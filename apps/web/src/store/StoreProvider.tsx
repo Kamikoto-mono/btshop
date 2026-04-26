@@ -41,26 +41,22 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const rawValue = window.localStorage.getItem(CART_STORAGE_KEY)
 
-    if (!rawValue) {
-      return
-    }
-
-    try {
-      storeRef.current?.dispatch(hydrateCart(JSON.parse(rawValue) as ICartItem[]))
-    } catch {
-      storeRef.current?.dispatch(hydrateCart([]))
+    if (rawValue) {
+      try {
+        storeRef.current?.dispatch(hydrateCart(JSON.parse(rawValue) as ICartItem[]))
+      } catch {
+        storeRef.current?.dispatch(hydrateCart([]))
+      }
     }
 
     const rawSession = window.localStorage.getItem(AUTH_STORAGE_KEY)
 
-    if (!rawSession) {
-      return
-    }
-
-    try {
-      storeRef.current?.dispatch(hydrateUserSession(JSON.parse(rawSession)))
-    } catch {
-      storeRef.current?.dispatch(hydrateUserSession(null))
+    if (rawSession) {
+      try {
+        storeRef.current?.dispatch(hydrateUserSession(JSON.parse(rawSession)))
+      } catch {
+        storeRef.current?.dispatch(hydrateUserSession(null))
+      }
     }
   }, [])
 

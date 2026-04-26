@@ -7,12 +7,14 @@ interface IUserSession {
 interface IAuthState {
   isOpen: boolean
   mode: 'login' | 'register'
+  redirectTo: string | null
   user: IUserSession | null
 }
 
 const initialState: IAuthState = {
   isOpen: false,
   mode: 'login',
+  redirectTo: null,
   user: null
 }
 
@@ -22,13 +24,21 @@ const authSlice = createSlice({
   reducers: {
     openAuthModal: (
       state,
-      action: PayloadAction<'login' | 'register' | undefined>
+      action: PayloadAction<
+        | {
+            mode?: 'login' | 'register'
+            redirectTo?: string | null
+          }
+        | undefined
+      >
     ) => {
       state.isOpen = true
-      state.mode = action.payload ?? 'login'
+      state.mode = action.payload?.mode ?? 'login'
+      state.redirectTo = action.payload?.redirectTo ?? null
     },
     closeAuthModal: (state) => {
       state.isOpen = false
+      state.redirectTo = null
     },
     setAuthMode: (state, action: PayloadAction<'login' | 'register'>) => {
       state.mode = action.payload
@@ -36,6 +46,7 @@ const authSlice = createSlice({
     setUserSession: (state, action: PayloadAction<IUserSession | null>) => {
       state.user = action.payload
       state.isOpen = false
+      state.redirectTo = null
     },
     hydrateUserSession: (state, action: PayloadAction<IUserSession | null>) => {
       state.user = action.payload

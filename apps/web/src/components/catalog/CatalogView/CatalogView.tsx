@@ -5,19 +5,16 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import {
-  formatCurrency,
   getCategories,
   getLineCount,
-  IProduct
+  type IProduct
 } from '@btshop/shared'
 
 import chevronDownIcon from '@assets/icons/chevron-down.svg'
 import emptyCartImage from '@assets/images/bt-empty-card.png'
 
-import { AddToCartButton } from '@/components/cart'
-import { Breadcrumbs, IBreadcrumbItem, ProductArtwork } from '@/components/ui'
-import { getProductCardImage } from '@/lib/productImages'
-import { getCompoundHref, getLineHref, getProductHref } from '@/lib/routes'
+import { Breadcrumbs, type IBreadcrumbItem, ProductCard } from '@/components/ui'
+import { getCompoundHref, getLineHref } from '@/lib/routes'
 import styles from './CatalogView.module.scss'
 
 interface ICatalogViewProps {
@@ -105,9 +102,7 @@ export const CatalogView = ({
                           </button>
                         </div>
 
-                        <div
-                          className={isOpened ? styles.lineListOpened : styles.lineListWrap}
-                        >
+                        <div className={isOpened ? styles.lineListOpened : styles.lineListWrap}>
                           <div className={styles.lineList}>
                             {compound.lines.map((line) => {
                               const isLineActive =
@@ -121,7 +116,8 @@ export const CatalogView = ({
                                   href={getLineHref(category.slug, compound.slug, line.slug)}
                                   key={line.slug}
                                 >
-                                  {line.name} ({getLineCount(category.slug, compound.slug, line.slug)})
+                                  {line.name} (
+                                  {getLineCount(category.slug, compound.slug, line.slug)})
                                 </Link>
                               )
                             })}
@@ -140,31 +136,12 @@ export const CatalogView = ({
           {products.length > 0 ? (
             <div className={styles.grid}>
               {products.map((product) => (
-                <article className={styles.card} key={product.id}>
-                  <Link href={getProductHref(product)}>
-                    <ProductArtwork
-                      imageSrc={getProductCardImage(product)}
-                      label={`${product.brand} • ${product.volume}`}
-                    />
-                  </Link>
-
-                  <div className={styles.cardBody}>
-                    <div>
-                      <p className={styles.cardMeta}>
-                        {product.categoryName} / {product.compoundName}
-                      </p>
-                      <Link className={styles.cardTitle} href={getProductHref(product)}>
-                        {product.name}
-                      </Link>
-                      <p className={styles.cardDescription}>{product.shortDescription}</p>
-                    </div>
-
-                    <div className={styles.cardFooter}>
-                      <strong>{formatCurrency(product.price)}</strong>
-                      <AddToCartButton product={product} />
-                    </div>
-                  </div>
-                </article>
+                <ProductCard
+                  artworkMeta={product.volume}
+                  className={styles.card}
+                  key={product.id}
+                  product={product}
+                />
               ))}
             </div>
           ) : (

@@ -1,14 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 
 import { getProducts, type IProduct } from '@btshop/shared'
 
-import { AddToCartButton } from '@/components/cart'
-import { ProductArtwork } from '@/components/ui'
-import { getProductCardImage } from '@/lib/productImages'
-import { getProductHref } from '@/lib/routes'
+import { ProductCard } from '@/components/ui'
 import styles from './PopularProductsSection.module.scss'
 
 const CARD_GAP = 18
@@ -119,7 +115,8 @@ export const PopularProductsSection = () => {
       <div className={styles.viewport}>
         <div className={styles.track} style={{ transform: `translateX(${-currentIndex * stepPx}px)` }}>
           {popularProducts.map((product, index) => (
-            <article
+            <ProductCard
+              artworkMeta={product.dosage}
               className={`${styles.card} ${
                 visibleCards === 2
                   ? styles.cardTwo
@@ -131,31 +128,8 @@ export const PopularProductsSection = () => {
               }`}
               key={product.id}
               ref={index === 0 ? firstCardRef : null}
-            >
-              <Link href={getProductHref(product)}>
-                <ProductArtwork
-                  imageSrc={getProductCardImage(product)}
-                  label={`${product.brand} • ${product.dosage}`}
-                />
-              </Link>
-
-              <div className={styles.cardBody}>
-                <div>
-                  <p className={styles.cardMeta}>
-                    {product.categoryName} / {product.compoundName}
-                  </p>
-                  <Link className={styles.productTitle} href={getProductHref(product)}>
-                    {product.name}
-                  </Link>
-                  <p className={styles.cardDescription}>{product.shortDescription}</p>
-                </div>
-
-                <div className={styles.cardFooter}>
-                  <strong>{product.price.toLocaleString('ru-RU')} руб.</strong>
-                  <AddToCartButton product={product} />
-                </div>
-              </div>
-            </article>
+              product={product}
+            />
           ))}
         </div>
       </div>

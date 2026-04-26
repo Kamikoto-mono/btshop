@@ -69,7 +69,12 @@ export const MobileTabs = () => {
           return
         }
 
-        dispatch(openAuthModal('login'))
+        dispatch(
+          openAuthModal({
+            mode: 'login',
+            redirectTo: '/profile'
+          })
+        )
       }
     }
   ]

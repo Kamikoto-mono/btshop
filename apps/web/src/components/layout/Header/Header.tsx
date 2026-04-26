@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 
 import cartIcon from '@assets/icons/cart.svg'
@@ -27,6 +27,7 @@ const navigationItems = [
 
 export const Header = () => {
   const pathname = usePathname()
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(true)
   const [showMobileBackground, setShowMobileBackground] = useState(false)
@@ -78,9 +79,11 @@ export const Header = () => {
             <Image alt='BTSHOP' priority src={logoIcon} />
           </Link>
 
-          <Suspense fallback={<div className={styles.searchFallback} />}>
-            <HeaderSearch />
-          </Suspense>
+          <div className={styles.searchSlot}>
+            <Suspense fallback={<div className={styles.searchFallback} />}>
+              <HeaderSearch />
+            </Suspense>
+          </div>
 
           <nav className={styles.nav}>
             {navigationItems.map((item) => (
@@ -97,12 +100,20 @@ export const Header = () => {
           <div className={styles.actions}>
             <button
               aria-label='Авторизация'
-              className={
-                pathname === '/profile' || userEmail
-                  ? styles.iconButtonActive
-                  : styles.iconButton
-              }
-              onClick={() => dispatch(openAuthModal('login'))}
+              className={pathname === '/profile' ? styles.iconButtonActive : styles.iconButton}
+              onClick={() => {
+                if (userEmail) {
+                  router.push('/profile')
+                  return
+                }
+
+                dispatch(
+                  openAuthModal({
+                    mode: 'login',
+                    redirectTo: '/profile'
+                  })
+                )
+              }}
               type='button'
             >
               <Image alt='' aria-hidden='true' src={profileIcon} />

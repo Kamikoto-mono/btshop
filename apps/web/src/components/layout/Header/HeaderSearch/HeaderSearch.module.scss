@@ -84,3 +84,9 @@
 .mobileSubmit :global(img) {
   filter: brightness(0) invert(1);
 }
+
+@media (max-width: 1000px) {
+  .wrapper {
+    max-width: none;
+  }
+}

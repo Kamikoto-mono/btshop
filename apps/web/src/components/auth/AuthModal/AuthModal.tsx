@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 
 import eyeOffIcon from '@assets/icons/eye-off.svg'
@@ -25,8 +26,9 @@ interface IPasswordFieldProps {
 }
 
 export const AuthModal = () => {
+  const router = useRouter()
   const dispatch = useAppDispatch()
-  const { isOpen, mode } = useAppSelector((state) => state.auth)
+  const { isOpen, mode, redirectTo } = useAppSelector((state) => state.auth)
 
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
@@ -48,11 +50,11 @@ export const AuthModal = () => {
       return
     }
 
-    dispatch(
-      setUserSession({
-        email: loginEmail.trim()
-      })
-    )
+    dispatch(setUserSession({ email: loginEmail.trim() }))
+
+    if (redirectTo) {
+      router.push(redirectTo)
+    }
   }
 
   const handleRegister = (event: FormEvent<HTMLFormElement>) => {
@@ -66,11 +68,11 @@ export const AuthModal = () => {
       return
     }
 
-    dispatch(
-      setUserSession({
-        email: registerEmail.trim()
-      })
-    )
+    dispatch(setUserSession({ email: registerEmail.trim() }))
+
+    if (redirectTo) {
+      router.push(redirectTo)
+    }
   }
 
   const renderPasswordField = ({
