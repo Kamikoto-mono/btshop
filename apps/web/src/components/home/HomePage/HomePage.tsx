@@ -1,9 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-
-import { getFeaturedProducts } from '@btshop/shared'
 
 import anonymityIcon from '@assets/icons/adv-anonymity.svg'
 import honestyIcon from '@assets/icons/adv-honesty.svg'
@@ -18,13 +15,11 @@ import mainToadsImage from '@assets/images/main-toads.png'
 import spLaboratoriesBanner from '@assets/images/sp-laboratories-banner.png'
 import zphcBanner from '@assets/images/zphc-banner.png'
 
-import { AddToCartButton } from '@/components/cart'
 import { HomeReviewsSection } from '@/components/reviews'
-import { Button, ProductArtwork, StatusDot } from '@/components/ui'
-import { getProductCardImage } from '@/lib/productImages'
-import { getProductHref } from '@/lib/routes'
+import { Button, StatusDot } from '@/components/ui'
 import { useInViewOnce } from '@/shared/hooks/useInViewOnce'
 import { BannersCarousel } from '../BannersCarousel/BannersCarousel'
+import { PopularProductsSection } from '../PopularProductsSection/PopularProductsSection'
 import styles from './HomePage.module.scss'
 
 const highlights = [
@@ -100,7 +95,6 @@ const banners = [
 ]
 
 export const HomePage = () => {
-  const featuredProducts = getFeaturedProducts()
   const { isInView: isHeroInView, ref: heroRef } = useInViewOnce<HTMLElement>({
     threshold: 0.12
   })
@@ -198,43 +192,7 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <p className={styles.eyebrow}>
-            <StatusDot />
-            Популярные позиции
-          </p>
-          <h2>Карточки без звёзд, избранного и лишнего шума</h2>
-        </div>
-
-        <div className={styles.productGrid}>
-          {featuredProducts.map((product) => (
-            <article className={styles.productCard} key={product.id}>
-              <Link href={getProductHref(product)}>
-                <ProductArtwork
-                  imageSrc={getProductCardImage(product)}
-                  label={`${product.brand} • ${product.dosage}`}
-                />
-              </Link>
-              <div className={styles.productBody}>
-                <div>
-                  <p className={styles.cardMeta}>
-                    {product.categoryName} / {product.compoundName}
-                  </p>
-                  <Link className={styles.productTitle} href={getProductHref(product)}>
-                    {product.name}
-                  </Link>
-                  <p className={styles.cardDescription}>{product.shortDescription}</p>
-                </div>
-                <div className={styles.cardFooter}>
-                  <strong>{product.price.toLocaleString('ru-RU')} руб.</strong>
-                  <AddToCartButton product={product} />
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+      <PopularProductsSection />
 
       <HomeReviewsSection />
     </div>

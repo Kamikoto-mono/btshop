@@ -212,10 +212,6 @@ export const AuthModal = () => {
             visible: isRegisterPasswordRepeatVisible
           })}
 
-          <p className={styles.hint}>
-            Регистрация пока mock-овая: вводите email и пароль, и мы создаём
-            локальную сессию без backend.
-          </p>
 
           <Button fullWidth size='lg' type='submit'>
             Зарегистрироваться
