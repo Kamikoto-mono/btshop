@@ -10,8 +10,8 @@ import { StoreProvider } from '@/store/StoreProvider'
 import styles from './layout.module.scss'
 
 export const metadata: Metadata = {
-  title: 'BTSHOP',
-  description: 'Mock storefront для онлайн-магазина с вложенными slug-маршрутами'
+  title: 'Потом',
+  description: 'напишу'
 }
 
 export default function RootLayout({
