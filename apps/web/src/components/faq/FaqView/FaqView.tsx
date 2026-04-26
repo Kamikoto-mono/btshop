@@ -20,7 +20,7 @@ interface IFaqSection {
 const faqSections: IFaqSection[] = [
   {
     id: 'general',
-    title: 'Общие вопросыыыыыыыыы',
+    title: 'Общие вопросы',
     questions: [
       {
         id: 'what-can-buy',
