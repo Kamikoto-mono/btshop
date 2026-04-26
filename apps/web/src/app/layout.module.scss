@@ -1,0 +1,30 @@
+.body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+
+.main {
+  flex: 1 0 auto;
+  width: min(var(--container-width), calc(100% - 32px));
+  margin: 0 auto;
+  padding-top: 24px;
+  position: relative;
+}
+
+@media (max-width: 720px) {
+  .main {
+    width: min(var(--container-width), calc(100% - 20px));
+  }
+}
+
+@media (max-width: 650px) {
+  .body {
+    padding-bottom: 70px;
+  }
+
+  .main {
+    padding-top: 76px;
+  }
+}

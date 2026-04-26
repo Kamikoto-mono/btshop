@@ -1,0 +1,142 @@
+.page {
+  display: grid;
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: 26px;
+  padding: 22px;
+  overflow: hidden;
+
+  border-radius: 30px;
+  border: 1px solid var(--color-border);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    background: rgba(248, 251, 255, 0.5);
+    box-shadow: var(--shadow-soft);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.thumbs {
+  display: grid;
+  gap: 12px;
+}
+
+.thumbButton {
+  display: block;
+  width: 100%;
+}
+
+.preview {
+  min-width: 0;
+}
+
+.previewButton {
+  display: block;
+  width: 100%;
+}
+
+.content {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: 14px 6px 14px 4px;
+}
+
+.category {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.content h1 {
+  font-size: 40px;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.descriptionBlock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 0px;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  bottom: -70px;
+  width: 350px;
+  height: 350px;
+  background: url('../../../../assets/images/dna-blocks.png') center / contain no-repeat;
+  opacity: 0.08;
+  transform: rotate(-9deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.descriptionBlock > * {
+  position: relative;
+  z-index: 2;
+}
+
+.descriptionBlock h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.descriptionBlock p {
+  color: var(--color-text-muted);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.actions {
+  max-width: 280px;
+}
+
+@media (max-width: 1100px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .card {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .thumbs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .descriptionBlock p {
+    font-size: 16px;
+  }
+
+  .content h1 {
+    font-size: 34px;
+  }
+}

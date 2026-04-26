@@ -1,0 +1,162 @@
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.background::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(29, 99, 216, 0.08), transparent 24%),
+    radial-gradient(circle at 86% 20%, rgba(73, 132, 221, 0.06), transparent 22%),
+    linear-gradient(180deg, rgba(248, 251, 255, 0.72) 0%, rgba(238, 243, 249, 0.72) 100%);
+}
+
+.formula {
+  position: absolute;
+  width: auto;
+  height: auto;
+  max-width: none;
+  min-width: 170px;
+  max-width: 380px;
+  opacity: 0.08;
+  filter: grayscale(1) contrast(0.72);
+  mix-blend-mode: multiply;
+  user-select: none;
+}
+
+.formulaOne {
+  top: 4vh;
+  left: -6vw;
+  width: 18vw;
+  opacity: 0.057;
+  transform: rotate(-18deg);
+}
+
+.formulaTwo {
+  top: 7vh;
+  left: 32vw;
+  width: 15vw;
+  opacity: 0.027;
+  transform: rotate(16deg);
+}
+
+.formulaThree {
+  top: 9vh;
+  right: 5vw;
+  width: 13vw;
+  opacity: 0.074;
+  transform: rotate(34deg);
+}
+
+.formulaFour {
+  top: 28vh;
+  left: 8vw;
+  width: 19vw;
+  opacity: 0.04;
+  transform: rotate(-27deg);
+}
+
+.formulaFive {
+  top: 34vh;
+  left: 43vw;
+  width: 14vw;
+  opacity: 0.053;
+  transform: rotate(21deg);
+}
+
+.formulaSix {
+  top: 29vh;
+  right: -4vw;
+  width: 18vw;
+  opacity: 0.055;
+  transform: rotate(-12deg);
+}
+
+.formulaSeven {
+  top: 55vh;
+  left: -3vw;
+  width: 14vw;
+  opacity: 0.098;
+  transform: rotate(42deg);
+}
+
+.formulaEight {
+  top: 58vh;
+  left: 27vw;
+  width: 16vw;
+  opacity: 0.072;
+  transform: rotate(9deg);
+}
+
+.formulaNine {
+  top: 53vh;
+  right: 18vw;
+  opacity: 0.035;
+  width: 17vw;
+  transform: rotate(-36deg);
+}
+
+.formulaTen {
+  top: 73vh;
+  left: 12vw;
+  width: 13vw;
+  opacity: 0.057;
+  transform: rotate(28deg);
+}
+
+.formulaEleven {
+  top: 76vh;
+  left: 50vw;
+  width: 18vw;
+  opacity: 0.063;
+  transform: rotate(-8deg);
+}
+
+.formulaTwelve {
+  top: 74vh;
+  right: -7vw;
+  width: 20vw;
+  opacity: 0.08;
+  transform: rotate(19deg);
+}
+
+@media (max-width: 900px) {
+  .formula {
+    opacity: 0.026;
+  }
+
+  .formulaOne,
+  .formulaFour,
+  .formulaSix,
+  .formulaEleven,
+  .formulaTwelve {
+    width: 280px;
+  }
+
+  .formulaTwo,
+  .formulaFive,
+  .formulaSeven,
+  .formulaTen {
+    width: 210px;
+  }
+
+  .formulaThree,
+  .formulaEight {
+    width: 190px;
+  }
+}
+
+@media (max-width: 650px) {
+  .formula {
+    opacity: 0.02;
+  }
+
+  .formula:nth-child(even) {
+    display: none;
+  }
+}

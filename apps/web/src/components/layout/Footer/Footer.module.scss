@@ -1,0 +1,140 @@
+.footer {
+  margin-top: 40px;
+  border-top: 1px solid var(--color-border);
+  background:
+    url('../../../../assets/images/site-bg/footer-cell-texture-transparent.png') center / cover no-repeat,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(243, 247, 253, 0.96) 100%);
+}
+
+.container {
+  width: min(var(--container-width), calc(100% - 32px));
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 34px 0 32px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.logo :global(img) {
+  width: auto;
+  height: 54px;
+}
+
+.copyright {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.bottomBar {
+  border-top: 1px dashed rgba(97, 117, 143, 0.28);
+}
+
+.bottomInner {
+  width: min(var(--container-width), calc(100% - 32px));
+  margin: 0 auto;
+  padding: 18px 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.paymentMethods {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.paymentMethods :global(img) {
+  width: auto;
+  max-width: 44px;
+  height: 14px;
+  object-fit: contain;
+}
+
+.paymentMethods :global(img:last-child) {
+  height: 18px;
+  max-width: 54px;
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.groupTitle {
+  margin-bottom: 4px;
+  color: var(--color-text);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.navGroup a,
+.contactLink {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.navGroup a:hover,
+.contactLink:hover {
+  color: var(--color-accent-dark);
+  transform: translateX(2px);
+}
+
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contactLink :global(img) {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 800px) {
+  .logo {
+    display: none;
+  }
+
+  .container {
+    gap: 0;
+  }
+}
+
+@media (max-width: 780px) {
+  .paymentMethods {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    gap: 20px;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 460px) {
+  .bottomInner {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .container {
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+}

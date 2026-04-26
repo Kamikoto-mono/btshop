@@ -1,0 +1,266 @@
+.page {
+  display: grid;
+  gap: 20px;
+}
+
+.sectionShell {
+  padding: 28px;
+  border-radius: 30px;
+  border: 1px solid var(--color-border);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    background: rgba(248, 251, 255, 0.5);
+    box-shadow: var(--shadow-soft);
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  font-size: 40px;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(320px, 42%) minmax(0, 1fr);
+  gap: 34px;
+  align-items: start;
+}
+
+.mobilePanels {
+  display: contents;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.faqSection {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.faqSection:last-child {
+  border-bottom: none;
+}
+
+.faqSection + .faqSection {
+  margin-top: 18px;
+}
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 18px;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.sectionHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectionIcon {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.sectionHeaderOpened .sectionTitle {
+  color: var(--color-accent-dark);
+}
+
+.sectionHeaderOpened .sectionIcon {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.sectionArrow {
+  color: var(--color-text-muted);
+  font-size: 18px;
+  line-height: 1;
+  transform: rotate(180deg);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.sectionArrowOpened {
+  color: var(--color-accent);
+  transform: rotate(0deg);
+}
+
+.questionsList {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.28s ease, opacity 0.2s ease;
+}
+
+.questionsListOpened {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.questionsListInner {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 18px 32px;
+}
+
+.questionItem {
+  width: 100%;
+  padding: 0 0 12px;
+  color: var(--color-text);
+  font-size: 17px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.questionItemSelected {
+  color: var(--color-accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.rightColumn {
+  min-width: 0;
+}
+
+.answerCard {
+  padding: 0px 24px;
+}
+
+.answerCard h2 {
+  margin-bottom: 16px;
+  font-size: 32px;
+  line-height: 1.08;
+}
+
+.answerText {
+  color: var(--color-text-muted);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.answerText p + p {
+  margin-top: 12px;
+}
+
+.backButton {
+  display: none;
+  margin-bottom: 16px;
+  color: var(--color-accent);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@media (max-width: 800px) {
+  .sectionShell {
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .mobilePanels {
+    display: flex;
+    width: 200%;
+    transition: transform 0.28s ease;
+  }
+
+  .mobilePanelsDetail {
+    transform: translateX(-50%);
+  }
+
+  .leftColumn,
+  .rightColumn {
+    width: 50%;
+    box-sizing: border-box;
+  }
+
+  .leftColumn {
+    padding-right: 8px;
+  }
+
+  .rightColumn {
+    min-height: 50vh;
+    padding-left: 8px;
+  }
+
+  .backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .questionItemSelected {
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .questionsListInner {
+    padding-left: 0;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .questionItem,
+  .answerText {
+    font-size: 16px;
+  }
+
+  .answerCard {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .header h1 {
+    font-size: 34px;
+  }
+
+  .answerCard h2 {
+    font-size: 28px;
+  }
+}

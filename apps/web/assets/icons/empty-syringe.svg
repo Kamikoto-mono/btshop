@@ -1,0 +1,16 @@
+<svg width="560" height="260" viewBox="0 0 560 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g opacity="0.16" transform="rotate(-18 280 130)">
+    <path d="M140 138H186" stroke="#A7B8CF" stroke-width="8" stroke-linecap="round"/>
+    <rect x="186" y="108" width="56" height="60" rx="18" stroke="#A7B8CF" stroke-width="8"/>
+    <rect x="242" y="116" width="178" height="44" rx="22" stroke="#A7B8CF" stroke-width="8"/>
+    <rect x="420" y="123" width="84" height="30" rx="15" stroke="#A7B8CF" stroke-width="8"/>
+    <path d="M504 138H532" stroke="#A7B8CF" stroke-width="8" stroke-linecap="round"/>
+    <path d="M532 138L552 118" stroke="#A7B8CF" stroke-width="8" stroke-linecap="round"/>
+    <path d="M532 138L552 158" stroke="#A7B8CF" stroke-width="8" stroke-linecap="round"/>
+    <path d="M552 118L560 110" stroke="#A7B8CF" stroke-width="5" stroke-linecap="round"/>
+    <path d="M552 158L560 166" stroke="#A7B8CF" stroke-width="5" stroke-linecap="round"/>
+    <path d="M278 122V154" stroke="#A7B8CF" stroke-width="5" stroke-linecap="round"/>
+    <path d="M316 122V154" stroke="#A7B8CF" stroke-width="5" stroke-linecap="round"/>
+    <path d="M354 122V154" stroke="#A7B8CF" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

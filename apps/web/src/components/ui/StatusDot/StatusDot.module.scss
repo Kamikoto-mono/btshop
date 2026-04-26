@@ -1,0 +1,81 @@
+.dot {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: linear-gradient(135deg, #8fe13c 0%, #58bc1f 100%);
+  box-shadow:
+    0 0 0 6px rgba(143, 225, 60, 0.16),
+    0 0 14px rgba(88, 188, 31, 0.18);
+}
+
+.pulse::after,
+.blink::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(143, 225, 60, 0.34);
+}
+
+.pulse::after {
+  animation: pulse 2.8s ease-out infinite;
+}
+
+.blink {
+  animation: blink 5.8s ease-in-out infinite;
+}
+
+.blink::after {
+  opacity: 0.42;
+  animation: blinkRing 5.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.82);
+  }
+
+  72% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.92;
+  }
+
+  50% {
+    opacity: 0.62;
+  }
+}
+
+@keyframes blinkRing {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+
+  50% {
+    opacity: 0.08;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .dot::after {
+    animation: none;
+  }
+}

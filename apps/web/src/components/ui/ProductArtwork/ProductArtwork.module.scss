@@ -1,0 +1,84 @@
+.cardArtwork,
+.mainArtwork,
+.thumbArtwork,
+.thumbArtworkActive {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(29, 99, 216, 0.12), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #eff4fb 100%);
+  box-shadow: inset 0 0 0 1px rgba(223, 232, 244, 0.72);
+}
+
+.artworkImage {
+  object-fit: cover;
+}
+
+.cardArtwork::after,
+.mainArtwork::after,
+.thumbArtwork::after,
+.thumbArtworkActive::after {
+  content: '';
+  position: absolute;
+  inset: auto -20% -38% auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(29, 99, 216, 0.06);
+}
+
+.badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: rgba(17, 70, 157, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.cardArtwork span,
+.mainArtwork span,
+.thumbArtwork span,
+.thumbArtworkActive span {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  z-index: 1;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.cardArtwork {
+  min-height: 240px;
+}
+
+.mainArtwork {
+  min-height: 680px;
+  border-radius: 30px;
+}
+
+.thumbArtwork,
+.thumbArtworkActive {
+  min-height: 120px;
+  cursor: pointer;
+}
+
+.thumbArtworkActive {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(29, 99, 216, 0.14);
+}
+
+.thumbArtwork .badge,
+.thumbArtworkActive .badge {
+  padding: 4px 8px;
+  font-size: 10px;
+}

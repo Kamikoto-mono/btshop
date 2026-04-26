@@ -1,0 +1,216 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.modal {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(40, 40, 40, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2010;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background-color: rgba(60, 60, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.imageContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageFrame {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  --nav-size: 52px;
+}
+
+.modalImage {
+  display: block;
+  max-width: min(92vw, 1400px);
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+}
+
+.navButton {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--nav-size);
+  height: var(--nav-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(40, 40, 40, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  z-index: 2010;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(60, 60, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%);
+  }
+
+  &:active {
+    transform: translateY(-50%);
+    background-color: rgba(70, 70, 70, 0.9);
+  }
+}
+
+.navButtonLeft {
+  left: calc((100vw - min(92vw, 1400px)) / 2 + 8px);
+}
+
+.navButtonLeft .navIcon {
+  transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.navButtonRight {
+  right: calc((100vw - min(92vw, 1400px)) / 2 + 8px);
+}
+
+.navIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 25px;
+  height: 14px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+@media screen and (max-width: 768px) {
+  .closeButton {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}
+
+@media screen and (min-width: 1501px) and (max-width: 1600px) {
+  .navButtonLeft {
+    left: calc(68px + ((100vw - 1500px) / 2.5641025641));
+  }
+
+  .navButtonRight {
+    right: calc(68px + ((100vw - 1500px) / 2.5641025641));
+  }
+}
+
+@media screen and (min-width: 1601px) {
+  .navButtonLeft {
+    left: calc((100vw - 1440px) / 2 + 4px);
+  }
+
+  .navButtonRight {
+    right: calc((100vw - 1440px) / 2 + 4px);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .closeButton {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 30;
+  }
+
+  .navButton {
+    position: fixed;
+    top: auto;
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 100px);
+    transform: none;
+    width: 44px;
+    height: 44px;
+    z-index: 40;
+    transition: none;
+  }
+
+  .navButtonLeft {
+    left: 24px;
+  }
+
+  .navButtonRight {
+    right: 24px;
+  }
+
+  .navIcon {
+    width: 22px;
+    height: 14px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .navButton:hover {
+    background-color: rgba(40, 40, 40, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%);
+  }
+
+  .navButton:active {
+    background-color: rgba(40, 40, 40, 0.8);
+    transform: translateY(-50%);
+  }
+
+  @media screen and (max-width: 480px) {
+
+    .navButton:hover,
+    .navButton:active {
+      transform: none;
+    }
+  }
+}

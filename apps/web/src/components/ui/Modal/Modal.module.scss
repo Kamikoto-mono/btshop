@@ -1,0 +1,35 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(10, 19, 34, 0.52);
+  backdrop-filter: blur(8px);
+}
+
+.modal {
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+  border: 1px solid rgba(204, 214, 228, 0.92);
+  border-radius: 30px;
+  box-shadow: 0 24px 80px rgba(12, 39, 79, 0.22);
+}
+
+@media (max-width: 650px) {
+  .backdrop {
+    padding: 14px;
+  }
+
+  .modal {
+    max-height: calc(100dvh - 28px);
+    border-radius: 24px;
+  }
+}
+
+
