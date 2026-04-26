@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -21,6 +23,7 @@ import { HomeReviewsSection } from '@/components/reviews'
 import { Button, ProductArtwork, StatusDot } from '@/components/ui'
 import { getProductCardImage } from '@/lib/productImages'
 import { getProductHref } from '@/lib/routes'
+import { useInViewOnce } from '@/shared/hooks/useInViewOnce'
 import { BannersCarousel } from '../BannersCarousel/BannersCarousel'
 import styles from './HomePage.module.scss'
 
@@ -98,12 +101,24 @@ const banners = [
 
 export const HomePage = () => {
   const featuredProducts = getFeaturedProducts()
+  const { isInView: isHeroInView, ref: heroRef } = useInViewOnce<HTMLElement>({
+    threshold: 0.12
+  })
+  const { isInView: isAdvantagesInView, ref: advantagesRef } =
+    useInViewOnce<HTMLElement>({
+      threshold: 0.16
+    })
 
   return (
     <div className={styles.page}>
       <BannersCarousel banners={banners} />
 
-      <section className={styles.hero}>
+      <section
+        className={`${styles.hero} ${styles.heroReveal} ${
+          isHeroInView ? styles.heroVisible : ''
+        }`}
+        ref={heroRef}
+      >
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>
             <StatusDot />
@@ -151,7 +166,12 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.advantagesSection}`}>
+      <section
+        className={`${styles.section} ${styles.advantagesSection} ${
+          styles.advantagesReveal
+        } ${isAdvantagesInView ? styles.advantagesVisible : ''}`}
+        ref={advantagesRef}
+      >
         <div className={styles.advantagesIntro}>
           <div className={styles.sectionHeader}>
             <p className={styles.eyebrow}>

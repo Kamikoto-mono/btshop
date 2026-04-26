@@ -51,10 +51,28 @@
   margin-top: 38px;
 }
 
-.highlightItem {
+.heroReveal .highlightItem {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.heroVisible .highlightItem {
+  animation: riseIn 0.82s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.heroVisible .highlightItem:nth-child(1) {
+  animation-delay: 0.16s;
+}
+
+.heroVisible .highlightItem:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.heroVisible .highlightItem:nth-child(3) {
+  animation-delay: 0.44s;
 }
 
 .highlightIcon {
@@ -88,10 +106,16 @@
   line-height: 1.55;
 }
 
-.actions {
+.heroReveal .actions {
   display: flex;
   gap: 14px;
   margin-top: 40px;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.heroVisible .actions {
+  animation: riseIn 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.58s forwards;
 }
 
 .actionButton {
@@ -112,8 +136,14 @@
   margin-bottom: 24px;
 }
 
-.advantagesIntro {
+.advantagesReveal .advantagesIntro {
   margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.advantagesVisible .advantagesIntro {
+  animation: riseIn 0.78s cubic-bezier(0.2, 0.8, 0.2, 1) 0.18s forwards;
 }
 
 .advantagesGrid {
@@ -149,10 +179,32 @@
   z-index: 1;
 }
 
-.advantageItem {
+.advantagesReveal .advantageItem {
   display: flex;
   align-items: flex-start;
   gap: 16px;
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.advantagesVisible .advantageItem {
+  animation: riseIn 0.82s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.advantagesVisible .advantageItem:nth-child(1) {
+  animation-delay: 0.34s;
+}
+
+.advantagesVisible .advantageItem:nth-child(2) {
+  animation-delay: 0.48s;
+}
+
+.advantagesVisible .advantageItem:nth-child(3) {
+  animation-delay: 0.62s;
+}
+
+.advantagesVisible .advantageItem:nth-child(4) {
+  animation-delay: 0.76s;
 }
 
 .advantageIcon {
@@ -256,6 +308,18 @@
   font-size: 22px;
 }
 
+@keyframes riseIn {
+  0% {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 1080px) {
   .productGrid,
   .advantagesGrid {
@@ -313,5 +377,16 @@
 @media (max-width: 600px) {
   .actions {
     flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .highlightItem,
+  .actions,
+  .advantagesIntro,
+  .advantageItem {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }
