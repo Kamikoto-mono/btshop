@@ -21,11 +21,11 @@
 .thumbArtworkActive::after {
   content: '';
   position: absolute;
-  inset: auto -20% -38% auto;
-  width: 180px;
-  height: 180px;
+width: 80px;
+  height: 80px;
+  inset: auto -34% -38% auto;
   border-radius: 50%;
-  background: rgba(29, 99, 216, 0.06);
+  background: rgba(29, 99, 216, 0.2);
 }
 
 .badge {
