@@ -5,6 +5,12 @@ import { useRouter } from 'next/navigation'
 
 import { formatCurrency } from '@btshop/shared'
 
+import {
+  createMockOrder,
+  mockProfile,
+  ORDER_STORAGE_KEY,
+  PROFILE_STORAGE_KEY
+} from '@/mocks'
 import { Breadcrumbs, Button } from '@/components/ui'
 import { clearCart } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
@@ -63,9 +69,15 @@ export const CheckoutPage = () => {
   const totalPrice = productsTotal + selectedDelivery.price
 
   useEffect(() => {
-    const profile = window.localStorage.getItem('btshop-profile')
+    const profile = window.localStorage.getItem(PROFILE_STORAGE_KEY)
 
     if (!profile) {
+      setFullName(mockProfile.fullName ?? '')
+      setEmail(mockProfile.email ?? '')
+      setCity(mockProfile.city ?? mockProfile.address ?? '')
+      setPhone(mockProfile.phone ?? '')
+      setPostalCode(mockProfile.postalCode ?? '')
+      setTelegram(mockProfile.telegram ?? '')
       return
     }
 
@@ -86,7 +98,14 @@ export const CheckoutPage = () => {
       setPhone(parsedProfile.phone ?? '')
       setPostalCode(parsedProfile.postalCode ?? '')
       setTelegram(parsedProfile.telegram ?? '')
-    } catch {}
+    } catch {
+      setFullName(mockProfile.fullName ?? '')
+      setEmail(mockProfile.email ?? '')
+      setCity(mockProfile.city ?? mockProfile.address ?? '')
+      setPhone(mockProfile.phone ?? '')
+      setPostalCode(mockProfile.postalCode ?? '')
+      setTelegram(mockProfile.telegram ?? '')
+    }
   }, [])
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -97,38 +116,30 @@ export const CheckoutPage = () => {
     }
 
     const previousOrders = JSON.parse(
-      window.localStorage.getItem('btshop-orders') ?? '[]'
+      window.localStorage.getItem(ORDER_STORAGE_KEY) ?? '[]'
     ) as Array<Record<string, unknown>>
 
     window.localStorage.setItem(
-      'btshop-orders',
+      ORDER_STORAGE_KEY,
       JSON.stringify([
-        {
+        createMockOrder({
           city,
-          createdAt: new Date().toISOString(),
           customer: fullName,
           delivery: selectedDelivery.title,
           deliveryPrice: selectedDelivery.price,
           email,
-          id: `order-${Date.now()}`,
-          items: items.map((item) => ({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity
-          })),
+          items,
           phone,
           postalCode,
           status: 'Новый',
-          telegram,
-          totalPrice
-        },
+          telegram
+        }),
         ...previousOrders
       ])
     )
 
     window.localStorage.setItem(
-      'btshop-profile',
+      PROFILE_STORAGE_KEY,
       JSON.stringify({
         city,
         email,

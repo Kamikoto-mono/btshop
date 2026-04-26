@@ -7,6 +7,12 @@ import { formatCurrency } from '@btshop/shared'
 
 import emptyCartImage from '@assets/images/bt-empty-card.png'
 
+import {
+  createMockOrder,
+  mockProfile,
+  ORDER_STORAGE_KEY,
+  PROFILE_STORAGE_KEY
+} from '@/mocks'
 import { Button, Modal } from '@/components/ui'
 import {
   clearCart,
@@ -33,9 +39,13 @@ export const CartModal = () => {
   const [promoMessage, setPromoMessage] = useState('')
 
   useEffect(() => {
-    const profile = window.localStorage.getItem('btshop-profile')
+    const profile = window.localStorage.getItem(PROFILE_STORAGE_KEY)
 
     if (!profile) {
+      setFullName(mockProfile.fullName ?? '')
+      setAddress(mockProfile.address ?? '')
+      setPostalCode(mockProfile.postalCode ?? '')
+      setTelegram(mockProfile.telegram ?? '')
       return
     }
 
@@ -51,7 +61,12 @@ export const CartModal = () => {
       setAddress(parsedProfile.address ?? '')
       setPostalCode(parsedProfile.postalCode ?? '')
       setTelegram(parsedProfile.telegram ?? '')
-    } catch {}
+    } catch {
+      setFullName(mockProfile.fullName ?? '')
+      setAddress(mockProfile.address ?? '')
+      setPostalCode(mockProfile.postalCode ?? '')
+      setTelegram(mockProfile.telegram ?? '')
+    }
   }, [isCartOpen])
 
   const canSubmit = useMemo(
@@ -86,34 +101,27 @@ export const CartModal = () => {
     }
 
     const previousOrders = JSON.parse(
-      window.localStorage.getItem('btshop-orders') ?? '[]'
+      window.localStorage.getItem(ORDER_STORAGE_KEY) ?? '[]'
     ) as Array<Record<string, unknown>>
 
     window.localStorage.setItem(
-      'btshop-orders',
+      ORDER_STORAGE_KEY,
       JSON.stringify([
-        {
+        createMockOrder({
           address,
-          createdAt: new Date().toISOString(),
           customer: fullName,
-          id: `order-${Date.now()}`,
-          items: items.map((item) => ({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity
-          })),
+          items,
           postalCode,
           promoCode: promoCode.trim() || null,
           status: 'Новый',
           telegram
-        },
+        }),
         ...previousOrders
       ])
     )
 
     window.localStorage.setItem(
-      'btshop-profile',
+      PROFILE_STORAGE_KEY,
       JSON.stringify({
         address,
         fullName,

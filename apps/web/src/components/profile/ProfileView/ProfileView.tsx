@@ -4,6 +4,14 @@ import { FormEvent, useEffect, useState } from 'react'
 
 import { formatCurrency } from '@btshop/shared'
 
+import {
+  mockOrderHistory,
+  mockProfile,
+  ORDER_STORAGE_KEY,
+  PROFILE_STORAGE_KEY,
+  type IStoredOrder,
+  type IStoredProfile
+} from '@/mocks'
 import { Breadcrumbs, Button, StatusDot } from '@/components/ui'
 import styles from './ProfileView.module.scss'
 
@@ -14,23 +22,6 @@ interface IProfileState {
   telegram: string
 }
 
-interface IOrderItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-}
-
-interface IOrder {
-  createdAt: string
-  id: string
-  items: IOrderItem[]
-  status: string
-}
-
-const PROFILE_STORAGE_KEY = 'btshop-profile'
-const ORDER_STORAGE_KEY = 'btshop-orders'
-
 const initialProfile: IProfileState = {
   address: '',
   fullName: '',
@@ -40,7 +31,7 @@ const initialProfile: IProfileState = {
 
 export const ProfileView = () => {
   const [profile, setProfile] = useState<IProfileState>(initialProfile)
-  const [orders, setOrders] = useState<IOrder[]>([])
+  const [orders, setOrders] = useState<IStoredOrder[]>([])
   const [savedMessage, setSavedMessage] = useState('')
 
   useEffect(() => {
@@ -48,27 +39,27 @@ export const ProfileView = () => {
     const storedOrders = window.localStorage.getItem(ORDER_STORAGE_KEY)
 
     if (storedProfile) {
-      setProfile(JSON.parse(storedProfile))
+      const parsedProfile = JSON.parse(storedProfile) as IStoredProfile
+
+      setProfile({
+        address: parsedProfile.address ?? '',
+        fullName: parsedProfile.fullName ?? '',
+        postalCode: parsedProfile.postalCode ?? '',
+        telegram: parsedProfile.telegram ?? ''
+      })
+    } else {
+      setProfile({
+        address: mockProfile.address ?? '',
+        fullName: mockProfile.fullName ?? '',
+        postalCode: mockProfile.postalCode ?? '',
+        telegram: mockProfile.telegram ?? ''
+      })
     }
 
     if (storedOrders) {
-      setOrders(JSON.parse(storedOrders))
+      setOrders(JSON.parse(storedOrders) as IStoredOrder[])
     } else {
-      setOrders([
-        {
-          createdAt: new Date().toISOString(),
-          id: 'mock-001',
-          items: [
-            {
-              id: 'te-001',
-              name: 'Testosterone Enanthate 250',
-              price: 2800,
-              quantity: 1
-            }
-          ],
-          status: 'Доставлен'
-        }
-      ])
+      setOrders(mockOrderHistory)
     }
   }, [])
 
@@ -173,7 +164,7 @@ export const ProfileView = () => {
                   {order.items.map((item) => (
                     <div className={styles.orderItem} key={item.id}>
                       <span>
-                        {item.name} × {item.quantity}
+                        {item.name} x {item.quantity}
                       </span>
                       <strong>{formatCurrency(item.price * item.quantity)}</strong>
                     </div>

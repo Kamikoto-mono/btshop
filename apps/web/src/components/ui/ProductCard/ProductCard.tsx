@@ -33,7 +33,6 @@ export const ProductCard = forwardRef<HTMLElement, IProductCardProps>(
           <Link className={styles.productTitle} href={getProductHref(product)}>
             {product.name}
           </Link>
-          <p className={styles.cardDescription}>{product.shortDescription}</p>
         </div>
 
         <div className={styles.cardFooter}>

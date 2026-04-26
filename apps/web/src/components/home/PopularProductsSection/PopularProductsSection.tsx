@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import { getProducts, type IProduct } from '@btshop/shared'
-
 import { ProductCard } from '@/components/ui'
+import { mockPopularProducts } from '@/mocks'
 import styles from './PopularProductsSection.module.scss'
 
 const CARD_GAP = 18
@@ -25,32 +24,14 @@ const getVisibleCards = (width: number) => {
   return 5
 }
 
-const buildPopularProducts = (): IProduct[] => {
-  const items = getProducts()
-
-  if (items.length >= 10) {
-    return items.slice(0, 10)
-  }
-
-  const fillers = items.slice(0, Math.max(10 - items.length, 0)).map((product, index) => ({
-    ...product,
-    id: `${product.id}-popular-${index + 1}`,
-    price: product.price + (index + 1) * 150
-  }))
-
-  return [...items, ...fillers].slice(0, 10)
-}
-
-const popularProducts = buildPopularProducts()
-
 export const PopularProductsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [visibleCards, setVisibleCards] = useState(5)
   const [stepPx, setStepPx] = useState(0)
   const firstCardRef = useRef<HTMLElement | null>(null)
 
-  const maxIndex = Math.max(popularProducts.length - visibleCards, 0)
-  const canSlide = popularProducts.length > visibleCards
+  const maxIndex = Math.max(mockPopularProducts.length - visibleCards, 0)
+  const canSlide = mockPopularProducts.length > visibleCards
 
   useEffect(() => {
     const handleResize = () => {
@@ -114,7 +95,7 @@ export const PopularProductsSection = () => {
 
       <div className={styles.viewport}>
         <div className={styles.track} style={{ transform: `translateX(${-currentIndex * stepPx}px)` }}>
-          {popularProducts.map((product, index) => (
+          {mockPopularProducts.map((product, index) => (
             <ProductCard
               artworkMeta={product.dosage}
               className={`${styles.card} ${
