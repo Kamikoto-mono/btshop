@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { Breadcrumbs, StatusDot } from '@/components/ui'
+import { Breadcrumbs, Eyebrow } from '@/components/ui'
 import styles from './FaqView.module.scss'
 
 interface IFaqQuestion {
@@ -235,10 +235,9 @@ export const FaqView = () => {
 
       <section className={styles.sectionShell}>
         <div className={styles.header}>
-          <p className={styles.eyebrow}>
-            <StatusDot />
+          <Eyebrow className={styles.eyebrow} dot>
             FAQ
-          </p>
+          </Eyebrow>
           <h1>Частые вопросы</h1>
         </div>
 

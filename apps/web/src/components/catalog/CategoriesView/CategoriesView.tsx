@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { getCategories, getLineCount } from '@btshop/shared'
 
-import { Breadcrumbs } from '@/components/ui'
+import { Breadcrumbs, Eyebrow } from '@/components/ui'
 import { getCompoundHref, getLineHref } from '@/lib/routes'
 import styles from './CategoriesView.module.scss'
 
@@ -25,7 +25,7 @@ export const CategoriesView = () => {
 
       <section className={styles.content}>
         <div className={styles.header}>
-          <p className={styles.eyebrow}>Каталог</p>
+          <Eyebrow className={styles.eyebrow}>Каталог</Eyebrow>
         </div>
 
         <div className={styles.categoryList}>

@@ -15,11 +15,11 @@ import mainToadsImage from '@assets/images/main-toads.png'
 import spLaboratoriesBanner from '@assets/images/sp-laboratories-banner.png'
 import zphcBanner from '@assets/images/zphc-banner.png'
 
+import { PopularProductsSection } from '@/components/home'
 import { HomeReviewsSection } from '@/components/reviews'
-import { Button, StatusDot } from '@/components/ui'
+import { Button, Eyebrow } from '@/components/ui'
 import { useInViewOnce } from '@/shared/hooks/useInViewOnce'
 import { BannersCarousel } from '../BannersCarousel/BannersCarousel'
-import { PopularProductsSection } from '../PopularProductsSection/PopularProductsSection'
 import styles from './HomePage.module.scss'
 
 const highlights = [
@@ -34,7 +34,7 @@ const highlights = [
     title: '15 000+ отправленных заказов'
   },
   {
-    description: 'Качественная фармакология для высоких спортивных результатов.',
+    description: 'Качественная фармакология от брендов с мировым именем.',
     icon: routeNodeIcon,
     title: 'Поставки от брендов с мировой известностью'
   }
@@ -114,10 +114,9 @@ export const HomePage = () => {
         ref={heroRef}
       >
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>
-            <StatusDot />
+          <Eyebrow className={styles.eyebrow} dot>
             BATTLETOADS SHOP
-          </p>
+          </Eyebrow>
           <h1>Твой проводник в мир фармакологии</h1>
 
           <div className={styles.highlightsList}>
@@ -168,10 +167,9 @@ export const HomePage = () => {
       >
         <div className={styles.advantagesIntro}>
           <div className={styles.sectionHeader}>
-            <p className={styles.eyebrow}>
-              <StatusDot />
+            <Eyebrow className={styles.eyebrow} dot>
               Почему выбирают нас
-            </p>
+            </Eyebrow>
             <h2>Преимущества Battletoads Shop</h2>
           </div>
         </div>

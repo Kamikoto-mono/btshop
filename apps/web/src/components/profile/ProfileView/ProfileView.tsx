@@ -12,7 +12,7 @@ import {
   type IStoredOrder,
   type IStoredProfile
 } from '@/mocks'
-import { Breadcrumbs, Button, StatusDot } from '@/components/ui'
+import { Breadcrumbs, Button, Eyebrow } from '@/components/ui'
 import styles from './ProfileView.module.scss'
 
 interface IProfileState {
@@ -81,10 +81,9 @@ export const ProfileView = () => {
 
       <section className={styles.hero}>
         <div>
-          <h1 className={styles.eyebrow}>
-            <StatusDot />
+          <Eyebrow as='h1' className={styles.eyebrow} dot>
             Профиль
-          </h1>
+          </Eyebrow>
         </div>
         {savedMessage ? <span className={styles.badge}>{savedMessage}</span> : null}
       </section>
