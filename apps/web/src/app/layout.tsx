@@ -11,7 +11,7 @@ import styles from './layout.module.scss'
 
 export const metadata: Metadata = {
   title: 'Потом',
-  description: 'напишу'
+  description: 'напишу чет'
 }
 
 export default function RootLayout({
