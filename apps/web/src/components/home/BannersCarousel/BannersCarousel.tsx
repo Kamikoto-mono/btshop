@@ -95,7 +95,7 @@ export const BannersCarousel: React.FC<{ banners: IBanner[] }> = ({
       if (!isAnimating) {
         handleNext()
       }
-    }, 12000)
+    }, 9000)
 
     return () => clearInterval(interval)
   }, [handleNext, isAnimating, sortedBanners.length])
