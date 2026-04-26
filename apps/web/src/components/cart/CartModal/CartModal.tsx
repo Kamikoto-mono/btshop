@@ -13,7 +13,7 @@ import {
   ORDER_STORAGE_KEY,
   PROFILE_STORAGE_KEY
 } from '@/mocks'
-import { Button, Modal } from '@/components/ui'
+import { Button, Input, Modal } from '@/components/ui'
 import {
   clearCart,
   closeCart,
@@ -228,7 +228,7 @@ export const CartModal = () => {
           <div className={styles.promoBlock}>
             <label>
               <span>Промокод</span>
-              <input
+              <Input
                 onChange={(event) => setPromoCode(event.target.value)}
                 placeholder='Введите промокод'
                 value={promoCode}
@@ -248,7 +248,7 @@ export const CartModal = () => {
 
           <label>
             <span>ФИО</span>
-            <input
+            <Input
               onChange={(event) => setFullName(event.target.value)}
               placeholder='Иванов Иван Иванович'
               value={fullName}
@@ -257,7 +257,8 @@ export const CartModal = () => {
 
           <label>
             <span>Адрес</span>
-            <textarea
+            <Input
+              multiline
               onChange={(event) => setAddress(event.target.value)}
               placeholder='Город, улица, дом, квартира'
               rows={5}
@@ -268,7 +269,7 @@ export const CartModal = () => {
           <div className={styles.formGrid}>
             <label>
               <span>Индекс</span>
-              <input
+              <Input
                 onChange={(event) => setPostalCode(event.target.value)}
                 placeholder='101000'
                 value={postalCode}
@@ -277,7 +278,7 @@ export const CartModal = () => {
 
             <label>
               <span>Telegram</span>
-              <input
+              <Input
                 onChange={(event) => setTelegram(event.target.value)}
                 placeholder='@nickname'
                 value={telegram}

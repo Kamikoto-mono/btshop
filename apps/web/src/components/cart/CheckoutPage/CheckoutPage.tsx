@@ -11,7 +11,7 @@ import {
   ORDER_STORAGE_KEY,
   PROFILE_STORAGE_KEY
 } from '@/mocks'
-import { Breadcrumbs, Button } from '@/components/ui'
+import { Breadcrumbs, Button, Input } from '@/components/ui'
 import { clearCart } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import styles from './CheckoutPage.module.scss'
@@ -176,26 +176,26 @@ export const CheckoutPage = () => {
             <div className={styles.sectionTitle}>Контактные данные</div>
 
             <div className={styles.fieldsGrid}>
-              <input
+              <Input
                 onChange={(event) => setFullName(event.target.value)}
                 placeholder='ФИО получателя *'
                 value={fullName}
               />
 
               <div className={styles.compactGrid}>
-                <input
+                <Input
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder='Ваш email *'
                   value={email}
                 />
-                <input
+                <Input
                   onChange={(event) => setPhone(event.target.value)}
                   placeholder='Телефон *'
                   value={phone}
                 />
               </div>
 
-              <input
+              <Input
                 onChange={(event) => setTelegram(event.target.value)}
                 placeholder='Telegram'
                 value={telegram}
@@ -207,12 +207,12 @@ export const CheckoutPage = () => {
             <div className={styles.sectionTitle}>Адрес доставки</div>
 
             <div className={styles.fieldsGrid}>
-              <input
+              <Input
                 onChange={(event) => setCity(event.target.value)}
                 placeholder='Город *'
                 value={city}
               />
-              <input
+              <Input
                 onChange={(event) => setPostalCode(event.target.value)}
                 placeholder='Индекс *'
                 value={postalCode}

@@ -7,7 +7,7 @@ import { FormEvent, useState } from 'react'
 import eyeOffIcon from '@assets/icons/eye-off.svg'
 import eyeOpenIcon from '@assets/icons/eye-open.svg'
 
-import { Button, Modal } from '@/components/ui'
+import { Button, Input, Modal } from '@/components/ui'
 import {
   closeAuthModal,
   setAuthMode,
@@ -85,23 +85,22 @@ export const AuthModal = () => {
   }: IPasswordFieldProps) => (
     <label>
       <span>{label}</span>
-      <div className={styles.passwordField}>
-        <input
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={placeholder}
-          type={visible ? 'text' : 'password'}
-          value={value}
-        />
-
-        <button
-          aria-label={visible ? 'Скрыть пароль' : 'Показать пароль'}
-          className={styles.passwordToggle}
-          onClick={onToggleVisible}
-          type='button'
-        >
-          <Image alt='' aria-hidden='true' src={visible ? eyeOffIcon : eyeOpenIcon} />
-        </button>
-      </div>
+      <Input
+        endAdornment={
+          <button
+            aria-label={visible ? 'Скрыть пароль' : 'Показать пароль'}
+            className={styles.passwordToggle}
+            onClick={onToggleVisible}
+            type='button'
+          >
+            <Image alt='' aria-hidden='true' src={visible ? eyeOffIcon : eyeOpenIcon} />
+          </button>
+        }
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        type={visible ? 'text' : 'password'}
+        value={value}
+      />
     </label>
   )
 
@@ -145,7 +144,7 @@ export const AuthModal = () => {
         <form className={styles.form} onSubmit={handleLogin}>
           <label>
             <span>Email</span>
-            <input
+            <Input
               onChange={(event) => setLoginEmail(event.target.value)}
               placeholder='email@example.com'
               type='email'
@@ -186,7 +185,7 @@ export const AuthModal = () => {
         <form className={styles.form} onSubmit={handleRegister}>
           <label>
             <span>Email</span>
-            <input
+            <Input
               onChange={(event) => setRegisterEmail(event.target.value)}
               placeholder='email@example.com'
               type='email'
@@ -213,7 +212,6 @@ export const AuthModal = () => {
             value: registerPasswordRepeat,
             visible: isRegisterPasswordRepeatVisible
           })}
-
 
           <Button fullWidth size='lg' type='submit'>
             Зарегистрироваться

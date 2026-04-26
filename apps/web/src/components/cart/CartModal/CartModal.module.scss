@@ -187,27 +187,6 @@
   font-weight: 700;
 }
 
-.promoBlock input,
-.formColumn input,
-.formColumn textarea {
-  width: 100%;
-  border: 1px solid #c9d7ea;
-  border-radius: 18px;
-  background: #f8fbff;
-  color: var(--color-text);
-}
-
-.promoBlock input,
-.formColumn input {
-  height: 54px;
-  padding: 0 18px;
-}
-
-.formColumn textarea {
-  padding: 16px 18px;
-  resize: vertical;
-}
-
 .promoButton {
   align-self: end;
   min-width: 156px;

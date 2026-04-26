@@ -15,7 +15,7 @@ import {
   type IStoredOrder,
   type IStoredProfile
 } from '@/mocks'
-import { Breadcrumbs, Button, Eyebrow } from '@/components/ui'
+import { Breadcrumbs, Button, Eyebrow, Input } from '@/components/ui'
 import styles from './ProfileView.module.scss'
 
 interface IProfileState {
@@ -110,7 +110,7 @@ export const ProfileView = () => {
           <h2>Предпочтительные данные</h2>
           <label>
             <span>ФИО</span>
-            <input
+            <Input
               onChange={(event) =>
                 setProfile((current) => ({
                   ...current,
@@ -122,7 +122,8 @@ export const ProfileView = () => {
           </label>
           <label>
             <span>Адрес</span>
-            <textarea
+            <Input
+              multiline
               onChange={(event) =>
                 setProfile((current) => ({
                   ...current,
@@ -136,7 +137,7 @@ export const ProfileView = () => {
           <div className={styles.formGrid}>
             <label>
               <span>Индекс</span>
-              <input
+              <Input
                 onChange={(event) =>
                   setProfile((current) => ({
                     ...current,
@@ -148,7 +149,7 @@ export const ProfileView = () => {
             </label>
             <label>
               <span>Telegram</span>
-              <input
+              <Input
                 onChange={(event) =>
                   setProfile((current) => ({
                     ...current,

@@ -52,7 +52,11 @@ export const ProductDetails = ({
           <div className={styles.thumbs}>
             {galleryImages.map((image) => (
               <button
-                className={styles.thumbButton}
+                className={
+                  activeImage === image.label
+                    ? `${styles.thumbButton} ${styles.thumbButtonActive}`
+                    : styles.thumbButton
+                }
                 key={image.label}
                 onClick={() => setActiveImage(image.label)}
                 type='button'
