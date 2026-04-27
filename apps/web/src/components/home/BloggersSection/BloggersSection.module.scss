@@ -20,7 +20,7 @@
 .card {
   position: relative;
   display: grid;
-  min-height: 360px;
+  grid-template-rows: 230px 1fr;
   overflow: hidden;
   border: 1px solid rgba(169, 184, 204, 0.42);
   border-radius: 28px;
@@ -60,7 +60,7 @@
 
 .cover {
   position: relative;
-  min-height: 230px;
+  height: 230px;
   overflow: hidden;
 }
 
@@ -126,12 +126,12 @@
   }
 
   .card {
-    min-height: 320px;
+    grid-template-rows: 210px 1fr;
     border-radius: 24px;
   }
 
   .cover {
-    min-height: 210px;
+    height: 210px;
   }
 
   .content {
