@@ -1,5 +1,7 @@
 import { IProduct } from '@btshop/shared'
 
+export const getCategoryHref = (categorySlug: string) => `/${categorySlug}`
+
 export const getProductHref = (product: IProduct) =>
   `/${product.categorySlug}/${product.compoundSlug}/${product.lineSlug}/${product.id}`
 

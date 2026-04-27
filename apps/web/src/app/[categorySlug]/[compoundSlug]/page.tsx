@@ -39,10 +39,10 @@ export default async function CompoundPage({
       breadcrumbs={[
         { href: '/', label: 'Главная' },
         { href: '/market', label: 'Магазин' },
-        { label: category.name },
+        { href: `/${category.slug}`, label: category.name },
         { label: compound.name }
       ]}
-      description={`Раздел ${compound.name.toLowerCase()} внутри категории "${category.name}". Карточки ниже используют итоговые slug-ветки и позволяют дальше углубляться в конкретную внутреннюю подкатегорию.`}
+      description={`Раздел ${compound.name.toLowerCase()} внутри категории "${category.name}" для дальнейшего выбора конкретной подгруппы и товара.`}
       products={products}
       searchQuery={q}
       title={`${category.name} / ${compound.name}`}

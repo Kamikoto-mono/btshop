@@ -26,7 +26,7 @@ export default async function ProductPage({
       breadcrumbs={[
         { href: '/', label: 'Главная' },
         { href: '/market', label: 'Магазин' },
-        { href: `/${product.categorySlug}/${product.compoundSlug}`, label: product.categoryName },
+        { href: `/${product.categorySlug}`, label: product.categoryName },
         {
           href: `/${product.categorySlug}/${product.compoundSlug}`,
           label: product.compoundName

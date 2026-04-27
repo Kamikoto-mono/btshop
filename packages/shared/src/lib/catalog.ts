@@ -19,6 +19,9 @@ export const getCompoundProducts = (
       product.compoundSlug === compoundSlug
   )
 
+export const getCategoryProducts = (categorySlug: string): IProduct[] =>
+  products.filter((product) => product.categorySlug === categorySlug)
+
 export const getLineProducts = (
   categorySlug: string,
   compoundSlug: string,

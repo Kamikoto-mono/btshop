@@ -46,11 +46,11 @@ export default async function LinePage({
       breadcrumbs={[
         { href: '/', label: 'Главная' },
         { href: '/market', label: 'Магазин' },
-        { label: category.name },
-        { label: compound.name },
+        { href: `/${category.slug}`, label: category.name },
+        { href: `/${category.slug}/${compound.slug}`, label: compound.name },
         { label: line.name }
       ]}
-      description={`Раздел ${line.name.toLowerCase()} внутри "${compound.name}". Здесь пользователь уже выбирает конкретную карточку товара из внутренней подкатегории.`}
+      description={`Раздел ${line.name.toLowerCase()} внутри "${compound.name}" с переходом на отдельные страницы товаров.`}
       products={products}
       searchQuery={q}
       title={`${compound.name} / ${line.name}`}
