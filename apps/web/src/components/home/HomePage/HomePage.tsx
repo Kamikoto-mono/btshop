@@ -15,7 +15,7 @@ import mainToadsImage from '@assets/images/main-toads.png'
 import spLaboratoriesBanner from '@assets/images/sp-laboratories-banner.png'
 import zphcBanner from '@assets/images/zphc-banner.png'
 
-import { PopularProductsSection } from '@/components/home'
+import { BloggersSection, PopularProductsSection } from '@/components/home'
 import { HomeReviewsSection } from '@/components/reviews'
 import { Button, Eyebrow } from '@/components/ui'
 import { useInViewOnce } from '@/shared/hooks/useInViewOnce'
@@ -189,6 +189,8 @@ export const HomePage = () => {
           ))}
         </div>
       </section>
+
+      <BloggersSection />
 
       <PopularProductsSection />
 
