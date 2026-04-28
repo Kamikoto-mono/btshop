@@ -72,10 +72,21 @@
 .itemRow {
   padding: 24px 0;
   border-bottom: 1px solid var(--color-border);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    filter 0.28s ease;
 }
 
 .itemRow:last-child {
   border-bottom: 0;
+}
+
+.itemRowRemoving {
+  opacity: 0;
+  transform: translateX(34px);
+  filter: blur(3px);
+  pointer-events: none;
 }
 
 .removeButton {
@@ -175,16 +186,22 @@
 }
 
 .promoBlock label,
-.formColumn label {
+.fieldGroup {
   display: grid;
   gap: 8px;
 }
 
 .promoBlock span,
-.formColumn span {
+.fieldGroup span {
   color: #213b60;
   font-size: 14px;
   font-weight: 700;
+}
+
+.fieldError {
+  color: #c14949;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .promoButton {

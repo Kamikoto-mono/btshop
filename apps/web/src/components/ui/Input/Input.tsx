@@ -7,19 +7,27 @@ import styles from './Input.module.scss'
 type InputProps = ComponentPropsWithoutRef<'input'> & {
   className?: string
   endAdornment?: ReactNode
+  invalid?: boolean
   multiline?: false
 }
 
 type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   className?: string
   endAdornment?: ReactNode
+  invalid?: boolean
   multiline: true
 }
 
 type Props = InputProps | TextareaProps
 
 export const Input = (props: Props) => {
-  const { className, endAdornment, multiline = false, ...restProps } = props
+  const {
+    className,
+    endAdornment,
+    invalid = false,
+    multiline = false,
+    ...restProps
+  } = props
 
   const controlClassName = [
     styles.control,
@@ -35,11 +43,13 @@ export const Input = (props: Props) => {
       {multiline ? (
         <textarea
           {...(restProps as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          aria-invalid={invalid || undefined}
           className={controlClassName}
         />
       ) : (
         <input
           {...(restProps as ComponentPropsWithoutRef<'input'>)}
+          aria-invalid={invalid || undefined}
           className={controlClassName}
         />
       )}

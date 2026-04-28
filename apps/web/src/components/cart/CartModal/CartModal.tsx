@@ -1,7 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 import { formatCurrency } from '@btshop/shared'
 
@@ -22,7 +23,27 @@ import {
   removeItem
 } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import {
+  normalizeTelegramField,
+  normalizeText,
+  validateRequired,
+  validateTelegram
+} from '@/shared/utils'
 import styles from './CartModal.module.scss'
+
+interface ICartFormValues {
+  address: string
+  fullName: string
+  postalCode: string
+  telegram: string
+}
+
+const defaultValues: ICartFormValues = {
+  address: '',
+  fullName: '',
+  postalCode: '',
+  telegram: ''
+}
 
 export const CartModal = () => {
   const dispatch = useAppDispatch()
@@ -31,21 +52,29 @@ export const CartModal = () => {
     items: state.cart.items
   }))
 
-  const [fullName, setFullName] = useState('')
-  const [address, setAddress] = useState('')
-  const [postalCode, setPostalCode] = useState('')
-  const [telegram, setTelegram] = useState('')
   const [promoCode, setPromoCode] = useState('')
   const [promoMessage, setPromoMessage] = useState('')
+  const [removingIds, setRemovingIds] = useState<string[]>([])
+
+  const form = useForm<ICartFormValues>({
+    defaultValues,
+    mode: 'onChange'
+  })
 
   useEffect(() => {
+    if (!isCartOpen) {
+      return
+    }
+
     const profile = window.localStorage.getItem(PROFILE_STORAGE_KEY)
 
     if (!profile) {
-      setFullName(mockProfile.fullName ?? '')
-      setAddress(mockProfile.address ?? '')
-      setPostalCode(mockProfile.postalCode ?? '')
-      setTelegram(mockProfile.telegram ?? '')
+      form.reset({
+        address: mockProfile.address ?? '',
+        fullName: mockProfile.fullName ?? '',
+        postalCode: mockProfile.postalCode ?? '',
+        telegram: mockProfile.telegram ?? ''
+      })
       return
     }
 
@@ -57,33 +86,28 @@ export const CartModal = () => {
         telegram?: string
       }
 
-      setFullName(parsedProfile.fullName ?? '')
-      setAddress(parsedProfile.address ?? '')
-      setPostalCode(parsedProfile.postalCode ?? '')
-      setTelegram(parsedProfile.telegram ?? '')
+      form.reset({
+        address: parsedProfile.address ?? '',
+        fullName: parsedProfile.fullName ?? '',
+        postalCode: parsedProfile.postalCode ?? '',
+        telegram: parsedProfile.telegram ?? ''
+      })
     } catch {
-      setFullName(mockProfile.fullName ?? '')
-      setAddress(mockProfile.address ?? '')
-      setPostalCode(mockProfile.postalCode ?? '')
-      setTelegram(mockProfile.telegram ?? '')
+      form.reset({
+        address: mockProfile.address ?? '',
+        fullName: mockProfile.fullName ?? '',
+        postalCode: mockProfile.postalCode ?? '',
+        telegram: mockProfile.telegram ?? ''
+      })
     }
-  }, [isCartOpen])
-
-  const canSubmit = useMemo(
-    () =>
-      items.length > 0 &&
-      fullName.trim() &&
-      address.trim() &&
-      postalCode.trim() &&
-      telegram.trim(),
-    [address, fullName, items.length, postalCode, telegram]
-  )
+  }, [form, isCartOpen])
 
   const totalPrice = items.reduce(
     (sum, item) => sum + item.quantity * item.product.price,
     0
   )
   const hasItems = items.length > 0
+  const canSubmit = hasItems && form.formState.isValid
 
   const handlePromoApply = () => {
     setPromoMessage(
@@ -93,11 +117,25 @@ export const CartModal = () => {
     )
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    if (!canSubmit) {
+  const handleRemove = (productId: string) => {
+    if (removingIds.includes(productId)) {
       return
+    }
+
+    setRemovingIds((current) => [...current, productId])
+
+    window.setTimeout(() => {
+      dispatch(removeItem(productId))
+      setRemovingIds((current) => current.filter((id) => id !== productId))
+    }, 280)
+  }
+
+  const handleSubmit = form.handleSubmit((values) => {
+    const normalizedValues = {
+      address: normalizeText(values.address),
+      fullName: normalizeText(values.fullName),
+      postalCode: normalizeText(values.postalCode),
+      telegram: normalizeTelegramField(values.telegram)
     }
 
     const previousOrders = JSON.parse(
@@ -108,13 +146,13 @@ export const CartModal = () => {
       ORDER_STORAGE_KEY,
       JSON.stringify([
         createMockOrder({
-          address,
-          customer: fullName,
+          address: normalizedValues.address,
+          customer: normalizedValues.fullName,
           items,
-          postalCode,
+          postalCode: normalizedValues.postalCode,
           promoCode: promoCode.trim() || null,
           status: 'Новый',
-          telegram
+          telegram: normalizedValues.telegram
         }),
         ...previousOrders
       ])
@@ -122,18 +160,13 @@ export const CartModal = () => {
 
     window.localStorage.setItem(
       PROFILE_STORAGE_KEY,
-      JSON.stringify({
-        address,
-        fullName,
-        postalCode,
-        telegram
-      })
+      JSON.stringify(normalizedValues)
     )
 
     setPromoCode('')
     setPromoMessage('')
     dispatch(clearCart())
-  }
+  })
 
   return (
     <Modal
@@ -168,46 +201,58 @@ export const CartModal = () => {
 
           <div className={styles.itemsList}>
             {hasItems ? (
-              items.map((item) => (
-                <article className={styles.itemRow} key={item.product.id}>
-                  <button
-                    className={styles.removeButton}
-                    onClick={() => dispatch(removeItem(item.product.id))}
-                    type='button'
+              items.map((item) => {
+                const isRemoving = removingIds.includes(item.product.id)
+
+                return (
+                  <article
+                    className={
+                      isRemoving
+                        ? `${styles.itemRow} ${styles.itemRowRemoving}`
+                        : styles.itemRow
+                    }
+                    key={item.product.id}
                   >
-                    ×
-                  </button>
-
-                  <div className={styles.itemImage}>
-                    <span>{item.product.brand}</span>
-                  </div>
-
-                  <div className={styles.itemInfo}>
-                    <strong>{item.product.name}</strong>
-                    <p>{formatCurrency(item.product.price)}</p>
-                  </div>
-
-                  <div className={styles.quantityControl}>
                     <button
-                      onClick={() => dispatch(decreaseQuantity(item.product.id))}
+                      className={styles.removeButton}
+                      disabled={isRemoving}
+                      onClick={() => handleRemove(item.product.id)}
                       type='button'
                     >
-                      -
+                      ×
                     </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      onClick={() => dispatch(increaseQuantity(item.product.id))}
-                      type='button'
-                    >
-                      +
-                    </button>
-                  </div>
 
-                  <strong className={styles.itemTotal}>
-                    {formatCurrency(item.product.price * item.quantity)}
-                  </strong>
-                </article>
-              ))
+                    <div className={styles.itemImage}>
+                      <span>{item.product.brand}</span>
+                    </div>
+
+                    <div className={styles.itemInfo}>
+                      <strong>{item.product.name}</strong>
+                      <p>{formatCurrency(item.product.price)}</p>
+                    </div>
+
+                    <div className={styles.quantityControl}>
+                      <button
+                        onClick={() => dispatch(decreaseQuantity(item.product.id))}
+                        type='button'
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        onClick={() => dispatch(increaseQuantity(item.product.id))}
+                        type='button'
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <strong className={styles.itemTotal}>
+                      {formatCurrency(item.product.price * item.quantity)}
+                    </strong>
+                  </article>
+                )
+              })
             ) : (
               <div className={styles.emptyState}>
                 <Image alt='' aria-hidden='true' src={emptyCartImage} />
@@ -226,7 +271,7 @@ export const CartModal = () => {
 
         <form className={styles.formColumn} onSubmit={handleSubmit}>
           <div className={styles.promoBlock}>
-            <label>
+            <label className={styles.fieldGroup}>
               <span>Промокод</span>
               <Input
                 onChange={(event) => setPromoCode(event.target.value)}
@@ -246,43 +291,97 @@ export const CartModal = () => {
 
           {promoMessage ? <p className={styles.promoMessage}>{promoMessage}</p> : null}
 
-          <label>
+          <label className={styles.fieldGroup}>
             <span>ФИО</span>
-            <Input
-              onChange={(event) => setFullName(event.target.value)}
-              placeholder='Иванов Иван Иванович'
-              value={fullName}
+            <Controller
+              control={form.control}
+              name='fullName'
+              rules={{
+                validate: (value) => validateRequired(value, 'Укажите ФИО')
+              }}
+              render={({ field, fieldState }) => (
+                <Input
+                  {...field}
+                  invalid={fieldState.invalid}
+                  placeholder='Иванов Иван Иванович'
+                />
+              )}
             />
+            {form.formState.errors.fullName?.message ? (
+              <small className={styles.fieldError}>
+                {form.formState.errors.fullName.message}
+              </small>
+            ) : null}
           </label>
 
-          <label>
+          <label className={styles.fieldGroup}>
             <span>Адрес</span>
-            <Input
-              multiline
-              onChange={(event) => setAddress(event.target.value)}
-              placeholder='Город, улица, дом, квартира'
-              rows={5}
-              value={address}
+            <Controller
+              control={form.control}
+              name='address'
+              rules={{
+                validate: (value) => validateRequired(value, 'Укажите адрес')
+              }}
+              render={({ field, fieldState }) => (
+                <Input
+                  {...field}
+                  invalid={fieldState.invalid}
+                  multiline
+                  placeholder='Город, улица, дом, квартира'
+                  rows={5}
+                />
+              )}
             />
+            {form.formState.errors.address?.message ? (
+              <small className={styles.fieldError}>
+                {form.formState.errors.address.message}
+              </small>
+            ) : null}
           </label>
 
           <div className={styles.formGrid}>
-            <label>
+            <label className={styles.fieldGroup}>
               <span>Индекс</span>
-              <Input
-                onChange={(event) => setPostalCode(event.target.value)}
-                placeholder='101000'
-                value={postalCode}
+              <Controller
+                control={form.control}
+                name='postalCode'
+                rules={{
+                  validate: (value) => validateRequired(value, 'Укажите индекс')
+                }}
+                render={({ field, fieldState }) => (
+                  <Input
+                    {...field}
+                    invalid={fieldState.invalid}
+                    placeholder='101000'
+                  />
+                )}
               />
+              {form.formState.errors.postalCode?.message ? (
+                <small className={styles.fieldError}>
+                  {form.formState.errors.postalCode.message}
+                </small>
+              ) : null}
             </label>
 
-            <label>
+            <label className={styles.fieldGroup}>
               <span>Telegram</span>
-              <Input
-                onChange={(event) => setTelegram(event.target.value)}
-                placeholder='@nickname'
-                value={telegram}
+              <Controller
+                control={form.control}
+                name='telegram'
+                rules={{ validate: (value) => validateTelegram(value) }}
+                render={({ field, fieldState }) => (
+                  <Input
+                    {...field}
+                    invalid={fieldState.invalid}
+                    placeholder='@nickname'
+                  />
+                )}
               />
+              {form.formState.errors.telegram?.message ? (
+                <small className={styles.fieldError}>
+                  {form.formState.errors.telegram.message}
+                </small>
+              ) : null}
             </label>
           </div>
 

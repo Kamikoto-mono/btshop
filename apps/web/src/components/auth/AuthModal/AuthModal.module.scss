@@ -56,13 +56,19 @@
   gap: 20px;
 }
 
-.form label {
+.fieldGroup {
   display: grid;
   gap: 8px;
 }
 
-.form span {
+.fieldGroup span {
   font-weight: 600;
+}
+
+.fieldError {
+  color: #c14949;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .passwordToggle {

@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useState } from 'react'
 
 import eyeOffIcon from '@assets/icons/eye-off.svg'
 import eyeOpenIcon from '@assets/icons/eye-open.svg'
@@ -14,15 +15,39 @@ import {
   setUserSession
 } from '@/store/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { normalizeEmail, validateEmail, validateRequired } from '@/shared/utils'
 import styles from './AuthModal.module.scss'
 
+interface ILoginFormValues {
+  email: string
+  password: string
+  rememberMe: boolean
+}
+
+interface IRegisterFormValues {
+  email: string
+  password: string
+  passwordRepeat: string
+}
+
 interface IPasswordFieldProps {
+  error?: string
   label: string
-  onChange: (value: string) => void
-  onToggleVisible: () => void
+  name: 'password' | 'passwordRepeat'
   placeholder: string
-  value: string
   visible: boolean
+}
+
+const loginDefaults: ILoginFormValues = {
+  email: '',
+  password: '',
+  rememberMe: true
+}
+
+const registerDefaults: IRegisterFormValues = {
+  email: '',
+  password: '',
+  passwordRepeat: ''
 }
 
 export const AuthModal = () => {
@@ -30,77 +55,138 @@ export const AuthModal = () => {
   const dispatch = useAppDispatch()
   const { isOpen, mode, redirectTo } = useAppSelector((state) => state.auth)
 
-  const [loginEmail, setLoginEmail] = useState('')
-  const [loginPassword, setLoginPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(true)
-
-  const [registerEmail, setRegisterEmail] = useState('')
-  const [registerPassword, setRegisterPassword] = useState('')
-  const [registerPasswordRepeat, setRegisterPasswordRepeat] = useState('')
-
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false)
   const [isRegisterPasswordVisible, setIsRegisterPasswordVisible] = useState(false)
   const [isRegisterPasswordRepeatVisible, setIsRegisterPasswordRepeatVisible] =
     useState(false)
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const loginForm = useForm<ILoginFormValues>({
+    defaultValues: loginDefaults,
+    mode: 'onBlur'
+  })
 
-    if (!loginEmail.trim() || !loginPassword.trim()) {
+  const registerForm = useForm<IRegisterFormValues>({
+    defaultValues: registerDefaults,
+    mode: 'onBlur'
+  })
+
+  useEffect(() => {
+    if (!isOpen) {
       return
     }
 
-    dispatch(setUserSession({ email: loginEmail.trim() }))
+    loginForm.reset(loginDefaults)
+    registerForm.reset(registerDefaults)
+    setIsLoginPasswordVisible(false)
+    setIsRegisterPasswordVisible(false)
+    setIsRegisterPasswordRepeatVisible(false)
+  }, [isOpen])
+
+  const handleSuccessAuth = (email: string) => {
+    dispatch(setUserSession({ email }))
 
     if (redirectTo) {
       router.push(redirectTo)
     }
   }
 
-  const handleRegister = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleLogin = loginForm.handleSubmit((values) => {
+    handleSuccessAuth(normalizeEmail(values.email))
+  })
 
-    if (
-      !registerEmail.trim() ||
-      !registerPassword.trim() ||
-      registerPassword !== registerPasswordRepeat
-    ) {
-      return
-    }
+  const handleRegister = registerForm.handleSubmit((values) => {
+    handleSuccessAuth(normalizeEmail(values.email))
+  })
 
-    dispatch(setUserSession({ email: registerEmail.trim() }))
+  const renderPasswordToggle = (
+    visible: boolean,
+    onClick: () => void,
+    label: string
+  ) => (
+    <button
+      aria-label={visible ? `Скрыть ${label}` : `Показать ${label}`}
+      className={styles.passwordToggle}
+      onClick={onClick}
+      type='button'
+    >
+      <Image alt='' aria-hidden='true' src={visible ? eyeOffIcon : eyeOpenIcon} />
+    </button>
+  )
 
-    if (redirectTo) {
-      router.push(redirectTo)
-    }
-  }
-
-  const renderPasswordField = ({
+  const renderLoginPasswordField = ({
+    error,
     label,
-    onChange,
-    onToggleVisible,
+    name,
     placeholder,
-    value,
     visible
   }: IPasswordFieldProps) => (
-    <label>
+    <label className={styles.fieldGroup}>
       <span>{label}</span>
-      <Input
-        endAdornment={
-          <button
-            aria-label={visible ? 'Скрыть пароль' : 'Показать пароль'}
-            className={styles.passwordToggle}
-            onClick={onToggleVisible}
-            type='button'
-          >
-            <Image alt='' aria-hidden='true' src={visible ? eyeOffIcon : eyeOpenIcon} />
-          </button>
-        }
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        type={visible ? 'text' : 'password'}
-        value={value}
+      <Controller
+        control={loginForm.control}
+        name={name as 'password'}
+        rules={{
+          validate: (value) => validateRequired(value, 'Введите пароль')
+        }}
+        render={({ field }) => (
+          <Input
+            {...field}
+            endAdornment={renderPasswordToggle(visible, () => {
+              setIsLoginPasswordVisible((current) => !current)
+            }, 'пароль')}
+            invalid={Boolean(error)}
+            placeholder={placeholder}
+            type={visible ? 'text' : 'password'}
+          />
+        )}
       />
+      {error ? <small className={styles.fieldError}>{error}</small> : null}
+    </label>
+  )
+
+  const renderRegisterPasswordField = ({
+    error,
+    label,
+    name,
+    placeholder,
+    visible
+  }: IPasswordFieldProps) => (
+    <label className={styles.fieldGroup}>
+      <span>{label}</span>
+      <Controller
+        control={registerForm.control}
+        name={name}
+        rules={{
+          validate:
+            name === 'password'
+              ? (value) => validateRequired(value, 'Введите пароль')
+              : (value) =>
+                  value === registerForm.getValues('password')
+                    ? true
+                    : 'Пароли не совпадают'
+        }}
+        render={({ field }) => (
+          <Input
+            {...field}
+            endAdornment={renderPasswordToggle(
+              visible,
+              () => {
+                if (name === 'password') {
+                  setIsRegisterPasswordVisible((current) => !current)
+                  return
+                }
+
+                setIsRegisterPasswordRepeatVisible((current) => !current)
+              },
+              label.toLowerCase()
+            )}
+            invalid={Boolean(error)}
+            placeholder={placeholder}
+            type={visible ? 'text' : 'password'}
+          />
+        )}
+      />
+      {error ? <small className={styles.fieldError}>{error}</small> : null}
     </label>
   )
 
@@ -142,32 +228,48 @@ export const AuthModal = () => {
 
       {mode === 'login' ? (
         <form className={styles.form} onSubmit={handleLogin}>
-          <label>
+          <label className={styles.fieldGroup}>
             <span>Email</span>
-            <Input
-              onChange={(event) => setLoginEmail(event.target.value)}
-              placeholder='email@example.com'
-              type='email'
-              value={loginEmail}
+            <Controller
+              control={loginForm.control}
+              name='email'
+              rules={{ validate: validateEmail }}
+              render={({ field, fieldState }) => (
+                <Input
+                  {...field}
+                  invalid={fieldState.invalid}
+                  placeholder='email@example.com'
+                  type='email'
+                />
+              )}
             />
+            {loginForm.formState.errors.email?.message ? (
+              <small className={styles.fieldError}>
+                {loginForm.formState.errors.email.message}
+              </small>
+            ) : null}
           </label>
 
-          {renderPasswordField({
+          {renderLoginPasswordField({
+            error: loginForm.formState.errors.password?.message,
             label: 'Пароль',
-            onChange: setLoginPassword,
-            onToggleVisible: () =>
-              setIsLoginPasswordVisible((current) => !current),
+            name: 'password',
             placeholder: 'Введите пароль',
-            value: loginPassword,
             visible: isLoginPasswordVisible
           })}
 
           <div className={styles.metaRow}>
             <label className={styles.checkbox}>
-              <input
-                checked={rememberMe}
-                onChange={(event) => setRememberMe(event.target.checked)}
-                type='checkbox'
+              <Controller
+                control={loginForm.control}
+                name='rememberMe'
+                render={({ field }) => (
+                  <input
+                    checked={field.value}
+                    onChange={(event) => field.onChange(event.target.checked)}
+                    type='checkbox'
+                  />
+                )}
               />
               <span>Запомнить меня</span>
             </label>
@@ -183,33 +285,41 @@ export const AuthModal = () => {
         </form>
       ) : (
         <form className={styles.form} onSubmit={handleRegister}>
-          <label>
+          <label className={styles.fieldGroup}>
             <span>Email</span>
-            <Input
-              onChange={(event) => setRegisterEmail(event.target.value)}
-              placeholder='email@example.com'
-              type='email'
-              value={registerEmail}
+            <Controller
+              control={registerForm.control}
+              name='email'
+              rules={{ validate: validateEmail }}
+              render={({ field, fieldState }) => (
+                <Input
+                  {...field}
+                  invalid={fieldState.invalid}
+                  placeholder='email@example.com'
+                  type='email'
+                />
+              )}
             />
+            {registerForm.formState.errors.email?.message ? (
+              <small className={styles.fieldError}>
+                {registerForm.formState.errors.email.message}
+              </small>
+            ) : null}
           </label>
 
-          {renderPasswordField({
+          {renderRegisterPasswordField({
+            error: registerForm.formState.errors.password?.message,
             label: 'Пароль',
-            onChange: setRegisterPassword,
-            onToggleVisible: () =>
-              setIsRegisterPasswordVisible((current) => !current),
+            name: 'password',
             placeholder: 'Придумайте пароль',
-            value: registerPassword,
             visible: isRegisterPasswordVisible
           })}
 
-          {renderPasswordField({
+          {renderRegisterPasswordField({
+            error: registerForm.formState.errors.passwordRepeat?.message,
             label: 'Повтор пароля',
-            onChange: setRegisterPasswordRepeat,
-            onToggleVisible: () =>
-              setIsRegisterPasswordRepeatVisible((current) => !current),
+            name: 'passwordRepeat',
             placeholder: 'Повторите пароль',
-            value: registerPasswordRepeat,
             visible: isRegisterPasswordRepeatVisible
           })}
 

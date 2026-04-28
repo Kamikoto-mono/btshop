@@ -58,14 +58,24 @@
 .itemRow {
   padding: 18px 20px;
   border-bottom: 1px solid rgba(169, 184, 204, 0.7);
-    border-radius: 18px;
-      background: rgba(248, 251, 255, 0.9);
-      box-shadow:  0px 2px 4px 0px rgba(0, 0, 0, 0.08);
-
+  border-radius: 18px;
+  background: rgba(248, 251, 255, 0.9);
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    filter 0.28s ease;
 }
 
 .itemRow:last-child {
   border-bottom: 0;
+}
+
+.itemRowRemoving {
+  opacity: 0;
+  transform: translateX(34px);
+  filter: blur(3px);
+  pointer-events: none;
 }
 
 .itemInfo {

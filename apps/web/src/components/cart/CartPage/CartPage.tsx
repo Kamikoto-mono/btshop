@@ -24,6 +24,7 @@ export const CartPage = () => {
   const items = useAppSelector((state) => state.cart.items)
   const [promoCode, setPromoCode] = useState('')
   const [promoMessage, setPromoMessage] = useState('')
+  const [removingIds, setRemovingIds] = useState<string[]>([])
 
   const totalPrice = items.reduce(
     (sum, item) => sum + item.quantity * item.product.price,
@@ -39,6 +40,19 @@ export const CartPage = () => {
     )
   }
 
+  const handleRemove = (productId: string) => {
+    if (removingIds.includes(productId)) {
+      return
+    }
+
+    setRemovingIds((current) => [...current, productId])
+
+    window.setTimeout(() => {
+      dispatch(removeItem(productId))
+      setRemovingIds((current) => current.filter((id) => id !== productId))
+    }, 280)
+  }
+
   return (
     <div className={styles.page}>
       <Breadcrumbs
@@ -50,12 +64,13 @@ export const CartPage = () => {
 
       <section className={styles.shell}>
         <div className={styles.headerRow}>
-                    <button className={styles.backButton} onClick={() => router.back()} type='button'>
-              ← Назад
-            </button></div>
+          <button className={styles.backButton} onClick={() => router.back()} type='button'>
+            ← Назад
+          </button>
+        </div>
+
         <div className={styles.header}>
           <div>
-
             <h1>Корзина</h1>
           </div>
         </div>
@@ -71,50 +86,66 @@ export const CartPage = () => {
             </div>
 
             <div className={styles.itemsList}>
-              {items.map((item) => (
-                <article className={styles.itemRow} key={item.product.id}>
-                  <div className={styles.itemInfo}>
-                    <div className={styles.itemImage}>
-                      <span>{item.product.brand}</span>
-                    </div>
-                    <div>
-                      <strong>{item.product.name}</strong>
-                      <p>{item.product.categoryName} / {item.product.compoundName}</p>
-                    </div>
-                  </div>
+              {items.map((item) => {
+                const isRemoving = removingIds.includes(item.product.id)
 
-                  <span className={styles.price}>{formatCurrency(item.product.price)}</span>
-
-                  <div className={styles.quantityControl}>
-                    <button
-                      onClick={() => dispatch(decreaseQuantity(item.product.id))}
-                      type='button'
-                    >
-                      -
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      onClick={() => dispatch(increaseQuantity(item.product.id))}
-                      type='button'
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <strong className={styles.itemTotal}>
-                    {formatCurrency(item.product.price * item.quantity)}
-                  </strong>
-
-                  <button
-                    aria-label={`Удалить ${item.product.name}`}
-                    className={styles.removeButton}
-                    onClick={() => dispatch(removeItem(item.product.id))}
-                    type='button'
+                return (
+                  <article
+                    className={
+                      isRemoving
+                        ? `${styles.itemRow} ${styles.itemRowRemoving}`
+                        : styles.itemRow
+                    }
+                    key={item.product.id}
                   >
-                    ×
-                  </button>
-                </article>
-              ))}
+                    <div className={styles.itemInfo}>
+                      <div className={styles.itemImage}>
+                        <span>{item.product.brand}</span>
+                      </div>
+                      <div>
+                        <strong>{item.product.name}</strong>
+                        <p>
+                          {item.product.categoryName} / {item.product.compoundName}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className={styles.price}>
+                      {formatCurrency(item.product.price)}
+                    </span>
+
+                    <div className={styles.quantityControl}>
+                      <button
+                        onClick={() => dispatch(decreaseQuantity(item.product.id))}
+                        type='button'
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        onClick={() => dispatch(increaseQuantity(item.product.id))}
+                        type='button'
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <strong className={styles.itemTotal}>
+                      {formatCurrency(item.product.price * item.quantity)}
+                    </strong>
+
+                    <button
+                      aria-label={`Удалить ${item.product.name}`}
+                      className={styles.removeButton}
+                      disabled={isRemoving}
+                      onClick={() => handleRemove(item.product.id)}
+                      type='button'
+                    >
+                      ×
+                    </button>
+                  </article>
+                )
+              })}
             </div>
 
             <div className={styles.promoBlock}>

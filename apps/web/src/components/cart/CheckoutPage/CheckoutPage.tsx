@@ -1,6 +1,7 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 
 import { formatCurrency } from '@btshop/shared'
@@ -14,6 +15,14 @@ import {
 import { Breadcrumbs, Button, Input } from '@/components/ui'
 import { clearCart } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import {
+  normalizeEmail,
+  normalizeTelegramField,
+  normalizeText,
+  validateEmail,
+  validateRequired,
+  validateTelegram
+} from '@/shared/utils'
 import styles from './CheckoutPage.module.scss'
 
 const DELIVERY_METHODS = [
@@ -38,46 +47,59 @@ const DELIVERY_METHODS = [
   }
 ]
 
+interface ICheckoutFormValues {
+  city: string
+  deliveryId: string
+  email: string
+  fullName: string
+  phone: string
+  postalCode: string
+  telegram: string
+}
+
+const defaultValues: ICheckoutFormValues = {
+  city: '',
+  deliveryId: DELIVERY_METHODS[0].id,
+  email: '',
+  fullName: '',
+  phone: '',
+  postalCode: '',
+  telegram: ''
+}
+
 export const CheckoutPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const items = useAppSelector((state) => state.cart.items)
-  const [fullName, setFullName] = useState('')
-  const [email, setEmail] = useState('')
-  const [city, setCity] = useState('')
-  const [postalCode, setPostalCode] = useState('')
-  const [phone, setPhone] = useState('')
-  const [telegram, setTelegram] = useState('')
-  const [deliveryId, setDeliveryId] = useState(DELIVERY_METHODS[0].id)
 
+  const form = useForm<ICheckoutFormValues>({
+    defaultValues,
+    mode: 'onChange'
+  })
+
+  const deliveryId = form.watch('deliveryId')
   const productsTotal = items.reduce(
     (sum, item) => sum + item.quantity * item.product.price,
     0
   )
   const selectedDelivery =
     DELIVERY_METHODS.find((method) => method.id === deliveryId) ?? DELIVERY_METHODS[0]
-  const canSubmit = useMemo(
-    () =>
-      items.length > 0 &&
-      fullName.trim() &&
-      email.trim() &&
-      city.trim() &&
-      postalCode.trim() &&
-      phone.trim(),
-    [city, email, fullName, items.length, phone, postalCode]
-  )
   const totalPrice = productsTotal + selectedDelivery.price
+  const canSubmit = items.length > 0 && form.formState.isValid
 
   useEffect(() => {
     const profile = window.localStorage.getItem(PROFILE_STORAGE_KEY)
 
     if (!profile) {
-      setFullName(mockProfile.fullName ?? '')
-      setEmail(mockProfile.email ?? '')
-      setCity(mockProfile.city ?? mockProfile.address ?? '')
-      setPhone(mockProfile.phone ?? '')
-      setPostalCode(mockProfile.postalCode ?? '')
-      setTelegram(mockProfile.telegram ?? '')
+      form.reset({
+        city: mockProfile.city ?? mockProfile.address ?? '',
+        deliveryId: DELIVERY_METHODS[0].id,
+        email: mockProfile.email ?? '',
+        fullName: mockProfile.fullName ?? '',
+        phone: mockProfile.phone ?? '',
+        postalCode: mockProfile.postalCode ?? '',
+        telegram: mockProfile.telegram ?? ''
+      })
       return
     }
 
@@ -92,27 +114,36 @@ export const CheckoutPage = () => {
         telegram?: string
       }
 
-      setFullName(parsedProfile.fullName ?? '')
-      setEmail(parsedProfile.email ?? '')
-      setCity(parsedProfile.city ?? parsedProfile.address ?? '')
-      setPhone(parsedProfile.phone ?? '')
-      setPostalCode(parsedProfile.postalCode ?? '')
-      setTelegram(parsedProfile.telegram ?? '')
+      form.reset({
+        city: parsedProfile.city ?? parsedProfile.address ?? '',
+        deliveryId: DELIVERY_METHODS[0].id,
+        email: parsedProfile.email ?? '',
+        fullName: parsedProfile.fullName ?? '',
+        phone: parsedProfile.phone ?? '',
+        postalCode: parsedProfile.postalCode ?? '',
+        telegram: parsedProfile.telegram ?? ''
+      })
     } catch {
-      setFullName(mockProfile.fullName ?? '')
-      setEmail(mockProfile.email ?? '')
-      setCity(mockProfile.city ?? mockProfile.address ?? '')
-      setPhone(mockProfile.phone ?? '')
-      setPostalCode(mockProfile.postalCode ?? '')
-      setTelegram(mockProfile.telegram ?? '')
+      form.reset({
+        city: mockProfile.city ?? mockProfile.address ?? '',
+        deliveryId: DELIVERY_METHODS[0].id,
+        email: mockProfile.email ?? '',
+        fullName: mockProfile.fullName ?? '',
+        phone: mockProfile.phone ?? '',
+        postalCode: mockProfile.postalCode ?? '',
+        telegram: mockProfile.telegram ?? ''
+      })
     }
-  }, [])
+  }, [form])
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    if (!canSubmit) {
-      return
+  const handleSubmit = form.handleSubmit((values) => {
+    const normalizedValues = {
+      city: normalizeText(values.city),
+      email: normalizeEmail(values.email),
+      fullName: normalizeText(values.fullName),
+      phone: normalizeText(values.phone),
+      postalCode: normalizeText(values.postalCode),
+      telegram: normalizeTelegramField(values.telegram)
     }
 
     const previousOrders = JSON.parse(
@@ -123,16 +154,16 @@ export const CheckoutPage = () => {
       ORDER_STORAGE_KEY,
       JSON.stringify([
         createMockOrder({
-          city,
-          customer: fullName,
+          city: normalizedValues.city,
+          customer: normalizedValues.fullName,
           delivery: selectedDelivery.title,
           deliveryPrice: selectedDelivery.price,
-          email,
+          email: normalizedValues.email,
           items,
-          phone,
-          postalCode,
+          phone: normalizedValues.phone,
+          postalCode: normalizedValues.postalCode,
           status: 'Новый',
-          telegram
+          telegram: normalizedValues.telegram
         }),
         ...previousOrders
       ])
@@ -140,19 +171,12 @@ export const CheckoutPage = () => {
 
     window.localStorage.setItem(
       PROFILE_STORAGE_KEY,
-      JSON.stringify({
-        city,
-        email,
-        fullName,
-        phone,
-        postalCode,
-        telegram
-      })
+      JSON.stringify(normalizedValues)
     )
 
     dispatch(clearCart())
     router.push('/profile')
-  }
+  })
 
   return (
     <div className={styles.page}>
@@ -176,30 +200,91 @@ export const CheckoutPage = () => {
             <div className={styles.sectionTitle}>Контактные данные</div>
 
             <div className={styles.fieldsGrid}>
-              <Input
-                onChange={(event) => setFullName(event.target.value)}
-                placeholder='ФИО получателя *'
-                value={fullName}
-              />
+              <label className={styles.fieldGroup}>
+                <Controller
+                  control={form.control}
+                  name='fullName'
+                  rules={{
+                    validate: (value) => validateRequired(value, 'Укажите ФИО получателя')
+                  }}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      invalid={fieldState.invalid}
+                      placeholder='ФИО получателя *'
+                    />
+                  )}
+                />
+                {form.formState.errors.fullName?.message ? (
+                  <small className={styles.fieldError}>
+                    {form.formState.errors.fullName.message}
+                  </small>
+                ) : null}
+              </label>
 
               <div className={styles.compactGrid}>
-                <Input
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder='Ваш email *'
-                  value={email}
-                />
-                <Input
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder='Телефон *'
-                  value={phone}
-                />
+                <label className={styles.fieldGroup}>
+                  <Controller
+                    control={form.control}
+                    name='email'
+                    rules={{ validate: validateEmail }}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        {...field}
+                        invalid={fieldState.invalid}
+                        placeholder='Ваш email *'
+                      />
+                    )}
+                  />
+                  {form.formState.errors.email?.message ? (
+                    <small className={styles.fieldError}>
+                      {form.formState.errors.email.message}
+                    </small>
+                  ) : null}
+                </label>
+
+                <label className={styles.fieldGroup}>
+                  <Controller
+                    control={form.control}
+                    name='phone'
+                    rules={{
+                      validate: (value) => validateRequired(value, 'Укажите телефон')
+                    }}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        {...field}
+                        invalid={fieldState.invalid}
+                        placeholder='Телефон *'
+                      />
+                    )}
+                  />
+                  {form.formState.errors.phone?.message ? (
+                    <small className={styles.fieldError}>
+                      {form.formState.errors.phone.message}
+                    </small>
+                  ) : null}
+                </label>
               </div>
 
-              <Input
-                onChange={(event) => setTelegram(event.target.value)}
-                placeholder='Telegram'
-                value={telegram}
-              />
+              <label className={styles.fieldGroup}>
+                <Controller
+                  control={form.control}
+                  name='telegram'
+                  rules={{ validate: (value) => validateTelegram(value, { optional: true }) }}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      invalid={fieldState.invalid}
+                      placeholder='Telegram'
+                    />
+                  )}
+                />
+                {form.formState.errors.telegram?.message ? (
+                  <small className={styles.fieldError}>
+                    {form.formState.errors.telegram.message}
+                  </small>
+                ) : null}
+              </label>
             </div>
           </div>
 
@@ -207,16 +292,49 @@ export const CheckoutPage = () => {
             <div className={styles.sectionTitle}>Адрес доставки</div>
 
             <div className={styles.fieldsGrid}>
-              <Input
-                onChange={(event) => setCity(event.target.value)}
-                placeholder='Город *'
-                value={city}
-              />
-              <Input
-                onChange={(event) => setPostalCode(event.target.value)}
-                placeholder='Индекс *'
-                value={postalCode}
-              />
+              <label className={styles.fieldGroup}>
+                <Controller
+                  control={form.control}
+                  name='city'
+                  rules={{
+                    validate: (value) => validateRequired(value, 'Укажите город')
+                  }}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      invalid={fieldState.invalid}
+                      placeholder='Город *'
+                    />
+                  )}
+                />
+                {form.formState.errors.city?.message ? (
+                  <small className={styles.fieldError}>
+                    {form.formState.errors.city.message}
+                  </small>
+                ) : null}
+              </label>
+
+              <label className={styles.fieldGroup}>
+                <Controller
+                  control={form.control}
+                  name='postalCode'
+                  rules={{
+                    validate: (value) => validateRequired(value, 'Укажите индекс')
+                  }}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      invalid={fieldState.invalid}
+                      placeholder='Индекс *'
+                    />
+                  )}
+                />
+                {form.formState.errors.postalCode?.message ? (
+                  <small className={styles.fieldError}>
+                    {form.formState.errors.postalCode.message}
+                  </small>
+                ) : null}
+              </label>
             </div>
           </div>
 
@@ -224,32 +342,40 @@ export const CheckoutPage = () => {
             <div className={styles.sectionTitle}>Способ доставки</div>
 
             <div className={styles.deliveryBlock}>
-              {DELIVERY_METHODS.map((method) => (
-                <label
-                  className={
-                    method.disabled
-                      ? styles.deliveryDisabled
-                      : deliveryId === method.id
-                        ? styles.deliverySelected
-                        : styles.deliveryOption
-                  }
-                  key={method.id}
-                >
-                  <input
-                    checked={deliveryId === method.id}
-                    disabled={method.disabled}
-                    name='delivery'
-                    onChange={() => setDeliveryId(method.id)}
-                    type='radio'
-                  />
-                  <span>
-                    <strong>
-                      {method.title} — {formatCurrency(method.price)}
-                    </strong>
-                    <small>{method.description}</small>
-                  </span>
-                </label>
-              ))}
+              <Controller
+                control={form.control}
+                name='deliveryId'
+                render={({ field }) => (
+                  <>
+                    {DELIVERY_METHODS.map((method) => (
+                      <label
+                        className={
+                          method.disabled
+                            ? styles.deliveryDisabled
+                            : field.value === method.id
+                              ? styles.deliverySelected
+                              : styles.deliveryOption
+                        }
+                        key={method.id}
+                      >
+                        <input
+                          checked={field.value === method.id}
+                          disabled={method.disabled}
+                          name='delivery'
+                          onChange={() => field.onChange(method.id)}
+                          type='radio'
+                        />
+                        <span>
+                          <strong>
+                            {method.title} — {formatCurrency(method.price)}
+                          </strong>
+                          <small>{method.description}</small>
+                        </span>
+                      </label>
+                    ))}
+                  </>
+                )}
+              />
             </div>
           </div>
 

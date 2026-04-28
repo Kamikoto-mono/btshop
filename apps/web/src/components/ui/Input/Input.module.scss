@@ -25,6 +25,11 @@
   box-shadow: 0 0 0 4px rgba(29, 99, 216, 0.08);
 }
 
+.control[aria-invalid='true'] {
+  border-color: rgba(209, 64, 64, 0.55);
+  box-shadow: 0 0 0 4px rgba(209, 64, 64, 0.08);
+}
+
 .input {
   height: 54px;
   padding: 0 18px;
