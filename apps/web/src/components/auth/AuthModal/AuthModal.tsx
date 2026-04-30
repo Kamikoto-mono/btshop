@@ -2,63 +2,52 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 
-import eyeOffIcon from '@assets/icons/eye-off.svg'
-import eyeOpenIcon from '@assets/icons/eye-open.svg'
+import closeIcon from '@assets/icons/close.svg'
 
-import { Button, Input, Modal } from '@/components/ui'
+import { authApi, getAuthApiErrorMessage } from '@/api/auth'
+import { Modal } from '@/components/ui'
 import {
   closeAuthModal,
   setAuthMode,
   setUserSession
 } from '@/store/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { normalizeEmail, validateEmail, validateRequired } from '@/shared/utils'
+import { normalizeEmail } from '@/shared/utils'
 import styles from './AuthModal.module.scss'
-
-interface ILoginFormValues {
-  email: string
-  password: string
-  rememberMe: boolean
-}
-
-interface IRegisterFormValues {
-  email: string
-  password: string
-  passwordRepeat: string
-}
-
-interface IPasswordFieldProps {
-  error?: string
-  label: string
-  name: 'password' | 'passwordRepeat'
-  placeholder: string
-  visible: boolean
-}
-
-const loginDefaults: ILoginFormValues = {
-  email: '',
-  password: '',
-  rememberMe: true
-}
-
-const registerDefaults: IRegisterFormValues = {
-  email: '',
-  password: '',
-  passwordRepeat: ''
-}
+import { LoginForm } from './LoginForm'
+import { PasswordResetConfirmForm } from './PasswordResetConfirmForm'
+import { PasswordResetRequestForm } from './PasswordResetRequestForm'
+import { RegisterForm } from './RegisterForm'
+import {
+  loginDefaults,
+  passwordResetConfirmDefaults,
+  passwordResetRequestDefaults,
+  registerDefaults,
+  type ILoginFormValues,
+  type IPasswordResetConfirmFormValues,
+  type IPasswordResetRequestFormValues,
+  type IRegisterFormValues,
+  type TModalView
+} from './AuthModal.types'
 
 export const AuthModal = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const { isOpen, mode, redirectTo } = useAppSelector((state) => state.auth)
 
-  const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false)
-  const [isRegisterPasswordVisible, setIsRegisterPasswordVisible] = useState(false)
-  const [isRegisterPasswordRepeatVisible, setIsRegisterPasswordRepeatVisible] =
-    useState(false)
+  const [view, setView] = useState<TModalView>('auth')
+  const [formError, setFormError] = useState('')
+  const [formSuccess, setFormSuccess] = useState('')
+  const [resetCodeError, setResetCodeError] = useState('')
+  const [resetEmail, setResetEmail] = useState('')
+  const [otpResetKey, setOtpResetKey] = useState(0)
+  const [isLoginSubmitting, setIsLoginSubmitting] = useState(false)
+  const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false)
+  const [isResetRequestSubmitting, setIsResetRequestSubmitting] = useState(false)
+  const [isResetConfirmSubmitting, setIsResetConfirmSubmitting] = useState(false)
 
   const loginForm = useForm<ILoginFormValues>({
     defaultValues: loginDefaults,
@@ -70,263 +59,307 @@ export const AuthModal = () => {
     mode: 'onBlur'
   })
 
+  const passwordResetRequestForm = useForm<IPasswordResetRequestFormValues>({
+    defaultValues: passwordResetRequestDefaults,
+    mode: 'onBlur'
+  })
+
+  const passwordResetConfirmForm = useForm<IPasswordResetConfirmFormValues>({
+    defaultValues: passwordResetConfirmDefaults,
+    mode: 'onBlur'
+  })
+
   useEffect(() => {
     if (!isOpen) {
       return
     }
 
+    setView('auth')
+    setFormError('')
+    setFormSuccess('')
+    setResetCodeError('')
+    setResetEmail('')
+    setOtpResetKey(0)
+
     loginForm.reset(loginDefaults)
     registerForm.reset(registerDefaults)
-    setIsLoginPasswordVisible(false)
-    setIsRegisterPasswordVisible(false)
-    setIsRegisterPasswordRepeatVisible(false)
-  }, [isOpen])
+    passwordResetRequestForm.reset(passwordResetRequestDefaults)
+    passwordResetConfirmForm.reset(passwordResetConfirmDefaults)
+  }, [isOpen, loginForm, passwordResetConfirmForm, passwordResetRequestForm, registerForm])
 
-  const handleSuccessAuth = (email: string) => {
-    dispatch(setUserSession({ email }))
+  const handleClose = () => {
+    dispatch(closeAuthModal())
+  }
+
+  const clearMessages = () => {
+    setFormError('')
+    setFormSuccess('')
+    setResetCodeError('')
+  }
+
+  const handleSuccessAuth = async () => {
+    const user = await authApi.me()
+
+    dispatch(setUserSession(user))
 
     if (redirectTo) {
       router.push(redirectTo)
     }
   }
 
-  const handleLogin = loginForm.handleSubmit((values) => {
-    handleSuccessAuth(normalizeEmail(values.email))
-  })
+  const handleLogin = async (values: ILoginFormValues) => {
+    clearMessages()
+    setIsLoginSubmitting(true)
 
-  const handleRegister = registerForm.handleSubmit((values) => {
-    handleSuccessAuth(normalizeEmail(values.email))
-  })
+    try {
+      await authApi.login({
+        email: normalizeEmail(values.email),
+        password: values.password
+      })
 
-  const renderPasswordToggle = (
-    visible: boolean,
-    onClick: () => void,
-    label: string
-  ) => (
-    <button
-      aria-label={visible ? `Скрыть ${label}` : `Показать ${label}`}
-      className={styles.passwordToggle}
-      onClick={onClick}
-      type='button'
-    >
-      <Image alt='' aria-hidden='true' src={visible ? eyeOffIcon : eyeOpenIcon} />
-    </button>
-  )
+      await handleSuccessAuth()
+    } catch (error) {
+      setFormError(getAuthApiErrorMessage(error, 'Не удалось войти в аккаунт'))
+    } finally {
+      setIsLoginSubmitting(false)
+    }
+  }
 
-  const renderLoginPasswordField = ({
-    error,
-    label,
-    name,
-    placeholder,
-    visible
-  }: IPasswordFieldProps) => (
-    <label className={styles.fieldGroup}>
-      <span>{label}</span>
-      <Controller
-        control={loginForm.control}
-        name={name as 'password'}
-        rules={{
-          validate: (value) => validateRequired(value, 'Введите пароль')
-        }}
-        render={({ field }) => (
-          <Input
-            {...field}
-            endAdornment={renderPasswordToggle(visible, () => {
-              setIsLoginPasswordVisible((current) => !current)
-            }, 'пароль')}
-            invalid={Boolean(error)}
-            placeholder={placeholder}
-            type={visible ? 'text' : 'password'}
-          />
-        )}
-      />
-      {error ? <small className={styles.fieldError}>{error}</small> : null}
-    </label>
-  )
+  const handleRegister = async (values: IRegisterFormValues) => {
+    clearMessages()
+    setIsRegisterSubmitting(true)
 
-  const renderRegisterPasswordField = ({
-    error,
-    label,
-    name,
-    placeholder,
-    visible
-  }: IPasswordFieldProps) => (
-    <label className={styles.fieldGroup}>
-      <span>{label}</span>
-      <Controller
-        control={registerForm.control}
-        name={name}
-        rules={{
-          validate:
-            name === 'password'
-              ? (value) => validateRequired(value, 'Введите пароль')
-              : (value) =>
-                  value === registerForm.getValues('password')
-                    ? true
-                    : 'Пароли не совпадают'
-        }}
-        render={({ field }) => (
-          <Input
-            {...field}
-            endAdornment={renderPasswordToggle(
-              visible,
-              () => {
-                if (name === 'password') {
-                  setIsRegisterPasswordVisible((current) => !current)
-                  return
-                }
+    try {
+      await authApi.register({
+        email: normalizeEmail(values.email),
+        password: values.password
+      })
 
-                setIsRegisterPasswordRepeatVisible((current) => !current)
-              },
-              label.toLowerCase()
-            )}
-            invalid={Boolean(error)}
-            placeholder={placeholder}
-            type={visible ? 'text' : 'password'}
-          />
-        )}
-      />
-      {error ? <small className={styles.fieldError}>{error}</small> : null}
-    </label>
-  )
+      await handleSuccessAuth()
+    } catch (error) {
+      setFormError(
+        getAuthApiErrorMessage(error, 'Не удалось завершить регистрацию')
+      )
+    } finally {
+      setIsRegisterSubmitting(false)
+    }
+  }
+
+  const handlePasswordResetRequest = async (
+    values: IPasswordResetRequestFormValues
+  ) => {
+    clearMessages()
+    setIsResetRequestSubmitting(true)
+
+    const normalizedEmail = normalizeEmail(values.email)
+
+    try {
+      const response = await authApi.requestPasswordReset({
+        email: normalizedEmail
+      })
+
+      setResetEmail(normalizedEmail)
+      setFormSuccess(response.message)
+      setOtpResetKey((current) => current + 1)
+      passwordResetConfirmForm.reset(passwordResetConfirmDefaults)
+      setView('resetConfirm')
+    } catch (error) {
+      setFormError(
+        getAuthApiErrorMessage(error, 'Не удалось отправить код восстановления')
+      )
+    } finally {
+      setIsResetRequestSubmitting(false)
+    }
+  }
+
+  const handlePasswordResetConfirm = async (
+    values: IPasswordResetConfirmFormValues
+  ) => {
+    clearMessages()
+    setIsResetConfirmSubmitting(true)
+
+    try {
+      const response = await authApi.confirmPasswordReset({
+        code: values.code,
+        email: resetEmail,
+        newPassword: values.newPassword,
+        newPasswordRepeat: values.newPasswordRepeat
+      })
+
+      loginForm.setValue('email', resetEmail)
+      dispatch(setAuthMode('login'))
+      setView('auth')
+      setFormSuccess(response.message)
+      passwordResetRequestForm.reset({
+        email: resetEmail
+      })
+      passwordResetConfirmForm.reset(passwordResetConfirmDefaults)
+    } catch (error) {
+      const message = getAuthApiErrorMessage(
+        error,
+        'Не удалось обновить пароль'
+      )
+
+      setFormError(message)
+      setResetCodeError(message)
+    } finally {
+      setIsResetConfirmSubmitting(false)
+    }
+  }
+
+  const handleResendResetCode = async () => {
+    clearMessages()
+
+    try {
+      const response = await authApi.requestPasswordReset({
+        email: resetEmail
+      })
+
+      passwordResetConfirmForm.setValue('code', '')
+      setFormSuccess(response.message)
+      return true
+    } catch (error) {
+      setFormError(
+        getAuthApiErrorMessage(error, 'Не удалось отправить код повторно')
+      )
+      return false
+    }
+  }
 
   return (
     <Modal
       isOpen={isOpen}
       modalClassName={styles.modal}
-      onClose={() => dispatch(closeAuthModal())}
+      onClose={handleClose}
       width={560}
     >
       <div className={styles.header}>
-        <h2>Вход и регистрация</h2>
+        <div className={styles.headerCopy}>
+          <h2>
+            {view === 'auth'
+              ? 'Вход и регистрация'
+              : view === 'resetRequest'
+                ? 'Восстановление пароля'
+                : 'Введите код из письма'}
+          </h2>
+          {view === 'resetConfirm' ? (
+            <p className={styles.subtitle}>
+              Код отправлен на <strong>{resetEmail}</strong>
+            </p>
+          ) : null}
+        </div>
+
         <button
           aria-label='Закрыть модалку'
           className={styles.closeButton}
-          onClick={() => dispatch(closeAuthModal())}
+          onClick={handleClose}
           type='button'
         >
-          ×
+          <Image alt='' aria-hidden='true' src={closeIcon} />
         </button>
       </div>
 
-      <div className={styles.tabs}>
-        <button
-          className={mode === 'login' ? styles.tabActive : styles.tab}
-          onClick={() => dispatch(setAuthMode('login'))}
-          type='button'
-        >
-          Авторизация
-        </button>
-        <button
-          className={mode === 'register' ? styles.tabActive : styles.tab}
-          onClick={() => dispatch(setAuthMode('register'))}
-          type='button'
-        >
-          Регистрация
-        </button>
-      </div>
-
-      {mode === 'login' ? (
-        <form className={styles.form} onSubmit={handleLogin}>
-          <label className={styles.fieldGroup}>
-            <span>Email</span>
-            <Controller
-              control={loginForm.control}
-              name='email'
-              rules={{ validate: validateEmail }}
-              render={({ field, fieldState }) => (
-                <Input
-                  {...field}
-                  invalid={fieldState.invalid}
-                  placeholder='email@example.com'
-                  type='email'
-                />
-              )}
-            />
-            {loginForm.formState.errors.email?.message ? (
-              <small className={styles.fieldError}>
-                {loginForm.formState.errors.email.message}
-              </small>
-            ) : null}
-          </label>
-
-          {renderLoginPasswordField({
-            error: loginForm.formState.errors.password?.message,
-            label: 'Пароль',
-            name: 'password',
-            placeholder: 'Введите пароль',
-            visible: isLoginPasswordVisible
-          })}
-
-          <div className={styles.metaRow}>
-            <label className={styles.checkbox}>
-              <Controller
-                control={loginForm.control}
-                name='rememberMe'
-                render={({ field }) => (
-                  <input
-                    checked={field.value}
-                    onChange={(event) => field.onChange(event.target.checked)}
-                    type='checkbox'
-                  />
-                )}
-              />
-              <span>Запомнить меня</span>
-            </label>
-
-            <button className={styles.forgotLink} type='button'>
-              Забыли пароль?
+      {view === 'auth' ? (
+        <>
+          <div className={styles.tabs}>
+            <button
+              className={mode === 'login' ? styles.tabActive : styles.tab}
+              onClick={() => {
+                clearMessages()
+                dispatch(setAuthMode('login'))
+              }}
+              type='button'
+            >
+              Авторизация
+            </button>
+            <button
+              className={mode === 'register' ? styles.tabActive : styles.tab}
+              onClick={() => {
+                clearMessages()
+                dispatch(setAuthMode('register'))
+              }}
+              type='button'
+            >
+              Регистрация
             </button>
           </div>
 
-          <Button fullWidth size='lg' type='submit'>
-            Войти
-          </Button>
-        </form>
-      ) : (
-        <form className={styles.form} onSubmit={handleRegister}>
-          <label className={styles.fieldGroup}>
-            <span>Email</span>
-            <Controller
-              control={registerForm.control}
-              name='email'
-              rules={{ validate: validateEmail }}
-              render={({ field, fieldState }) => (
-                <Input
-                  {...field}
-                  invalid={fieldState.invalid}
-                  placeholder='email@example.com'
-                  type='email'
-                />
-              )}
+          {formError ? (
+            <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+          ) : null}
+          {!formError && formSuccess ? (
+            <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+          ) : null}
+
+          {mode === 'login' ? (
+            <LoginForm
+              form={loginForm}
+              isSubmitting={isLoginSubmitting}
+              onForgotPassword={(email) => {
+                clearMessages()
+                passwordResetRequestForm.setValue('email', email)
+                setView('resetRequest')
+              }}
+              onSubmit={handleLogin}
             />
-            {registerForm.formState.errors.email?.message ? (
-              <small className={styles.fieldError}>
-                {registerForm.formState.errors.email.message}
-              </small>
-            ) : null}
-          </label>
+          ) : (
+            <RegisterForm
+              form={registerForm}
+              isSubmitting={isRegisterSubmitting}
+              onSubmit={handleRegister}
+            />
+          )}
+        </>
+      ) : view === 'resetRequest' ? (
+        <>
+          {formError ? (
+            <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+          ) : null}
+          {!formError && formSuccess ? (
+            <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+          ) : null}
 
-          {renderRegisterPasswordField({
-            error: registerForm.formState.errors.password?.message,
-            label: 'Пароль',
-            name: 'password',
-            placeholder: 'Придумайте пароль',
-            visible: isRegisterPasswordVisible
-          })}
+          <PasswordResetRequestForm
+            form={passwordResetRequestForm}
+            isSubmitting={isResetRequestSubmitting}
+            onBack={() => {
+              clearMessages()
+              setView('auth')
+            }}
+            onSubmit={handlePasswordResetRequest}
+          />
+        </>
+      ) : (
+        <>
+          {formError ? (
+            <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+          ) : null}
+          {!formError && formSuccess ? (
+            <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+          ) : null}
 
-          {renderRegisterPasswordField({
-            error: registerForm.formState.errors.passwordRepeat?.message,
-            label: 'Повтор пароля',
-            name: 'passwordRepeat',
-            placeholder: 'Повторите пароль',
-            visible: isRegisterPasswordRepeatVisible
-          })}
+          <PasswordResetConfirmForm
+            form={passwordResetConfirmForm}
+            isSubmitting={isResetConfirmSubmitting}
+            onBack={() => {
+              clearMessages()
+              setView('resetRequest')
+            }}
+            onCodeChange={(value) => {
+              if (resetCodeError) {
+                setResetCodeError('')
+              }
 
-          <Button fullWidth size='lg' type='submit'>
-            Зарегистрироваться
-          </Button>
-        </form>
+              passwordResetConfirmForm.setValue('code', value, {
+                shouldValidate: true
+              })
+            }}
+            onResend={handleResendResetCode}
+            onSubmit={handlePasswordResetConfirm}
+            otpResetKey={otpResetKey}
+            resetCodeError={resetCodeError}
+          />
+        </>
       )}
     </Modal>
   )

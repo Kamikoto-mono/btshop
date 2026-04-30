@@ -16,10 +16,10 @@ export const MobileTabs = () => {
   const pathname = usePathname() || '/'
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { cartCount, userEmail } = useAppSelector((state) => ({
-    cartCount: state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
-    userEmail: state.auth.user?.email ?? ''
-  }))
+  const cartCount = useAppSelector((state) =>
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  )
+  const userEmail = useAppSelector((state) => state.auth.user?.email ?? '')
 
   const isCatalogPath = () => {
     if (pathname === '/market' || pathname === '/categories') {

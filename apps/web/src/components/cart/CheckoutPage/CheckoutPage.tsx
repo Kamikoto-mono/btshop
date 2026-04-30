@@ -71,6 +71,7 @@ export const CheckoutPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const items = useAppSelector((state) => state.cart.items)
+  const user = useAppSelector((state) => state.auth.user)
 
   const form = useForm<ICheckoutFormValues>({
     defaultValues,
@@ -92,13 +93,13 @@ export const CheckoutPage = () => {
 
     if (!profile) {
       form.reset({
-        city: mockProfile.city ?? mockProfile.address ?? '',
+        city: user?.address ?? mockProfile.city ?? mockProfile.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
-        email: mockProfile.email ?? '',
-        fullName: mockProfile.fullName ?? '',
-        phone: mockProfile.phone ?? '',
-        postalCode: mockProfile.postalCode ?? '',
-        telegram: mockProfile.telegram ?? ''
+        email: user?.email ?? mockProfile.email ?? '',
+        fullName: user?.fullName ?? mockProfile.fullName ?? '',
+        phone: user?.tel ?? mockProfile.phone ?? '',
+        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
+        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
       })
       return
     }
@@ -115,26 +116,26 @@ export const CheckoutPage = () => {
       }
 
       form.reset({
-        city: parsedProfile.city ?? parsedProfile.address ?? '',
+        city: parsedProfile.city ?? parsedProfile.address ?? user?.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
-        email: parsedProfile.email ?? '',
-        fullName: parsedProfile.fullName ?? '',
-        phone: parsedProfile.phone ?? '',
-        postalCode: parsedProfile.postalCode ?? '',
-        telegram: parsedProfile.telegram ?? ''
+        email: parsedProfile.email ?? user?.email ?? '',
+        fullName: parsedProfile.fullName ?? user?.fullName ?? '',
+        phone: parsedProfile.phone ?? user?.tel ?? '',
+        postalCode: parsedProfile.postalCode ?? user?.postalCode ?? '',
+        telegram: parsedProfile.telegram ?? user?.telegramUsername ?? ''
       })
     } catch {
       form.reset({
-        city: mockProfile.city ?? mockProfile.address ?? '',
+        city: user?.address ?? mockProfile.city ?? mockProfile.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
-        email: mockProfile.email ?? '',
-        fullName: mockProfile.fullName ?? '',
-        phone: mockProfile.phone ?? '',
-        postalCode: mockProfile.postalCode ?? '',
-        telegram: mockProfile.telegram ?? ''
+        email: user?.email ?? mockProfile.email ?? '',
+        fullName: user?.fullName ?? mockProfile.fullName ?? '',
+        phone: user?.tel ?? mockProfile.phone ?? '',
+        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
+        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
       })
     }
-  }, [form])
+  }, [form, user])
 
   const handleSubmit = form.handleSubmit((values) => {
     const normalizedValues = {

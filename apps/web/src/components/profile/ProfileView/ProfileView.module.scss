@@ -19,6 +19,7 @@
 .hero {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 16px;
 }
 
@@ -42,16 +43,58 @@
   font-weight: 600;
 }
 
+.authRequired,
 .content {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 20px;
+}
+
+.authRequired {
+  padding: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: 30px;
+  background: rgba(248, 251, 255, 0.7);
+  box-shadow: var(--shadow-soft);
+  justify-items: start;
+}
+
+.authRequired h2 {
+  font-size: 30px;
+  color: #17345a;
+}
+
+.authRequired p {
+  max-width: 480px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.content {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: start;
 }
 
 .fieldGroup {
   display: grid;
   gap: 8px;
+}
+
+.readonlyField {
+  min-height: 54px;
+  padding: 16px 18px;
+  border: 1px solid #c9d7ea;
+  border-radius: 16px;
+  background: rgba(243, 248, 255, 0.82);
+  color: var(--color-text);
+}
+
+.errorBanner {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(209, 64, 64, 0.08);
+  color: #ad2e2e;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .fieldGroup span {
@@ -62,6 +105,10 @@
   color: #c14949;
   font-size: 13px;
   line-height: 1.35;
+}
+
+.logoutButton {
+  margin-top: 20px;
 }
 
 .formGrid {
@@ -297,6 +344,10 @@
 
   .hero h1 {
     font-size: 34px;
+  }
+
+  .hero {
+    flex-direction: column;
   }
 
   .orderSummary,

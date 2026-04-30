@@ -32,10 +32,10 @@ export const Header = () => {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(true)
   const [showMobileBackground, setShowMobileBackground] = useState(false)
   const [lastScrollY, setLastScrollY] = useState(0)
-  const { totalCount, userEmail } = useAppSelector((state) => ({
-    totalCount: state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
-    userEmail: state.auth.user?.email ?? ''
-  }))
+  const totalCount = useAppSelector((state) =>
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  )
+  const userEmail = useAppSelector((state) => state.auth.user?.email ?? '')
 
   const isMarketActive =
     pathname === '/market' ||

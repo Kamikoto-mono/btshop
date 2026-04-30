@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useRef } from 'react'
 import { Provider } from 'react-redux'
 
+import { authApi } from '@/api/auth'
 import { hydrateUserSession } from './authSlice'
 import { hydrateCart, ICartItem } from './cartSlice'
 import { useAppSelector } from './hooks'
@@ -58,6 +59,21 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         storeRef.current?.dispatch(hydrateUserSession(null))
       }
     }
+
+    if (!authApi.hasSession()) {
+      storeRef.current?.dispatch(hydrateUserSession(null))
+      return
+    }
+
+    authApi
+      .me()
+      .then((user) => {
+        storeRef.current?.dispatch(hydrateUserSession(user))
+      })
+      .catch(() => {
+        authApi.logout()
+        storeRef.current?.dispatch(hydrateUserSession(null))
+      })
   }, [])
 
   return (

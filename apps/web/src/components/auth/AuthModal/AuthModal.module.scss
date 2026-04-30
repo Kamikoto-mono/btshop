@@ -10,9 +10,20 @@
   align-items: center;
 }
 
+.headerCopy {
+  display: grid;
+  gap: 6px;
+}
+
 .header h2 {
   font-size: 28px;
   font-weight: 700;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .closeButton {
@@ -21,9 +32,16 @@
   display: inline-grid;
   place-items: center;
   border-radius: 999px;
-  color: var(--color-accent);
-  font-size: 34px;
-  line-height: 1;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background: rgba(58, 110, 220, 0.08);
+}
+
+.closeButton :global(img) {
+  width: 18px;
+  height: 18px;
 }
 
 .tabs {
@@ -56,13 +74,38 @@
   gap: 20px;
 }
 
+.helperText {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .fieldGroup {
   display: grid;
   gap: 8px;
 }
 
+.fieldLabel,
 .fieldGroup span {
   font-weight: 600;
+}
+
+.alert {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.alertError {
+  background: rgba(209, 64, 64, 0.08);
+  color: #ad2e2e;
+}
+
+.alertSuccess {
+  background: rgba(26, 143, 93, 0.1);
+  color: #19724d;
 }
 
 .fieldError {
@@ -118,6 +161,27 @@
   opacity: 0.72;
 }
 
+.otpBlock {
+  display: grid;
+  gap: 10px;
+}
+
+.actionsColumn {
+  display: grid;
+  gap: 12px;
+}
+
+.secondaryAction {
+  width: fit-content;
+  color: var(--color-accent-dark);
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.secondaryAction:hover {
+  opacity: 0.72;
+}
 
 @media (max-width: 640px) {
   .metaRow {

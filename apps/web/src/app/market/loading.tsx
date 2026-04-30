@@ -1,7 +1,5 @@
-import { ProductCardSkeleton } from '@/components/ui'
+import { ProductCardSkeletonGrid } from '@/components/ui'
 import styles from './loading.module.scss'
-
-const skeletonItems = Array.from({ length: 8 }, (_, index) => index)
 
 export default function MarketLoading() {
   return (
@@ -47,11 +45,7 @@ export default function MarketLoading() {
             </div>
           </div>
 
-          <div className={styles.grid}>
-            {skeletonItems.map((item) => (
-              <ProductCardSkeleton key={item} />
-            ))}
-          </div>
+          <ProductCardSkeletonGrid />
         </section>
       </div>
     </div>

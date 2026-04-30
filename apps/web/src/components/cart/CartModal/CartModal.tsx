@@ -47,10 +47,9 @@ const defaultValues: ICartFormValues = {
 
 export const CartModal = () => {
   const dispatch = useAppDispatch()
-  const { isCartOpen, items } = useAppSelector((state) => ({
-    isCartOpen: state.cart.isOpen,
-    items: state.cart.items
-  }))
+  const isCartOpen = useAppSelector((state) => state.cart.isOpen)
+  const items = useAppSelector((state) => state.cart.items)
+  const user = useAppSelector((state) => state.auth.user)
 
   const [promoCode, setPromoCode] = useState('')
   const [promoMessage, setPromoMessage] = useState('')
@@ -70,10 +69,10 @@ export const CartModal = () => {
 
     if (!profile) {
       form.reset({
-        address: mockProfile.address ?? '',
-        fullName: mockProfile.fullName ?? '',
-        postalCode: mockProfile.postalCode ?? '',
-        telegram: mockProfile.telegram ?? ''
+        address: user?.address ?? mockProfile.address ?? '',
+        fullName: user?.fullName ?? mockProfile.fullName ?? '',
+        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
+        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
       })
       return
     }
@@ -87,20 +86,20 @@ export const CartModal = () => {
       }
 
       form.reset({
-        address: parsedProfile.address ?? '',
-        fullName: parsedProfile.fullName ?? '',
-        postalCode: parsedProfile.postalCode ?? '',
-        telegram: parsedProfile.telegram ?? ''
+        address: parsedProfile.address ?? user?.address ?? '',
+        fullName: parsedProfile.fullName ?? user?.fullName ?? '',
+        postalCode: parsedProfile.postalCode ?? user?.postalCode ?? '',
+        telegram: parsedProfile.telegram ?? user?.telegramUsername ?? ''
       })
     } catch {
       form.reset({
-        address: mockProfile.address ?? '',
-        fullName: mockProfile.fullName ?? '',
-        postalCode: mockProfile.postalCode ?? '',
-        telegram: mockProfile.telegram ?? ''
+        address: user?.address ?? mockProfile.address ?? '',
+        fullName: user?.fullName ?? mockProfile.fullName ?? '',
+        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
+        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
       })
     }
-  }, [form, isCartOpen])
+  }, [form, isCartOpen, user])
 
   const totalPrice = items.reduce(
     (sum, item) => sum + item.quantity * item.product.price,
