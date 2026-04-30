@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 
+import type { IProduct } from '@/api/products/model'
 import anonymityIcon from '@assets/icons/adv-anonymity.svg'
 import honestyIcon from '@assets/icons/adv-honesty.svg'
 import reliabilityIcon from '@assets/icons/adv-reliability.svg'
@@ -94,7 +95,11 @@ const banners = [
   }
 ]
 
-export const HomePage = () => {
+export const HomePage = ({
+  popularProducts
+}: {
+  popularProducts: IProduct[]
+}) => {
   const { isInView: isHeroInView, ref: heroRef } = useInViewOnce<HTMLElement>({
     threshold: 0.12
   })
@@ -192,7 +197,7 @@ export const HomePage = () => {
 
       <BloggersSection />
 
-      <PopularProductsSection />
+      <PopularProductsSection products={popularProducts} />
 
       <HomeReviewsSection />
     </div>

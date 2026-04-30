@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { IProduct } from '@btshop/shared'
+import { IProduct } from '@/api/products/model'
 
 export interface ICartItem {
   product: IProduct

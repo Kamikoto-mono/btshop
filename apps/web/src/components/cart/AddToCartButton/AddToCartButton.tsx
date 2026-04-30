@@ -1,6 +1,6 @@
 'use client'
 
-import { IProduct } from '@btshop/shared'
+import { IProduct } from '@/api/products/model'
 
 import { Button } from '@/components/ui'
 import {

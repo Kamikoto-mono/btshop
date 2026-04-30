@@ -1,4 +1,4 @@
-import { getProducts, type IProduct } from '@btshop/shared'
+import type { IProduct } from '@/api/products/model'
 
 export const PROFILE_STORAGE_KEY = 'btshop-profile'
 export const ORDER_STORAGE_KEY = 'btshop-orders'
@@ -43,9 +43,53 @@ export interface IStoredProfile {
   telegram?: string
 }
 
-const products = getProducts()
-
-const getProductById = (id: string) => products.find((product) => product.id === id)
+const fallbackProducts: IProduct[] = [
+  {
+    brand: 'ZPHC',
+    categoryId: 'mock-category-injection',
+    categoryName: 'Инъекции',
+    description: 'Классический длинный эфир для базовых курсов и TRT-схем.',
+    f_price: null,
+    id: 'mock-te-250',
+    inStock: 100,
+    name: 'Testosterone Enanthate 250',
+    photo: null,
+    photos: [],
+    price: 2800,
+    subCategoryId: 'mock-subcategory-testosterone',
+    subCategoryName: 'Тестостерон'
+  },
+  {
+    brand: 'Balkan',
+    categoryId: 'mock-category-injection',
+    categoryName: 'Инъекции',
+    description: 'Более концентрированная версия энантата под опытные схемы.',
+    f_price: null,
+    id: 'mock-te-300',
+    inStock: 100,
+    name: 'Testosterone Enanthate 300',
+    photo: null,
+    photos: [],
+    price: 3150,
+    subCategoryId: 'mock-subcategory-testosterone',
+    subCategoryName: 'Тестостерон'
+  },
+  {
+    brand: 'SP',
+    categoryId: 'mock-category-injection',
+    categoryName: 'Инъекции',
+    description: 'Короткий эфир с быстрым стартом и гибкой настройкой схемы.',
+    f_price: null,
+    id: 'mock-tp-100',
+    inStock: 100,
+    name: 'Testosterone Propionate 100',
+    photo: null,
+    photos: [],
+    price: 2550,
+    subCategoryId: 'mock-subcategory-testosterone',
+    subCategoryName: 'Тестостерон'
+  }
+]
 
 const toOrderItem = (product: IProduct, quantity: number): IStoredOrderItem => ({
   id: product.id,
@@ -53,22 +97,6 @@ const toOrderItem = (product: IProduct, quantity: number): IStoredOrderItem => (
   price: product.price,
   quantity
 })
-
-export const mockPopularProducts: IProduct[] = (() => {
-  if (products.length >= 10) {
-    return products.slice(0, 10)
-  }
-
-  const fillers = products
-    .slice(0, Math.max(10 - products.length, 0))
-    .map((product, index) => ({
-      ...product,
-      id: `${product.id}-popular-${index + 1}`,
-      price: product.price + (index + 1) * 150
-    }))
-
-  return [...products, ...fillers].slice(0, 10)
-})()
 
 export const mockProfile: IStoredProfile = {
   address: 'Москва, улица Примерная, дом 10, квартира 24',
@@ -81,9 +109,9 @@ export const mockProfile: IStoredProfile = {
 }
 
 const defaultOrderProducts = {
-  first: getProductById('te-001') ?? products[0],
-  second: getProductById('te-002') ?? products[1] ?? products[0],
-  third: getProductById('tp-001') ?? products[2] ?? products[0]
+  first: fallbackProducts[0],
+  second: fallbackProducts[1] ?? fallbackProducts[0],
+  third: fallbackProducts[2] ?? fallbackProducts[0]
 }
 
 export const mockOrderHistory: IStoredOrder[] = [

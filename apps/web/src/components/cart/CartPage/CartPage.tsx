@@ -105,7 +105,7 @@ export const CartPage = () => {
                       <div>
                         <strong>{item.product.name}</strong>
                         <p>
-                          {item.product.categoryName} / {item.product.compoundName}
+                          {item.product.categoryName} / {item.product.subCategoryName}
                         </p>
                       </div>
                     </div>

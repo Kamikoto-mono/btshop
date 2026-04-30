@@ -12,6 +12,7 @@
   "dependencies": {
     "@btshop/shared": "workspace:*",
     "@reduxjs/toolkit": "^2.9.0",
+    "axios": "^1.15.2",
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",

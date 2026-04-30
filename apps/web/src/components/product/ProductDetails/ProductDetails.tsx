@@ -2,22 +2,25 @@
 
 import { useMemo, useState } from 'react'
 
-import { IProduct } from '@btshop/shared'
-
+import type { IProduct } from '@/api/products/model'
 import { AddToCartButton } from '@/components/cart'
-import { getProductGallery } from '@/lib/productImages'
+import { PopularProductsSection } from '@/components/home'
 import { Breadcrumbs, IBreadcrumbItem, ProductArtwork, StatusDot } from '@/components/ui'
+import { getProductGallery } from '@/lib/productImages'
 import { ImageModal } from '../ImageModal/ImageModal'
 import styles from './ProductDetails.module.scss'
 
 export const ProductDetails = ({
+  breadcrumbs,
   product,
-  breadcrumbs
+  relatedProducts = []
 }: {
-  product: IProduct
   breadcrumbs: IBreadcrumbItem[]
+  product: IProduct
+  relatedProducts?: IProduct[]
 }) => {
   const galleryImages = useMemo(() => getProductGallery(product), [product])
+  const hasMultipleImages = galleryImages.length > 1
   const [activeImage, setActiveImage] = useState(
     galleryImages[0]?.label ?? product.name
   )
@@ -33,14 +36,14 @@ export const ProductDetails = ({
     const nextIndex =
       activeImageIndex <= 0 ? galleryImages.length - 1 : activeImageIndex - 1
 
-    setActiveImage(galleryImages[nextIndex]?.label ?? galleryImages[0].label)
+    setActiveImage(galleryImages[nextIndex]?.label ?? galleryImages[0]?.label ?? product.name)
   }
 
   const handleNextImage = () => {
     const nextIndex =
       activeImageIndex >= galleryImages.length - 1 ? 0 : activeImageIndex + 1
 
-    setActiveImage(galleryImages[nextIndex]?.label ?? galleryImages[0].label)
+    setActiveImage(galleryImages[nextIndex]?.label ?? galleryImages[0]?.label ?? product.name)
   }
 
   return (
@@ -48,28 +51,30 @@ export const ProductDetails = ({
       <Breadcrumbs items={breadcrumbs} />
 
       <section className={styles.card}>
-        <div className={styles.gallery}>
-          <div className={styles.thumbs}>
-            {galleryImages.map((image) => (
-              <button
-                className={
-                  activeImage === image.label
-                    ? `${styles.thumbButton} ${styles.thumbButtonActive}`
-                    : styles.thumbButton
-                }
-                key={image.label}
-                onClick={() => setActiveImage(image.label)}
-                type='button'
-              >
-                <ProductArtwork
-                  active={activeImage === image.label}
-                  imageSrc={image.src}
-                  label={image.label}
-                  variant='thumb'
-                />
-              </button>
-            ))}
-          </div>
+        <div className={hasMultipleImages ? styles.gallery : styles.gallerySingle}>
+          {hasMultipleImages ? (
+            <div className={styles.thumbs}>
+              {galleryImages.map((image) => (
+                <button
+                  className={
+                    activeImage === image.label
+                      ? `${styles.thumbButton} ${styles.thumbButtonActive}`
+                      : styles.thumbButton
+                  }
+                  key={image.label}
+                  onClick={() => setActiveImage(image.label)}
+                  type='button'
+                >
+                  <ProductArtwork
+                    active={activeImage === image.label}
+                    imageSrc={image.src}
+                    label={image.label}
+                    variant='thumb'
+                  />
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <div className={styles.preview}>
             <button
@@ -78,7 +83,7 @@ export const ProductDetails = ({
               type='button'
             >
               <ProductArtwork
-                imageSrc={activeImageSrc}
+                imageSrc={activeImageSrc || undefined}
                 label={activeImage}
                 variant='main'
               />
@@ -95,7 +100,7 @@ export const ProductDetails = ({
 
           <div className={styles.descriptionBlock}>
             <h2>Описание</h2>
-            <p>{product.description}</p>
+            <p className={styles.descriptionText}>{product.description}</p>
           </div>
 
           <div className={styles.actions}>
@@ -103,6 +108,8 @@ export const ProductDetails = ({
           </div>
         </div>
       </section>
+
+      {relatedProducts.length > 0 ? <PopularProductsSection products={relatedProducts} /> : null}
 
       <ImageModal
         imageAlt={product.name}

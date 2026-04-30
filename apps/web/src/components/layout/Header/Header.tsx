@@ -5,8 +5,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 
-import { getCategories } from '@btshop/shared'
-
 import cartIcon from '@assets/icons/cart.svg'
 import logoIcon from '@assets/icons/logo.svg'
 import profileIcon from '@assets/icons/profile.svg'
@@ -27,8 +25,6 @@ const navigationItems = [
   }
 ]
 
-const marketRootSlugs = getCategories().map((category) => category.slug)
-
 export const Header = () => {
   const pathname = usePathname()
   const router = useRouter()
@@ -43,9 +39,8 @@ export const Header = () => {
 
   const isMarketActive =
     pathname === '/market' ||
-    marketRootSlugs.some(
-      (slug) => pathname === `/${slug}` || pathname.startsWith(`/${slug}/`)
-    )
+    pathname.startsWith('/market/') ||
+    pathname.startsWith('/products/')
 
   useEffect(() => {
     const handleScroll = () => {

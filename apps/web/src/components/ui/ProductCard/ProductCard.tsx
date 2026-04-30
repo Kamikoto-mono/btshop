@@ -1,8 +1,9 @@
 import { forwardRef } from 'react'
 import Link from 'next/link'
 
-import { formatCurrency, type IProduct } from '@btshop/shared'
+import { formatCurrency } from '@btshop/shared'
 
+import type { IProduct } from '@/api/products/model'
 import { AddToCartButton } from '@/components/cart'
 import { getProductCardImage } from '@/lib/productImages'
 import { getProductHref } from '@/lib/routes'
@@ -10,9 +11,9 @@ import { ProductArtwork } from '../ProductArtwork/ProductArtwork'
 import styles from './ProductCard.module.scss'
 
 interface IProductCardProps {
-  product: IProduct
   artworkMeta?: string
   className?: string
+  product: IProduct
 }
 
 export const ProductCard = forwardRef<HTMLElement, IProductCardProps>(
@@ -20,15 +21,15 @@ export const ProductCard = forwardRef<HTMLElement, IProductCardProps>(
     <article className={className ? `${styles.card} ${className}` : styles.card} ref={ref}>
       <Link href={getProductHref(product)}>
         <ProductArtwork
-          imageSrc={getProductCardImage(product)}
-          label={`${product.brand} • ${artworkMeta ?? product.dosage}`}
+          imageSrc={getProductCardImage(product) ?? undefined}
+          label={`${product.brand} • ${artworkMeta ?? product.subCategoryName}`}
         />
       </Link>
 
       <div className={styles.cardBody}>
         <div>
           <p className={styles.cardMeta}>
-            {product.categoryName} / {product.compoundName}
+            {product.categoryName} / {product.subCategoryName}
           </p>
           <Link className={styles.productTitle} href={getProductHref(product)}>
             {product.name}
@@ -36,7 +37,12 @@ export const ProductCard = forwardRef<HTMLElement, IProductCardProps>(
         </div>
 
         <div className={styles.cardFooter}>
-          <strong>{formatCurrency(product.price)}</strong>
+          <div>
+            {typeof product.f_price === 'number' ? (
+              <span className={styles.oldPrice}>{formatCurrency(product.f_price)}</span>
+            ) : null}
+            <strong>{formatCurrency(product.price)}</strong>
+          </div>
           <AddToCartButton product={product} />
         </div>
       </div>

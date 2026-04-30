@@ -59,6 +59,18 @@
   margin-top: auto;
 }
 
+.cardFooter > div {
+  display: grid;
+  gap: 4px;
+}
+
+.oldPrice {
+  color: #8fa1ba;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
 .cardFooter strong {
   font-size: 20px;
   color: #365788;

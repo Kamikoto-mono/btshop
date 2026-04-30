@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import type { IProduct } from '@/api/products/model'
 import { ProductCard } from '@/components/ui'
-import { mockPopularProducts } from '@/mocks'
 import styles from './PopularProductsSection.module.scss'
 
 const CARD_GAP = 18
@@ -24,14 +24,17 @@ const getVisibleCards = (width: number) => {
   return 5
 }
 
-export const PopularProductsSection = () => {
+export const PopularProductsSection = ({
+  products
+}: {
+  products: IProduct[]
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [visibleCards, setVisibleCards] = useState(5)
   const [stepPx, setStepPx] = useState(0)
   const firstCardRef = useRef<HTMLElement | null>(null)
 
-  const maxIndex = Math.max(mockPopularProducts.length - visibleCards, 0)
-  const canSlide = mockPopularProducts.length > visibleCards
+  const canSlide = products.length > visibleCards
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,13 +58,19 @@ export const PopularProductsSection = () => {
     window.addEventListener('resize', recalculateStep)
 
     return () => window.removeEventListener('resize', recalculateStep)
-  }, [visibleCards])
+  }, [visibleCards, products.length])
 
   useEffect(() => {
-    if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex)
+    const nextMaxIndex = Math.max(products.length - visibleCards, 0)
+
+    if (currentIndex > nextMaxIndex) {
+      setCurrentIndex(nextMaxIndex)
     }
-  }, [currentIndex, maxIndex])
+  }, [currentIndex, products.length, visibleCards])
+
+  if (products.length === 0) {
+    return null
+  }
 
   return (
     <section className={styles.section}>
@@ -73,8 +82,12 @@ export const PopularProductsSection = () => {
             <button
               aria-label='Предыдущие товары'
               className={styles.arrowButton}
-              disabled={currentIndex === 0}
-              onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+              onClick={() =>
+                setCurrentIndex((prev) => {
+                  const maxIndex = Math.max(products.length - visibleCards, 0)
+                  return prev <= 0 ? maxIndex : prev - 1
+                })
+              }
               type='button'
             >
               ←
@@ -83,8 +96,12 @@ export const PopularProductsSection = () => {
             <button
               aria-label='Следующие товары'
               className={styles.arrowButton}
-              disabled={currentIndex >= maxIndex}
-              onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, maxIndex))}
+              onClick={() =>
+                setCurrentIndex((prev) => {
+                  const maxIndex = Math.max(products.length - visibleCards, 0)
+                  return prev >= maxIndex ? 0 : prev + 1
+                })
+              }
               type='button'
             >
               →
@@ -95,9 +112,8 @@ export const PopularProductsSection = () => {
 
       <div className={styles.viewport}>
         <div className={styles.track} style={{ transform: `translateX(${-currentIndex * stepPx}px)` }}>
-          {mockPopularProducts.map((product, index) => (
+          {products.map((product, index) => (
             <ProductCard
-              artworkMeta={product.dosage}
               className={`${styles.card} ${
                 visibleCards === 2
                   ? styles.cardTwo
