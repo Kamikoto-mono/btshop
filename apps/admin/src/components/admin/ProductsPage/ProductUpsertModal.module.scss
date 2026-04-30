@@ -1,0 +1,194 @@
+.modalSection {
+  display: grid;
+  gap: 18px;
+}
+
+.descActions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+.numberRow {
+  display: flex;
+  width: 100%;
+}
+
+.numberRow :global(.ant-form-item) {
+  flex: 1;
+}
+
+.categoryBlock {
+  display: grid;
+  gap: 12px;
+}
+
+.categoryLabel {
+  color: #16304f;
+  font-weight: 600;
+}
+
+.categoryLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: #61758f;
+}
+
+.categoryRow {
+  display: flex;
+  width: 100%;
+}
+
+.categoryField {
+  flex: 1;
+}
+
+.modalSection :global(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+.modalSection :global(.ant-input-outlined),
+.modalSection :global(.ant-input-number),
+.modalSection :global(.ant-select .ant-select-selector) {
+  border-radius: 14px;
+}
+
+.modalSection :global(.ant-input-outlined),
+.modalSection :global(.ant-input-number) {
+  min-height: 44px;
+}
+
+.modalSection :global(.ant-input-number .ant-input-number-input) {
+  height: 42px;
+}
+
+.modalSection :global(.ant-select-single:not(.ant-select-customize-input) .ant-select-selector) {
+  height: 44px;
+  padding: 0 14px;
+}
+
+.modalSection :global(.ant-select-single .ant-select-selector .ant-select-selection-item),
+.modalSection :global(.ant-select-single .ant-select-selector .ant-select-selection-placeholder) {
+  line-height: 42px;
+}
+
+.modalSection :global(.ant-select .ant-select-arrow) {
+  color: #8ea0b8;
+}
+
+.modalSection :global(.ant-input-textarea textarea.ant-input) {
+  min-height: 132px;
+  resize: vertical;
+}
+
+.dropzone {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.photoGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.photoCard,
+.photoCardActive {
+  position: relative;
+  overflow: hidden;
+  width: 180px;
+  padding: 10px;
+  border: 1px solid rgba(204, 214, 228, 0.92);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.photoCardActive {
+  border-color: #1d63d8;
+  box-shadow: 0 0 0 3px rgba(29, 99, 216, 0.1);
+}
+
+.photoThumb {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f3f6fb;
+}
+
+.photoThumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverFallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #8ea0b8;
+  font-size: 12px;
+}
+
+.uploadHint {
+  color: #61758f;
+  font-size: 13px;
+}
+
+.emptyPhotoInline {
+  margin-top: 0;
+}
+
+.photoDeleteButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 6px 20px rgba(21, 51, 84, 0.12);
+  color: #5a6d88;
+  cursor: pointer;
+}
+
+.photoDeleteButton:hover {
+  color: #d04747;
+}
+
+.primaryButton,
+.primaryButtonActive {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #61758f;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  color: #1d63d8;
+}
+
+.primaryButtonActive {
+  color: #1d63d8;
+  cursor: default;
+}
+
+@media (max-width: 1080px) {
+  .categoryRow,
+  .numberRow {
+    flex-direction: column;
+  }
+}

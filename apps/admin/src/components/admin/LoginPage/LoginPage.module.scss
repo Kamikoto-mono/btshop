@@ -1,0 +1,42 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.shell {
+  width: min(100%, 460px);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  color: #1d63d8;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8fe13c 0%, #58bc1f 100%);
+}
+
+.title {
+  margin-bottom: 8px !important;
+  color: #16304f !important;
+}
+
+.subtitle {
+  display: block;
+  margin-bottom: 26px;
+  color: #61758f;
+  line-height: 1.6;
+}

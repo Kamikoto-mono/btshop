@@ -10,7 +10,10 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.2.2",
     "@btshop/shared": "workspace:*",
+    "antd": "^6.3.7",
+    "axios": "^1.15.2",
     "next": "16.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",

@@ -1,0 +1,108 @@
+.root {
+  min-height: 100vh;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(204, 214, 228, 0.9);
+  background: rgba(247, 249, 252, 0.92);
+  backdrop-filter: blur(10px);
+  padding: 16px 0px 0px 0px;
+}
+
+.headerInner {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.headerRow {
+    display: flex;
+      justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand {
+  margin-bottom: 0 !important;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #16304f;
+}
+
+.tabs {
+  justify-self: center;
+  min-width: 0;
+}
+
+.userMeta {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 12px;
+}
+
+.userEmail {
+  color: #61758f;
+  font-size: 14px;
+}
+
+.tabs :global(.ant-tabs-nav) {
+  margin-bottom: 0 !important;
+}
+
+.tabs :global(.ant-tabs-nav-wrap) {
+  justify-content: center;
+}
+
+.tabs :global(.ant-tabs-tab) {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.main {
+  padding: 28px 0 40px;
+}
+
+.content {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.centeredState {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 860px) {
+  .header {
+    padding: 16px;
+  }
+
+  .headerInner,
+  .content {
+    width: 100%;
+  }
+
+  .headerRow {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .tabs {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .tabs :global(.ant-tabs-nav-wrap) {
+    justify-content: flex-start;
+  }
+
+  .userMeta {
+    justify-self: start;
+  }
+}

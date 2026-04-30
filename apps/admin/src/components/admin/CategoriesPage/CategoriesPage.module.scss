@@ -1,0 +1,206 @@
+.page {
+  display: grid;
+  gap: 24px;
+}
+
+.heading {
+  margin-bottom: 0 !important;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.columnCard :global(.ant-card-head) {
+  min-height: 68px;
+}
+
+.columnCard :global(.ant-card-head-title) {
+  padding: 18px 0 !important;
+}
+
+.columnCard :global(.ant-card-extra) {
+  padding: 18px 0 !important;
+}
+
+.columnBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inlineCreate {
+  display: grid;
+  gap: 10px;
+}
+
+.inlineCreateActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.itemWrap {
+  display: grid;
+  gap: 10px;
+}
+
+.item,
+.itemActive,
+.itemInlineState {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.item:hover {
+  background: rgba(29, 99, 216, 0.06);
+}
+
+.itemActive {
+  background: #1d63d8;
+  color: #fff;
+}
+
+.itemInlineState {
+  background: rgba(29, 99, 216, 0.08);
+  color: #16304f;
+  cursor: default;
+}
+
+.itemInfo {
+  min-width: 0;
+}
+
+.itemName,
+.itemNameEditing {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.itemMeta {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #7a8ba3;
+}
+
+.itemActive .itemMeta {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.itemInlineState .itemMeta {
+  color: #61758f;
+}
+
+.itemActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.itemActions :global(.ant-btn) {
+  color: inherit;
+}
+
+.descButtonIdle {
+  opacity: 0.4;
+}
+
+.descButtonActive {
+  color: #16304f !important;
+}
+
+.itemActive .itemActions :global(.ant-btn) {
+  color: #fff;
+}
+
+.itemActive .descButtonIdle {
+  opacity: 0.55;
+}
+
+.itemActive .descButtonActive {
+  color: #16304f !important;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+}
+
+.itemInlineState .itemActions :global(.ant-btn) {
+  color: #16304f;
+}
+
+.itemInlineState .itemActions :global(.ant-btn-color-primary) {
+  color: #fff;
+}
+
+.inlineEdit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.inlineCreate :global(.ant-input),
+.inlineEdit :global(.ant-input),
+.inlineCreate :global(.ant-input-outlined),
+.inlineEdit :global(.ant-input-outlined) {
+  height: 40px;
+  min-height: 40px;
+}
+
+.inlineEdit :global(.ant-btn),
+.itemInlineState .itemActions :global(.ant-btn) {
+  flex: 0 0 auto;
+}
+
+.descEditor {
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(204, 214, 228, 0.92);
+  border-radius: 14px;
+  background: rgba(29, 99, 216, 0.04);
+}
+
+.descEditorActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.emptyWrap {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 1180px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+
+  .columnBody {
+    min-height: 420px;
+  }
+}
