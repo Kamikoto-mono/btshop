@@ -20,12 +20,9 @@ interface IFaqSection {
 }
 
 const legalLinks = {
-  article226_1:
-    'https://www.consultant.ru/document/cons_doc_LAW_10699/1f73e94c7dfdcefa44dbbc1b2799cf9c5331bee5/',
-  article234:
-    'https://www.consultant.ru/document/cons_doc_LAW_10699/deb8cd782c79ab8888215304186ca7e15ffb2fdc/',
-  decree964:
-    'https://www.consultant.ru/cons/cgi/online.cgi?base=LAW&dst=100010&n=74146&req=doc'
+  criminalCode:
+    'http://pravo.gov.ru/proxy/ips/?docbody=&link_id=0&nd=102041891&intelsearch=&firstDoc=1',
+  decree964: 'https://roszdravnadzor.gov.ru/pages/reform/npa-archive/28-01-2021'
 }
 
 const faqSections: IFaqSection[] = [
@@ -55,13 +52,14 @@ const faqSections: IFaqSection[] = [
         answerRich: (
           <>
             <p>
-              Вопрос законности зависит не только от самого вещества, но и от его состава,
-              способа оборота и цели действий. Для ориентира можно смотреть действующие тексты
-              нормативных актов.
+              Формально хранение, приобретение и употребление сами по себе не образуют
+              автоматически те составы, на которые обычно ссылаются в таких вопросах.
+              Для ориентира обычно смотрят перечни веществ из постановления
+              Правительства РФ от 29.12.2007 № 964 и статьи 234 и 226.1 УК РФ.
             </p>
 
             <div className={styles.legalBlock}>
-              <p className={styles.legalNoteTitle}>Тексты актов</p>
+              <p className={styles.legalNoteTitle}>Ссылки на тексты норм</p>
               <ul className={styles.legalLinks}>
                 <li>
                   <a
@@ -76,35 +74,34 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.article234}
+                    href={legalLinks.criminalCode}
                     rel='noreferrer'
                     target='_blank'
                   >
-                    Статья 234 УК РФ
+                    УК РФ, статья 234
                   </a>
                 </li>
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.article226_1}
+                    href={legalLinks.criminalCode}
                     rel='noreferrer'
                     target='_blank'
                   >
-                    Статья 226.1 УК РФ
+                    УК РФ, статья 226.1
                   </a>
                 </li>
               </ul>
             </div>
 
             <p>
-              Для практической оценки ситуации лучше опираться на актуальную редакцию норм и,
-              если нужен персональный разбор, обращаться за юридической консультацией.
+              Статья 234 УК РФ касается незаконного оборота сильнодействующих веществ
+              именно в целях сбыта. Статья 226.1 УК РФ касается контрабанды, то есть
+              незаконного перемещения через границу. Если речь не идёт о сбыте и
+              незаконном перемещении через границу, сама покупка для личного пользования
+              не равна автоматически этим составам.
             </p>
 
-            <div className={styles.legalBlock}>
-              <p className={styles.legalNoteTitle}>Важно</p>
-              <p>Этот блок носит справочный характер и не является юридической консультацией.</p>
-            </div>
           </>
         ),
         id: 'legal-status',
@@ -144,13 +141,13 @@ const faqSections: IFaqSection[] = [
         answerRich: (
           <>
             <p>
-              Если интересует именно правовая часть, смотреть стоит не только условия доставки,
-              но и действующие нормы, связанные с сильнодействующими веществами и незаконным
-              перемещением через границу.
+              По правовой части обычно смотрят на те же нормы: перечни веществ из
+              постановления № 964, статью 234 УК РФ про оборот в целях сбыта и
+              статью 226.1 УК РФ про незаконное перемещение через границу.
             </p>
 
             <div className={styles.legalBlock}>
-              <p className={styles.legalNoteTitle}>Что посмотреть</p>
+              <p className={styles.legalNoteTitle}>Ссылки</p>
               <ul className={styles.legalLinks}>
                 <li>
                   <a
@@ -165,29 +162,31 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.article234}
+                    href={legalLinks.criminalCode}
                     rel='noreferrer'
                     target='_blank'
                   >
-                    Статья 234 УК РФ
+                    УК РФ, статья 234
                   </a>
                 </li>
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.article226_1}
+                    href={legalLinks.criminalCode}
                     rel='noreferrer'
                     target='_blank'
                   >
-                    Статья 226.1 УК РФ
+                    УК РФ, статья 226.1
                   </a>
                 </li>
               </ul>
             </div>
 
             <p>
-              Если нужен разбор конкретной ситуации, лучше сверять актуальную редакцию норм и
-              консультироваться с профильным юристом.
+              Ключевой момент здесь тот же: для личной покупки без цели сбыта и без
+              незаконного перемещения через границу нельзя механически применять эти
+              составы. Но итоговая оценка зависит от фактических обстоятельств, поэтому
+              при сомнениях лучше сверять актуальную редакцию норм и консультироваться с юристом.
             </p>
           </>
         ),
@@ -301,7 +300,11 @@ export const FaqView = () => {
       return null
     }
 
-    return section.questions.find((question) => question.id === selectedQuestionId) ?? section.questions[0] ?? null
+    return (
+      section.questions.find((question) => question.id === selectedQuestionId) ??
+      section.questions[0] ??
+      null
+    )
   }, [openedSectionId, selectedQuestionId])
 
   const handleSectionToggle = (section: IFaqSection) => {

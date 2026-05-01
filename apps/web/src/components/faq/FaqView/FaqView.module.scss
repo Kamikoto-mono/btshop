@@ -23,7 +23,7 @@
   width: 700px;
   height: 700px;
   background: url('../../../../assets/images/molecule.png') center / contain no-repeat;
-  opacity: 0.5;
+  opacity: 0.2;
   pointer-events: none;
 }
 
@@ -188,11 +188,10 @@
 }
 
 .legalBlock {
-  margin-top: 18px;
-  padding: 16px 18px;
-  border: 1px solid rgba(90, 148, 242, 0.24);
-  border-radius: 18px;
-  background: rgba(238, 246, 255, 0.72);
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 4px 0 4px 16px;
+  border-left: 2px solid rgba(90, 148, 242, 0.38);
 }
 
 .legalNoteTitle {
@@ -207,6 +206,7 @@
   display: grid;
   gap: 8px;
   padding-left: 18px;
+  list-style: disc;
 }
 
 .legalLink {
