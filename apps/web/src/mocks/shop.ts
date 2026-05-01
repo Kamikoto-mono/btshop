@@ -17,7 +17,6 @@ export interface IStoredOrderItem {
 
 export interface IStoredOrder {
   address?: string
-  city?: string
   createdAt: string
   customer: string
   delivery?: string
@@ -35,7 +34,6 @@ export interface IStoredOrder {
 
 export interface IStoredProfile {
   address?: string
-  city?: string
   email?: string
   fullName?: string
   phone?: string
@@ -100,7 +98,6 @@ const toOrderItem = (product: IProduct, quantity: number): IStoredOrderItem => (
 
 export const mockProfile: IStoredProfile = {
   address: 'Москва, улица Примерная, дом 10, квартира 24',
-  city: 'Москва',
   email: 'battletoads@example.com',
   fullName: 'Иванов Иван Иванович',
   phone: '+7 999 123-45-67',
@@ -116,7 +113,6 @@ const defaultOrderProducts = {
 
 export const mockOrderHistory: IStoredOrder[] = [
   {
-    city: mockProfile.city,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     customer: mockProfile.fullName ?? '',
     delivery: 'Почта — первый класс',
@@ -137,7 +133,6 @@ export const mockOrderHistory: IStoredOrder[] = [
       1000
   },
   {
-    city: mockProfile.city,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9).toISOString(),
     customer: mockProfile.fullName ?? '',
     delivery: 'EMS курьерская',
@@ -164,7 +159,6 @@ export const mapCartItemsToOrderItems = (items: ICartLikeItem[]): IStoredOrderIt
 
 export const createMockOrder = ({
   address,
-  city,
   customer,
   delivery,
   deliveryPrice,
@@ -177,7 +171,6 @@ export const createMockOrder = ({
   telegram
 }: {
   address?: string
-  city?: string
   customer: string
   delivery?: string
   deliveryPrice?: number
@@ -197,7 +190,6 @@ export const createMockOrder = ({
 
   return {
     address,
-    city,
     createdAt: new Date().toISOString(),
     customer,
     delivery,

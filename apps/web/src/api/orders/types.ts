@@ -25,6 +25,7 @@ export interface IOrderDto {
   address: string
   amount: number
   createdAt: string
+  delivery: string
   email: string
   fullName: string
   id: string
@@ -34,4 +35,16 @@ export interface IOrderDto {
   tel: string
   telegramUsername: string
   userId: string
+}
+
+export interface IOrdersHistoryDto {
+  items: IOrderDto[]
+  meta: {
+    hasNextPage: boolean
+    hasPrevPage: boolean
+    limit: number
+    page: number
+    total: number
+    totalPages: number
+  }
 }

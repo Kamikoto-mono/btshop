@@ -1,12 +1,26 @@
 import { AxiosError } from 'axios'
 
-import { publicApi } from '../config'
+import { privateApi, publicApi } from '../config'
 import { mapOrder } from './model'
-import type { ICreateOrderRequestDto, IOrderDto } from './types'
+import type { ICreateOrderRequestDto, IOrderDto, IOrdersHistoryDto } from './types'
 
 const createOrder = async (payload: ICreateOrderRequestDto) => {
   const { data } = await publicApi.post<IOrderDto>('/orders', payload)
   return mapOrder(data)
+}
+
+const getHistory = async (page = 1, limit = 15) => {
+  const { data } = await privateApi.get<IOrdersHistoryDto>('/orders/history', {
+    params: {
+      limit,
+      page
+    }
+  })
+
+  return {
+    items: data.items.map(mapOrder),
+    meta: data.meta
+  }
 }
 
 export const getOrderApiErrorMessage = (
@@ -25,5 +39,6 @@ export const getOrderApiErrorMessage = (
 }
 
 export const ordersApi = {
-  createOrder
+  createOrder,
+  getHistory
 }

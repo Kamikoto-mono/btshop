@@ -6,6 +6,7 @@ export interface IOrder {
   address: string
   amount: number
   createdAt: string
+  delivery: string
   email: string
   fullName: string
   id: string
@@ -26,6 +27,7 @@ export const mapOrder = (dto: IOrderDto): IOrder => ({
   address: dto.address,
   amount: dto.amount,
   createdAt: dto.createdAt,
+  delivery: dto.delivery,
   email: dto.email,
   fullName: dto.fullName,
   id: dto.id,

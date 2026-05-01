@@ -121,6 +121,7 @@ export const OrderUpsertModal = ({
   return (
     <AdminModalShell
       destroyOnHidden
+      forceRender
       okButtonProps={{
         disabled: isLoading || !order,
         loading: isSaving

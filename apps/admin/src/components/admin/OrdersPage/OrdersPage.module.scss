@@ -62,6 +62,14 @@
   font-weight: 600;
 }
 
+.statusSelect {
+  min-width: 132px;
+}
+
+.statusSelect :global(.ant-select-selector) {
+  border-radius: 999px !important;
+}
+
 .statusCreated {
   color: #2e7ae8;
   background: rgba(46, 122, 232, 0.12);

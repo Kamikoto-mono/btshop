@@ -9,13 +9,10 @@ import { formatCurrency } from '@btshop/shared'
 import chevronDownIcon from '@assets/icons/chevron-down.svg'
 
 import { authApi } from '@/api/auth'
+import { ordersApi } from '@/api/orders'
+import type { IOrder } from '@/api/orders/model'
 import { Breadcrumbs, Button, Eyebrow, Input } from '@/components/ui'
-import {
-  mockOrderHistory,
-  ORDER_STORAGE_KEY,
-  PROFILE_STORAGE_KEY,
-  type IStoredOrder
-} from '@/mocks'
+import { PROFILE_STORAGE_KEY } from '@/mocks'
 import { logout, openAuthModal, setUserSession } from '@/store/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
@@ -34,6 +31,8 @@ interface IProfileFormValues {
   tel: string
 }
 
+const HISTORY_PAGE_SIZE = 15
+
 const defaultValues: IProfileFormValues = {
   address: '',
   fullName: '',
@@ -45,30 +44,65 @@ const defaultValues: IProfileFormValues = {
 export const ProfileView = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.auth.user)
-  const [orders, setOrders] = useState<IStoredOrder[]>([])
+  const [orders, setOrders] = useState<IOrder[]>([])
   const [openedOrderId, setOpenedOrderId] = useState<string | null>(null)
   const [savedMessage, setSavedMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [ordersError, setOrdersError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [isOrdersLoading, setIsOrdersLoading] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [historyPage, setHistoryPage] = useState(1)
+  const [hasMoreOrders, setHasMoreOrders] = useState(false)
 
   const form = useForm<IProfileFormValues>({
     defaultValues,
     mode: 'onChange'
   })
 
-  useEffect(() => {
-    const storedOrders = window.localStorage.getItem(ORDER_STORAGE_KEY)
+  const loadOrders = async (page: number, mode: 'replace' | 'append' = 'replace') => {
+    if (!user) {
+      return
+    }
 
-    const nextOrders = storedOrders
-      ? (JSON.parse(storedOrders) as IStoredOrder[])
-      : mockOrderHistory
+    if (mode === 'append') {
+      setIsLoadingMore(true)
+    } else {
+      setIsOrdersLoading(true)
+    }
 
-    setOrders(nextOrders)
-    setOpenedOrderId(nextOrders[0]?.id ?? null)
-  }, [])
+    setOrdersError('')
+
+    try {
+      const response = await ordersApi.getHistory(page, HISTORY_PAGE_SIZE)
+
+      setOrders((current) => {
+        const nextOrders = mode === 'append' ? [...current, ...response.items] : response.items
+
+        if (!openedOrderId) {
+          setOpenedOrderId(nextOrders[0]?.id ?? null)
+        }
+
+        return nextOrders
+      })
+
+      setHistoryPage(response.meta.page)
+      setHasMoreOrders(response.meta.hasNextPage)
+    } catch {
+      setOrdersError('Не удалось загрузить историю заказов')
+    } finally {
+      setIsOrdersLoading(false)
+      setIsLoadingMore(false)
+    }
+  }
 
   useEffect(() => {
     if (!user) {
+      setOrders([])
+      setOpenedOrderId(null)
+      setHistoryPage(1)
+      setHasMoreOrders(false)
+      setOrdersError('')
       form.reset(defaultValues)
       void form.trigger()
       return
@@ -82,17 +116,11 @@ export const ProfileView = () => {
       tel: user.tel
     })
     void form.trigger()
+    void loadOrders(1, 'replace')
   }, [form, user])
 
   const orderTotals = useMemo(
-    () =>
-      Object.fromEntries(
-        orders.map((order) => [
-          order.id,
-          order.totalPrice ??
-            order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        ])
-      ),
+    () => Object.fromEntries(orders.map((order) => [order.id, order.amount])),
     [orders]
   )
 
@@ -162,9 +190,7 @@ export const ProfileView = () => {
       {!user ? (
         <section className={styles.authRequired}>
           <h2>Нужна авторизация</h2>
-          <p>
-            Войдите в аккаунт, чтобы посмотреть и сохранить данные профиля.
-          </p>
+          <p>Войдите в аккаунт, чтобы посмотреть и сохранить данные профиля.</p>
           <Button
             onClick={() =>
               dispatch(
@@ -305,72 +331,87 @@ export const ProfileView = () => {
           <section className={styles.orders}>
             <h2>История заказов</h2>
 
-            <div className={styles.orderList}>
-              {orders.map((order) => {
-                const isOpened = openedOrderId === order.id
-                const total = orderTotals[order.id] ?? 0
+            {ordersError ? <p className={styles.errorBanner}>{ordersError}</p> : null}
 
-                return (
-                  <article className={styles.orderAccordion} key={order.id}>
-                    <button
-                      className={styles.orderSummary}
-                      onClick={() =>
-                        setOpenedOrderId((current) =>
-                          current === order.id ? null : order.id
-                        )
-                      }
-                      type='button'
-                    >
-                      <div className={styles.orderSummaryMeta}>
-                        <strong>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</strong>
-                        <span>{order.id}</span>
-                      </div>
+            {isOrdersLoading ? (
+              <p className={styles.ordersState}>Загружаем историю заказов...</p>
+            ) : orders.length === 0 ? (
+              <p className={styles.ordersState}>Заказов пока нет.</p>
+            ) : (
+              <>
+                <div className={styles.orderList}>
+                  {orders.map((order) => {
+                    const isOpened = openedOrderId === order.id
+                    const total = orderTotals[order.id] ?? 0
 
-                      <div className={styles.orderSummarySide}>
-                        <span className={styles.orderStatus}>{order.status}</span>
-                        <strong className={styles.orderTotal}>{formatCurrency(total)}</strong>
-                        <span
+                    return (
+                      <article className={styles.orderAccordion} key={order.id}>
+                        <button
+                          className={styles.orderSummary}
+                          onClick={() =>
+                            setOpenedOrderId((current) =>
+                              current === order.id ? null : order.id
+                            )
+                          }
+                          type='button'
+                        >
+                          <div className={styles.orderSummaryMeta}>
+                            <strong>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</strong>
+                            <span>{order.id}</span>
+                          </div>
+
+                          <div className={styles.orderSummarySide}>
+                            <span className={styles.orderStatus}>{order.status}</span>
+                            <strong className={styles.orderTotal}>{formatCurrency(total)}</strong>
+                            <span
+                              className={
+                                isOpened ? styles.orderArrowOpened : styles.orderArrow
+                              }
+                            >
+                              <Image alt='' aria-hidden='true' src={chevronDownIcon} />
+                            </span>
+                          </div>
+                        </button>
+
+                        <div
                           className={
-                            isOpened ? styles.orderArrowOpened : styles.orderArrow
+                            isOpened ? styles.orderContentOpened : styles.orderContent
                           }
                         >
-                          <Image alt='' aria-hidden='true' src={chevronDownIcon} />
-                        </span>
-                      </div>
-                    </button>
+                          <div className={styles.orderContentInner}>
+                            <div className={styles.orderItems}>
+                              {order.products.map((item) => (
+                                <div className={styles.orderItem} key={item.productId}>
+                                  <div className={styles.itemMeta}>
+                                    <strong>{item.name}</strong>
+                                    <p>{item.quantity} шт.</p>
+                                  </div>
 
-                    <div
-                      className={
-                        isOpened ? styles.orderContentOpened : styles.orderContent
-                      }
-                    >
-                      <div className={styles.orderContentInner}>
-                        <div className={styles.orderItems}>
-                          {order.items.map((item) => (
-                            <div className={styles.orderItem} key={item.id}>
-                              <div className={styles.itemInfo}>
-                                <div className={styles.itemImage}>
-                                  <span>{item.name.split(' ')[0]}</span>
+                                  <strong className={styles.itemPrice}>
+                                    {formatCurrency(item.price * item.quantity)}
+                                  </strong>
                                 </div>
-
-                                <div className={styles.itemMeta}>
-                                  <strong>{item.name}</strong>
-                                  <p>{item.quantity} шт.</p>
-                                </div>
-                              </div>
-
-                              <strong className={styles.itemPrice}>
-                                {formatCurrency(item.price * item.quantity)}
-                              </strong>
+                              ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
+                      </article>
+                    )
+                  })}
+                </div>
+
+                {hasMoreOrders ? (
+                  <Button
+                    disabled={isLoadingMore}
+                    onClick={() => void loadOrders(historyPage + 1, 'append')}
+                    size='lg'
+                    variant='outlined'
+                  >
+                    {isLoadingMore ? 'Загружаем...' : 'Загрузить ещё'}
+                  </Button>
+                ) : null}
+              </>
+            )}
           </section>
         </div>
       )}

@@ -8,8 +8,6 @@ import {
   Empty,
   Popconfirm,
   Select,
-  Space,
-  Tag,
   Typography,
   type TablePaginationConfig
 } from 'antd'
@@ -37,6 +35,12 @@ const STATUS_OPTIONS = [
   { label: 'В работе', value: 'В работе' }
 ]
 
+const DELIVERY_LABELS: Record<string, string> = {
+  cdek: 'CDEK',
+  почта: 'Почта',
+  pochta: 'Почта'
+}
+
 const getStatusClassName = (status: string) => {
   if (status === 'Оплачен') {
     return styles.statusPaid
@@ -57,6 +61,11 @@ const formatDateTime = (value: string) =>
 
 const formatRangeDate = (value: Date) => value.toISOString()
 
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('ru-RU').format(value).replace(/\s/g, ' ')
+
+const getDeliveryLabel = (value: string) => DELIVERY_LABELS[value] ?? value
+
 export const OrdersPage = () => {
   const { message } = App.useApp()
   const [filters, setFilters] = useState<IOrderFilters>({})
@@ -65,6 +74,7 @@ export const OrdersPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalOrders, setTotalOrders] = useState(0)
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null)
+  const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null)
 
   const loadOrders = async (page = currentPage, nextFilters = filters) => {
     setIsLoading(true)
@@ -97,6 +107,36 @@ export const OrdersPage = () => {
     setCurrentPage(1)
   }
 
+  const handleStatusChange = async (order: IAdminOrder, status: string) => {
+    setStatusUpdatingId(order.id)
+
+    try {
+      const updatedOrder = await ordersApi.updateOrder(order.id, {
+        address: order.address,
+        delivery: order.delivery,
+        email: order.email,
+        fullName: order.fullName,
+        index: Number(order.postalCode),
+        products: order.products.map((product) => ({
+          productId: product.productId,
+          quantity: product.quantity
+        })),
+        status,
+        tel: order.tel,
+        telegramUsername: order.telegramUsername
+      })
+
+      setOrders((current) =>
+        current.map((item) => (item.id === updatedOrder.id ? updatedOrder : item))
+      )
+      message.success('Статус заказа обновлён.')
+    } catch {
+      message.error('Не удалось обновить статус заказа.')
+    } finally {
+      setStatusUpdatingId(null)
+    }
+  }
+
   const columns = useMemo<ColumnsType<IAdminOrder>>(
     () => [
       {
@@ -107,17 +147,32 @@ export const OrdersPage = () => {
         width: 180
       },
       {
-        dataIndex: 'fullName',
-        key: 'fullName',
+        dataIndex: 'email',
+        key: 'customer',
         render: (_, order) => (
           <div className={styles.customerCell}>
-            <span className={styles.customerName}>{order.fullName}</span>
             <span className={styles.customerMeta}>{order.email}</span>
+            <span className={styles.customerMeta}>
+              {order.telegramUsername || 'Telegram не указан'}
+            </span>
             <span className={styles.customerMeta}>{order.tel}</span>
           </div>
         ),
         title: 'Клиент',
         width: 260
+      },
+      {
+        dataIndex: 'address',
+        key: 'address',
+        render: (_, order) => (
+          <div className={styles.customerCell}>
+            <span className={styles.customerName}>{order.fullName}</span>
+            <span className={styles.customerMeta}>{order.address}</span>
+            <span className={styles.customerMeta}>{order.postalCode}</span>
+          </div>
+        ),
+        title: 'Адрес',
+        width: 280
       },
       {
         dataIndex: 'products',
@@ -137,38 +192,34 @@ export const OrdersPage = () => {
       {
         dataIndex: 'delivery',
         key: 'delivery',
-        render: (value: string) => <Tag>{value}</Tag>,
+        render: (value: string) => getDeliveryLabel(value),
         title: 'Доставка',
         width: 120
       },
       {
         dataIndex: 'status',
         key: 'status',
-        render: (value: string) => <Tag className={getStatusClassName(value)}>{value}</Tag>,
+        render: (value: string, order) => (
+          <Select
+            className={`${styles.statusSelect} ${getStatusClassName(value)}`}
+            loading={statusUpdatingId === order.id}
+            onChange={(nextStatus) => void handleStatusChange(order, nextStatus)}
+            options={STATUS_OPTIONS}
+            popupMatchSelectWidth={false}
+            size='small'
+            value={value}
+            variant='borderless'
+          />
+        ),
         title: 'Статус',
-        width: 130
+        width: 150
       },
       {
         dataIndex: 'amount',
         key: 'amount',
-        render: (value: number) => `${value} ₽`,
+        render: (value: number) => `${formatCurrency(value)} ₽`,
         title: 'Сумма',
-        width: 120
-      },
-      {
-        dataIndex: 'address',
-        key: 'address',
-        render: (_, order) => (
-          <div className={styles.customerCell}>
-            <span>{order.address}</span>
-            <span className={styles.customerMeta}>Индекс: {order.postalCode}</span>
-            <span className={styles.customerMeta}>
-              Telegram: {order.telegramUsername || 'не указан'}
-            </span>
-          </div>
-        ),
-        title: 'Контакты / адрес',
-        width: 260
+        width: 140
       },
       {
         key: 'actions',
@@ -204,7 +255,7 @@ export const OrdersPage = () => {
         width: 44
       }
     ],
-    [currentPage, message]
+    [currentPage, message, statusUpdatingId]
   )
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -268,7 +319,7 @@ export const OrdersPage = () => {
           total: totalOrders
         }}
         rowKey='id'
-        scroll={{ x: 1500 }}
+        scroll={{ x: 1600 }}
       />
 
       <OrderUpsertModal
