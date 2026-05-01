@@ -1,11 +1,19 @@
 'use client'
 
+import Image from 'next/image'
 import { useMemo, useState } from 'react'
+
+import chevronDownIcon from '@assets/icons/chevron-down.svg'
 
 import type { IProduct } from '@/api/products/model'
 import { AddToCartButton } from '@/components/cart'
 import { PopularProductsSection } from '@/components/home'
-import { Breadcrumbs, IBreadcrumbItem, ProductArtwork, StatusDot } from '@/components/ui'
+import {
+  Breadcrumbs,
+  type IBreadcrumbItem,
+  ProductArtwork,
+  StatusDot
+} from '@/components/ui'
 import { getProductGallery } from '@/lib/productImages'
 import { ImageModal } from '../ImageModal/ImageModal'
 import styles from './ProductDetails.module.scss'
@@ -25,6 +33,7 @@ export const ProductDetails = ({
     galleryImages[0]?.label ?? product.name
   )
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false)
 
   const activeImageIndex = galleryImages.findIndex(
     (image) => image.label === activeImage
@@ -99,8 +108,31 @@ export const ProductDetails = ({
           <h1>{product.name}</h1>
 
           <div className={styles.descriptionBlock}>
-            <h2>Описание</h2>
-            <p className={styles.descriptionText}>{product.description}</p>
+            <div className={styles.descriptionHeader}>
+              <h2>Описание</h2>
+              <button
+                aria-expanded={isDescriptionOpen}
+                className={
+                  isDescriptionOpen
+                    ? styles.descriptionToggleOpened
+                    : styles.descriptionToggle
+                }
+                onClick={() => setIsDescriptionOpen((current) => !current)}
+                type='button'
+              >
+                <Image alt='' aria-hidden='true' src={chevronDownIcon} />
+              </button>
+            </div>
+
+            <div
+              className={
+                isDescriptionOpen
+                  ? styles.descriptionContentOpened
+                  : styles.descriptionContent
+              }
+            >
+              <p className={styles.descriptionText}>{product.description}</p>
+            </div>
           </div>
 
           <div className={styles.actions}>

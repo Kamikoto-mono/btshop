@@ -437,8 +437,8 @@
 .pagination {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
+  justify-content: center;
 }
 
 .pageList {
@@ -570,7 +570,15 @@
     padding: 12px;
   }
 
-  .priceRange,
+  .priceRange {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .applyButton {
+    grid-column: 1 / -1;
+  }
+
   .pagination {
     grid-template-columns: 1fr;
     display: grid;

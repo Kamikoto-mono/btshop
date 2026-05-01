@@ -4,7 +4,7 @@
 .thumbArtworkActive {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 30px;
   background:
     radial-gradient(circle at top left, rgba(29, 99, 216, 0.12), transparent 28%),
     linear-gradient(180deg, #ffffff 0%, #eff4fb 100%);
@@ -81,4 +81,18 @@ width: 80px;
 .thumbArtworkActive .badge {
   padding: 4px 8px;
   font-size: 10px;
+}
+
+@media (max-width: 1100px) {
+  .mainArtwork {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 650px) {
+  .mainArtwork {
+    min-height: 400px;
+  }
+
+
 }
