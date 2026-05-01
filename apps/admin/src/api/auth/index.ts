@@ -28,7 +28,13 @@ const refresh = async (payload: IRefreshRequestDto) => {
 const me = async () => {
   const { adminApi } = await import('../config')
   const { data } = await adminApi.get<IMeResponseDto>('/auth/me')
-  return mapAdminUser(data)
+  const user = mapAdminUser(data)
+
+  if (user.role !== 'admin') {
+    throw new Error('Admin access required')
+  }
+
+  return user
 }
 
 const logout = () => {

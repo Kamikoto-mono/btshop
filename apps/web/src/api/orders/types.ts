@@ -5,6 +5,7 @@ export interface ICreateOrderProductDto {
 
 export interface ICreateOrderRequestDto {
   address: string
+  delivery: 'cdek' | 'pochta'
   email: string
   fullName: string
   index: string

@@ -25,15 +25,14 @@ import styles from './CheckoutPage.module.scss'
 
 interface IDeliveryMethod {
   description: string
-  disabled?: boolean
-  id: string
+  id: 'cdek' | 'pochta'
   price: number
   title: string
 }
 
 interface ICheckoutFormValues {
   address: string
-  deliveryId: string
+  deliveryId: 'cdek' | 'pochta'
   email: string
   fullName: string
   phone: string
@@ -43,23 +42,16 @@ interface ICheckoutFormValues {
 
 const DELIVERY_METHODS: IDeliveryMethod[] = [
   {
-    description: 'Базовая отправка Почтой России',
-    id: 'post',
+    description: '??????? ???????? ?????? ??????',
+    id: 'pochta',
     price: 1000,
-    title: 'Почта — первый класс'
+    title: '????? ? ?????? ?????'
   },
   {
-    description: 'Курьерская доставка EMS',
-    id: 'ems',
-    price: 1500,
-    title: 'EMS курьерская'
-  },
-  {
-    description: 'Доступно при заказе от 35 000 ₽',
-    disabled: true,
+    description: '???????? ????',
     id: 'cdek',
     price: 1000,
-    title: 'СДЭК'
+    title: '????'
   }
 ]
 
@@ -162,6 +154,7 @@ export const CheckoutPage = () => {
     try {
       const order = await ordersApi.createOrder({
         address: normalizedValues.address,
+        delivery: values.deliveryId,
         email: normalizedValues.email,
         fullName: normalizedValues.fullName,
         index: normalizedValues.postalCode,
@@ -465,17 +458,14 @@ export const CheckoutPage = () => {
                     {DELIVERY_METHODS.map((method) => (
                       <label
                         className={
-                          method.disabled
-                            ? styles.deliveryDisabled
-                            : field.value === method.id
-                              ? styles.deliverySelected
-                              : styles.deliveryOption
+                          field.value === method.id
+                            ? styles.deliverySelected
+                            : styles.deliveryOption
                         }
                         key={method.id}
                       >
                         <input
                           checked={field.value === method.id}
-                          disabled={method.disabled}
                           name='delivery'
                           onChange={() => field.onChange(method.id)}
                           type='radio'
