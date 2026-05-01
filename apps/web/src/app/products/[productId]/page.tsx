@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { categoriesApi } from '@/api/categories'
 import { productsApi } from '@/api/products'
 import { ProductDetails } from '@/components/product'
 import { BreadcrumbsJsonLd } from '@/components/seo/BreadcrumbsJsonLd'
 import { ProductJsonLd } from '@/components/seo/ProductJsonLd'
-import { getMarketHref } from '@/lib/routes'
+import { resolveCatalogPathByIds } from '@/lib/catalogSlugs'
 import { getAbsoluteImageUrl, withFallbackDescription } from '@/shared/seo/utils'
 
 export async function generateMetadata({
@@ -64,25 +65,28 @@ export default async function ProductPage({
   const { productId } = await params
 
   try {
-    const [product, randomProducts] = await Promise.all([
+    const [categories, product, randomProducts] = await Promise.all([
+      categoriesApi.getCategories().catch(() => []),
       productsApi.getProductById(productId),
       productsApi.getRandomProducts({ limit: 15 }).catch(() => [])
     ])
     const relatedProducts = randomProducts.filter((item) => item.id !== product.id)
+    const categoryPath = resolveCatalogPathByIds(categories, {
+      categoryId: product.categoryId
+    })
+    const subCategoryPath = resolveCatalogPathByIds(categories, {
+      categoryId: product.categoryId,
+      subCategoryId: product.subCategoryId
+    })
     const breadcrumbs = [
       { href: '/', label: 'Главная' },
       { href: '/market', label: 'Магазин' },
       {
-        href: getMarketHref({
-          categoryId: product.categoryId
-        }),
+        href: categoryPath,
         label: product.categoryName
       },
       {
-        href: getMarketHref({
-          categoryId: product.categoryId,
-          subCategoryId: product.subCategoryId
-        }),
+        href: subCategoryPath,
         label: product.subCategoryName
       },
       { href: `/products/${product.id}`, label: product.name }
