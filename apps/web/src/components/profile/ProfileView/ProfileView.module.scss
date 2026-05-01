@@ -194,8 +194,8 @@ display: flex;
 .orderTotal {
   min-width: 124px;
   color: var(--color-text);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   text-align: right;
   white-space: nowrap;
 }
@@ -278,7 +278,7 @@ display: flex;
 .itemMeta strong {
   display: block;
   color: #48515f;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.28;
   text-transform: uppercase;
@@ -292,7 +292,7 @@ display: flex;
 
 .itemPrice {
   color: var(--color-text);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   white-space: nowrap;
 }
