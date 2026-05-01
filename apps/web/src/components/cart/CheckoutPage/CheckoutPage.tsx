@@ -1,18 +1,20 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 
 import { formatCurrency } from '@btshop/shared'
 
+import { getOrderApiErrorMessage, ordersApi } from '@/api/orders'
+import type { IOrder } from '@/api/orders/model'
+import { mapOrderToStoredOrder } from '@/api/orders/model'
+import { Breadcrumbs, Button, Input } from '@/components/ui'
 import {
-  createMockOrder,
   mockProfile,
   ORDER_STORAGE_KEY,
   PROFILE_STORAGE_KEY
 } from '@/mocks'
-import { Breadcrumbs, Button, Input } from '@/components/ui'
 import { clearCart } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
@@ -25,7 +27,25 @@ import {
 } from '@/shared/utils'
 import styles from './CheckoutPage.module.scss'
 
-const DELIVERY_METHODS = [
+interface IDeliveryMethod {
+  description: string
+  disabled?: boolean
+  id: string
+  price: number
+  title: string
+}
+
+interface ICheckoutFormValues {
+  address: string
+  deliveryId: string
+  email: string
+  fullName: string
+  phone: string
+  postalCode: string
+  telegram: string
+}
+
+const DELIVERY_METHODS: IDeliveryMethod[] = [
   {
     description: 'Базовая отправка Почтой России',
     id: 'post',
@@ -47,18 +67,8 @@ const DELIVERY_METHODS = [
   }
 ]
 
-interface ICheckoutFormValues {
-  city: string
-  deliveryId: string
-  email: string
-  fullName: string
-  phone: string
-  postalCode: string
-  telegram: string
-}
-
 const defaultValues: ICheckoutFormValues = {
-  city: '',
+  address: '',
   deliveryId: DELIVERY_METHODS[0].id,
   email: '',
   fullName: '',
@@ -73,6 +83,10 @@ export const CheckoutPage = () => {
   const items = useAppSelector((state) => state.cart.items)
   const user = useAppSelector((state) => state.auth.user)
 
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createdOrder, setCreatedOrder] = useState<IOrder | null>(null)
+
   const form = useForm<ICheckoutFormValues>({
     defaultValues,
     mode: 'onChange'
@@ -86,14 +100,14 @@ export const CheckoutPage = () => {
   const selectedDelivery =
     DELIVERY_METHODS.find((method) => method.id === deliveryId) ?? DELIVERY_METHODS[0]
   const totalPrice = productsTotal + selectedDelivery.price
-  const canSubmit = items.length > 0 && form.formState.isValid
+  const canSubmit = items.length > 0 && !isSubmitting
 
   useEffect(() => {
     const profile = window.localStorage.getItem(PROFILE_STORAGE_KEY)
 
     if (!profile) {
       form.reset({
-        city: user?.address ?? mockProfile.city ?? mockProfile.address ?? '',
+        address: user?.address ?? mockProfile.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
         email: user?.email ?? mockProfile.email ?? '',
         fullName: user?.fullName ?? mockProfile.fullName ?? '',
@@ -107,7 +121,6 @@ export const CheckoutPage = () => {
     try {
       const parsedProfile = JSON.parse(profile) as {
         address?: string
-        city?: string
         email?: string
         fullName?: string
         phone?: string
@@ -116,7 +129,7 @@ export const CheckoutPage = () => {
       }
 
       form.reset({
-        city: parsedProfile.city ?? parsedProfile.address ?? user?.address ?? '',
+        address: parsedProfile.address ?? user?.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
         email: parsedProfile.email ?? user?.email ?? '',
         fullName: parsedProfile.fullName ?? user?.fullName ?? '',
@@ -126,7 +139,7 @@ export const CheckoutPage = () => {
       })
     } catch {
       form.reset({
-        city: user?.address ?? mockProfile.city ?? mockProfile.address ?? '',
+        address: user?.address ?? mockProfile.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
         email: user?.email ?? mockProfile.email ?? '',
         fullName: user?.fullName ?? mockProfile.fullName ?? '',
@@ -137,9 +150,12 @@ export const CheckoutPage = () => {
     }
   }, [form, user])
 
-  const handleSubmit = form.handleSubmit((values) => {
+  const handleSubmit = form.handleSubmit(async (values) => {
+    setErrorMessage('')
+    setIsSubmitting(true)
+
     const normalizedValues = {
-      city: normalizeText(values.city),
+      address: normalizeText(values.address),
       email: normalizeEmail(values.email),
       fullName: normalizeText(values.fullName),
       phone: normalizeText(values.phone),
@@ -147,37 +163,139 @@ export const CheckoutPage = () => {
       telegram: normalizeTelegramField(values.telegram)
     }
 
-    const previousOrders = JSON.parse(
-      window.localStorage.getItem(ORDER_STORAGE_KEY) ?? '[]'
-    ) as Array<Record<string, unknown>>
+    try {
+      const order = await ordersApi.createOrder({
+        address: normalizedValues.address,
+        email: normalizedValues.email,
+        fullName: normalizedValues.fullName,
+        index: normalizedValues.postalCode,
+        products: items.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity
+        })),
+        tel: normalizedValues.phone,
+        telegramUsername: normalizedValues.telegram
+      })
 
-    window.localStorage.setItem(
-      ORDER_STORAGE_KEY,
-      JSON.stringify([
-        createMockOrder({
-          city: normalizedValues.city,
-          customer: normalizedValues.fullName,
-          delivery: selectedDelivery.title,
-          deliveryPrice: selectedDelivery.price,
+      const previousOrders = JSON.parse(
+        window.localStorage.getItem(ORDER_STORAGE_KEY) ?? '[]'
+      ) as Array<Record<string, unknown>>
+
+      window.localStorage.setItem(
+        ORDER_STORAGE_KEY,
+        JSON.stringify([mapOrderToStoredOrder(order), ...previousOrders])
+      )
+
+      window.localStorage.setItem(
+        PROFILE_STORAGE_KEY,
+        JSON.stringify({
+          address: normalizedValues.address,
           email: normalizedValues.email,
-          items,
+          fullName: normalizedValues.fullName,
           phone: normalizedValues.phone,
           postalCode: normalizedValues.postalCode,
-          status: 'Новый',
           telegram: normalizedValues.telegram
-        }),
-        ...previousOrders
-      ])
-    )
+        })
+      )
 
-    window.localStorage.setItem(
-      PROFILE_STORAGE_KEY,
-      JSON.stringify(normalizedValues)
-    )
-
-    dispatch(clearCart())
-    router.push('/profile')
+      setCreatedOrder(order)
+      dispatch(clearCart())
+    } catch (error) {
+      setErrorMessage(getOrderApiErrorMessage(error, 'Не удалось оформить заказ'))
+    } finally {
+      setIsSubmitting(false)
+    }
   })
+
+  if (createdOrder) {
+    return (
+      <div className={styles.page}>
+        <Breadcrumbs
+          items={[
+            { href: '/', label: 'Главная' },
+            { href: '/cart', label: 'Корзина' },
+            { label: 'Заказ оформлен' }
+          ]}
+        />
+
+        <section className={styles.successShell}>
+          <div className={styles.successHero}>
+            <h1>Спасибо за заказ</h1>
+            <p>
+              Спасибо за заказ, с вами свяжется наш менеджер по предоставленным
+              вами контактам.
+            </p>
+          </div>
+
+          <div className={styles.successGrid}>
+            <section className={styles.successCard}>
+              <h2>Контакты для связи</h2>
+              <div className={styles.successMeta}>
+                <div>
+                  <span>ФИО</span>
+                  <strong>{createdOrder.fullName}</strong>
+                </div>
+                <div>
+                  <span>Email</span>
+                  <strong>{createdOrder.email}</strong>
+                </div>
+                <div>
+                  <span>Телефон</span>
+                  <strong>{createdOrder.tel}</strong>
+                </div>
+                <div>
+                  <span>Telegram</span>
+                  <strong>{createdOrder.telegramUsername || 'Не указан'}</strong>
+                </div>
+                <div>
+                  <span>Адрес</span>
+                  <strong>{createdOrder.address}</strong>
+                </div>
+                <div>
+                  <span>Индекс</span>
+                  <strong>{createdOrder.postalCode}</strong>
+                </div>
+                <div>
+                  <span>Номер заказа</span>
+                  <strong>{createdOrder.id}</strong>
+                </div>
+              </div>
+            </section>
+
+            <aside className={styles.successCard}>
+              <h2>Состав заказа</h2>
+
+              <div className={styles.successItems}>
+                {createdOrder.products.map((product) => (
+                  <div className={styles.successItem} key={product.productId}>
+                    <div>
+                      <strong>{product.name}</strong>
+                      <span>{product.quantity} шт.</span>
+                    </div>
+                    <strong>{formatCurrency(product.price * product.quantity)}</strong>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.successTotal}>
+                <span>Итого</span>
+                <strong>{formatCurrency(createdOrder.amount)}</strong>
+              </div>
+
+              <div className={styles.successActions}>
+                <Button fullWidth href='/market' size='lg'>
+                  Продолжить покупки
+                </Button>
+                <Button fullWidth href='/profile' size='lg' variant='outlined'>
+                  Перейти в профиль
+                </Button>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.page}>
@@ -296,21 +414,21 @@ export const CheckoutPage = () => {
               <label className={styles.fieldGroup}>
                 <Controller
                   control={form.control}
-                  name='city'
+                  name='address'
                   rules={{
-                    validate: (value) => validateRequired(value, 'Укажите город')
+                    validate: (value) => validateRequired(value, 'Укажите адрес')
                   }}
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
                       invalid={fieldState.invalid}
-                      placeholder='Город *'
+                      placeholder='Адрес *'
                     />
                   )}
                 />
-                {form.formState.errors.city?.message ? (
+                {form.formState.errors.address?.message ? (
                   <small className={styles.fieldError}>
-                    {form.formState.errors.city.message}
+                    {form.formState.errors.address.message}
                   </small>
                 ) : null}
               </label>
@@ -380,8 +498,10 @@ export const CheckoutPage = () => {
             </div>
           </div>
 
+          {errorMessage ? <p className={styles.errorBanner}>{errorMessage}</p> : null}
+
           <Button disabled={!canSubmit} size='lg' type='submit'>
-            Оформить заказ
+            {isSubmitting ? 'Отправляем заказ...' : 'Оформить заказ'}
           </Button>
         </form>
 
@@ -410,10 +530,12 @@ export const CheckoutPage = () => {
             <span>Сумма товаров</span>
             <strong>{formatCurrency(productsTotal)}</strong>
           </div>
+
           <div className={styles.summaryLine}>
             <span>Доставка</span>
             <strong>{formatCurrency(selectedDelivery.price)}</strong>
           </div>
+
           <div className={styles.summaryTotal}>
             <span>Итого</span>
             <strong>{formatCurrency(totalPrice)}</strong>

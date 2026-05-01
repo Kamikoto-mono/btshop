@@ -100,7 +100,17 @@ export const CartPage = () => {
                   >
                     <div className={styles.itemInfo}>
                       <div className={styles.itemImage}>
-                        <span>{item.product.brand}</span>
+                        {item.product.photo ? (
+                          <Image
+                            alt={item.product.name}
+                            className={styles.productImage}
+                            fill
+                            sizes='104px'
+                            src={item.product.photo}
+                          />
+                        ) : (
+                          <span>{item.product.brand}</span>
+                        )}
                       </div>
                       <div>
                         <strong>{item.product.name}</strong>

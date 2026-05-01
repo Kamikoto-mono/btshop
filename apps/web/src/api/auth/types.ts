@@ -39,7 +39,7 @@ export interface IMessageResponseDto {
 }
 
 export interface IAuthMeResponseDto {
-  adress: string | null
+  address: string | null
   email: string
   fullName: string | null
   id: string
@@ -49,7 +49,7 @@ export interface IAuthMeResponseDto {
 }
 
 export interface IUpdateProfileRequestDto {
-  adress: string
+  address: string
   fullName: string
   index: string
   tel: string

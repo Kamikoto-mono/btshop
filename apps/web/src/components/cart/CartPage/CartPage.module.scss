@@ -86,6 +86,8 @@
 }
 
 .itemImage {
+  position: relative;
+  overflow: hidden;
   width: 104px;
   height: 68px;
   display: grid;
@@ -104,7 +106,13 @@
   box-shadow: inset 0 0 0 1px rgba(169, 184, 204, 0.32);
 }
 
+.productImage {
+  object-fit: cover;
+}
+
 .itemImage span {
+  position: relative;
+  z-index: 1;
   padding: 0 10px;
   color: var(--color-accent-dark);
   font-size: 12px;

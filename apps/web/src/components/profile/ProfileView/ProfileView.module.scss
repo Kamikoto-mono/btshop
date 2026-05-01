@@ -45,17 +45,19 @@
 
 .authRequired,
 .content {
-  display: grid;
+display: flex;
+
   gap: 20px;
 }
 
 .authRequired {
-  padding: 28px;
+  padding: 30px;
   border: 1px solid var(--color-border);
   border-radius: 30px;
   background: rgba(248, 251, 255, 0.7);
   box-shadow: var(--shadow-soft);
   justify-items: start;
+    flex-direction: column;
 }
 
 .authRequired h2 {
@@ -64,7 +66,6 @@
 }
 
 .authRequired p {
-  max-width: 480px;
   color: var(--color-text-muted);
   line-height: 1.5;
 }
@@ -108,7 +109,7 @@
 }
 
 .logoutButton {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .formGrid {

@@ -1,13 +1,15 @@
 import Link from 'next/link'
 
-import { getCategories, getLineCount } from '@btshop/shared'
-
+import type { ICategoryNode } from '@/api/categories/model'
 import { Breadcrumbs, Eyebrow } from '@/components/ui'
-import { getCompoundHref, getLineHref } from '@/lib/routes'
+import { getMarketHref } from '@/lib/routes'
 import styles from './CategoriesView.module.scss'
 
-export const CategoriesView = () => {
-  const categories = getCategories()
+export const CategoriesView = ({
+  categories
+}: {
+  categories: ICategoryNode[]
+}) => {
 
   return (
     <div className={styles.page}>
@@ -30,33 +32,39 @@ export const CategoriesView = () => {
 
         <div className={styles.categoryList}>
           {categories.map((category) => (
-            <section className={styles.category} key={category.slug}>
+            <section className={styles.category} key={category.id}>
               <h2>{category.name}</h2>
 
               <div className={styles.compoundList}>
-                {category.compounds.map((compound) => (
-                  <div className={styles.compound} key={compound.slug}>
+                {category.subCategories.map((subCategory) => (
+                  <div className={styles.compound} key={subCategory.id}>
                     <Link
                       className={styles.compoundLink}
-                      href={getCompoundHref(category.slug, compound.slug)}
+                      href={getMarketHref({
+                        categoryId: category.id,
+                        subCategoryId: subCategory.id
+                      })}
                     >
-                      {compound.name}
+                      {subCategory.name}
                     </Link>
 
-                    <div className={styles.lineList}>
-                      {compound.lines.map((line) => (
-                        <Link
-                          className={styles.lineLink}
-                          href={getLineHref(category.slug, compound.slug, line.slug)}
-                          key={line.slug}
-                        >
-                          <span>{line.name}</span>
-                          <small>
-                            {getLineCount(category.slug, compound.slug, line.slug)}
-                          </small>
-                        </Link>
-                      ))}
-                    </div>
+                    {subCategory.childSubCategories.length > 0 ? (
+                      <div className={styles.lineList}>
+                        {subCategory.childSubCategories.map((childSubCategory) => (
+                          <Link
+                            className={styles.lineLink}
+                            href={getMarketHref({
+                              categoryId: category.id,
+                              subCategoryId: childSubCategory.id
+                            })}
+                            key={childSubCategory.id}
+                          >
+                            <span>{childSubCategory.name}</span>
+                            <small>{childSubCategory.productsInStockCount}</small>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </div>

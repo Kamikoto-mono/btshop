@@ -99,6 +99,8 @@
 }
 
 .itemImage {
+  position: relative;
+  overflow: hidden;
   height: 72px;
   display: grid;
   place-items: center;
@@ -115,7 +117,13 @@
   border: 1px solid #eef3f9;
 }
 
+.productImage {
+  object-fit: cover;
+}
+
 .itemImage span {
+  position: relative;
+  z-index: 1;
   padding: 0 12px;
   color: var(--color-accent-dark);
   font-size: 12px;

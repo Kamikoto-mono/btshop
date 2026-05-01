@@ -70,6 +70,7 @@ export const ProfileView = () => {
   useEffect(() => {
     if (!user) {
       form.reset(defaultValues)
+      void form.trigger()
       return
     }
 
@@ -80,6 +81,7 @@ export const ProfileView = () => {
       telegram: user.telegramUsername,
       tel: user.tel
     })
+    void form.trigger()
   }, [form, user])
 
   const orderTotals = useMemo(
@@ -284,7 +286,7 @@ export const ProfileView = () => {
               </label>
             </div>
 
-            <Button disabled={!form.formState.isValid || isSaving} size='lg' type='submit'>
+            <Button disabled={isSaving} size='lg' type='submit'>
               {isSaving ? 'Сохраняем...' : 'Сохранить'}
             </Button>
 

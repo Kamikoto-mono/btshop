@@ -222,7 +222,17 @@ export const CartModal = () => {
                     </button>
 
                     <div className={styles.itemImage}>
-                      <span>{item.product.brand}</span>
+                      {item.product.photo ? (
+                        <Image
+                          alt={item.product.name}
+                          className={styles.productImage}
+                          fill
+                          sizes='96px'
+                          src={item.product.photo}
+                        />
+                      ) : (
+                        <span>{item.product.brand}</span>
+                      )}
                     </div>
 
                     <div className={styles.itemInfo}>

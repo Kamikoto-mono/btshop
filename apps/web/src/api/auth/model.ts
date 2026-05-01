@@ -19,7 +19,7 @@ export interface IUpdateUserProfilePayload {
 }
 
 export const mapUserProfile = (dto: IAuthMeResponseDto): IUserProfile => ({
-  address: dto.adress ?? '',
+  address: dto.address ?? '',
   email: dto.email,
   fullName: dto.fullName ?? '',
   id: dto.id,
@@ -35,7 +35,7 @@ export const mapProfileUpdatePayload = ({
   tel,
   telegramUsername
 }: IUpdateUserProfilePayload): IUpdateProfileRequestDto => ({
-  adress: address,
+  address,
   fullName,
   index: postalCode,
   tel,
