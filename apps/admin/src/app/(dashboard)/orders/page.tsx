@@ -1,10 +1,5 @@
-import { PlaceholderPage } from '@/components/admin/PlaceholderPage/PlaceholderPage'
+import { OrdersPage } from '@/components/admin/OrdersPage/OrdersPage'
 
 export default function Page() {
-  return (
-    <PlaceholderPage
-      description='Здесь позже будет таблица заказов, статусы, детали доставки и действия по обработке.'
-      title='Заказы'
-    />
-  )
+  return <OrdersPage />
 }

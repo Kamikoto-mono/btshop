@@ -1,0 +1,95 @@
+.page {
+  display: grid;
+  gap: 20px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heading {
+  margin-bottom: 0 !important;
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.2fr) minmax(220px, 1fr);
+  gap: 16px;
+}
+
+.dateRange :global(.ant-picker) {
+  width: 100%;
+}
+
+.customerCell {
+  display: grid;
+  gap: 4px;
+}
+
+.customerName {
+  color: #16304f;
+  font-weight: 600;
+}
+
+.customerMeta {
+  color: #7d90ab;
+  font-size: 13px;
+}
+
+.productsCell {
+  display: grid;
+  gap: 4px;
+}
+
+.productLine {
+  color: #59728f;
+  font-size: 13px;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.statusCreated,
+.statusPaid,
+.statusActive {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.statusCreated {
+  color: #2e7ae8;
+  background: rgba(46, 122, 232, 0.12);
+}
+
+.statusPaid {
+  color: #228b5a;
+  background: rgba(34, 139, 90, 0.12);
+}
+
+.statusActive {
+  color: #9a6700;
+  background: rgba(245, 166, 35, 0.14);
+}
+
+@media (max-width: 1080px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filtersGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .filtersGrid {
+    grid-template-columns: 1fr;
+  }
+}
