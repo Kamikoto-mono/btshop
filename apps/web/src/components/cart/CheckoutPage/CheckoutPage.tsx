@@ -10,11 +10,7 @@ import { getOrderApiErrorMessage, ordersApi } from '@/api/orders'
 import type { IOrder } from '@/api/orders/model'
 import { mapOrderToStoredOrder } from '@/api/orders/model'
 import { Breadcrumbs, Button, Input } from '@/components/ui'
-import {
-  mockProfile,
-  ORDER_STORAGE_KEY,
-  PROFILE_STORAGE_KEY
-} from '@/mocks'
+import { ORDER_STORAGE_KEY, PROFILE_STORAGE_KEY } from '@/mocks'
 import { clearCart } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
@@ -107,13 +103,13 @@ export const CheckoutPage = () => {
 
     if (!profile) {
       form.reset({
-        address: user?.address ?? mockProfile.address ?? '',
+        address: user?.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
-        email: user?.email ?? mockProfile.email ?? '',
-        fullName: user?.fullName ?? mockProfile.fullName ?? '',
-        phone: user?.tel ?? mockProfile.phone ?? '',
-        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
-        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
+        email: user?.email ?? '',
+        fullName: user?.fullName ?? '',
+        phone: user?.tel ?? '',
+        postalCode: user?.postalCode ?? '',
+        telegram: user?.telegramUsername ?? ''
       })
       return
     }
@@ -139,13 +135,13 @@ export const CheckoutPage = () => {
       })
     } catch {
       form.reset({
-        address: user?.address ?? mockProfile.address ?? '',
+        address: user?.address ?? '',
         deliveryId: DELIVERY_METHODS[0].id,
-        email: user?.email ?? mockProfile.email ?? '',
-        fullName: user?.fullName ?? mockProfile.fullName ?? '',
-        phone: user?.tel ?? mockProfile.phone ?? '',
-        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
-        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
+        email: user?.email ?? '',
+        fullName: user?.fullName ?? '',
+        phone: user?.tel ?? '',
+        postalCode: user?.postalCode ?? '',
+        telegram: user?.telegramUsername ?? ''
       })
     }
   }, [form, user])

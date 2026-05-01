@@ -4,19 +4,16 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   App,
   Button,
-  Card,
   Empty,
   Input,
   InputNumber,
   Popconfirm,
   Select,
   Space,
-  Table,
-  type TablePaginationConfig,
   Tag,
-  Typography
+  Typography,
+  type TablePaginationConfig
 } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
 import {
   CheckOutlined,
   CloseOutlined,
@@ -24,13 +21,17 @@ import {
   EditOutlined,
   PlusOutlined
 } from '@ant-design/icons'
+import type { ColumnsType } from 'antd/es/table'
 
 import { categoriesApi } from '@/api/categories'
-import type {
-  IAdminCategoryNode
-} from '@/api/categories/model'
+import type { IAdminCategoryNode } from '@/api/categories/model'
 import { productsApi } from '@/api/products'
 import type { IAdminProduct } from '@/api/products/model'
+import {
+  AdminDataTable,
+  AdminFilterField,
+  AdminFiltersPanel
+} from '@/components/ui'
 import { ProductUpsertModal } from './ProductUpsertModal'
 import styles from './ProductsPage.module.scss'
 
@@ -90,6 +91,7 @@ export const ProductsPage = () => {
         subCategoryId:
           nextFilters.childSubCategoryId ?? nextFilters.subCategoryId ?? undefined
       })
+
       setProducts(response.items)
       setCurrentPage(response.meta.page)
       setTotalProducts(response.meta.total)
@@ -242,10 +244,7 @@ export const ProductsPage = () => {
             onClick={() => void handleQuickEditSave(product)}
             type='primary'
           />
-          <Button
-            icon={<CloseOutlined />}
-            onClick={() => setQuickEdit(null)}
-          />
+          <Button icon={<CloseOutlined />} onClick={() => setQuickEdit(null)} />
         </Space.Compact>
       )
     }
@@ -318,10 +317,7 @@ export const ProductsPage = () => {
                   onClick={() => void handleQuickEditSave(product)}
                   type='primary'
                 />
-                <Button
-                  icon={<CloseOutlined />}
-                  onClick={() => setQuickEdit(null)}
-                />
+                <Button icon={<CloseOutlined />} onClick={() => setQuickEdit(null)} />
               </Space.Compact>
             )
           }
@@ -439,134 +435,125 @@ export const ProductsPage = () => {
         </Button>
       </div>
 
-      <Card className={styles.filtersCard}>
-        <div className={styles.filtersGrid}>
-          <div className={styles.filterBlock}>
-            <span className={styles.filterLabel}>Категория</span>
-            <Select
-              allowClear
-              disabled={isCategoriesLoading}
+      <AdminFiltersPanel contentClassName={styles.filtersGrid}>
+        <AdminFilterField label='Категория'>
+          <Select
+            allowClear
+            disabled={isCategoriesLoading}
+            onChange={(value) =>
+              applyFilters((current) => ({
+                ...current,
+                categoryId: value,
+                childSubCategoryId: undefined,
+                subCategoryId: undefined
+              }))
+            }
+            options={categories.map((item) => ({
+              label: item.name,
+              value: item.id
+            }))}
+            placeholder='Все категории'
+            value={filters.categoryId}
+          />
+        </AdminFilterField>
+
+        <AdminFilterField label='Подкатегория'>
+          <Select
+            allowClear
+            disabled={!selectedCategory || isCategoriesLoading}
+            onChange={(value) =>
+              applyFilters((current) => ({
+                ...current,
+                childSubCategoryId: undefined,
+                subCategoryId: value
+              }))
+            }
+            options={secondLevelOptions}
+            placeholder='Все подкатегории'
+            value={filters.subCategoryId}
+          />
+        </AdminFilterField>
+
+        <AdminFilterField label='Подподкатегория'>
+          <Select
+            allowClear
+            disabled={!selectedSubCategory || isCategoriesLoading}
+            onChange={(value) =>
+              applyFilters((current) => ({
+                ...current,
+                childSubCategoryId: value
+              }))
+            }
+            options={thirdLevelOptions}
+            placeholder='Не выбрана'
+            value={filters.childSubCategoryId}
+          />
+        </AdminFilterField>
+
+        <AdminFilterField className={styles.priceBlock} label='Цена'>
+          <div className={styles.priceRange}>
+            <InputNumber
+              min={0}
               onChange={(value) =>
                 applyFilters((current) => ({
                   ...current,
-                  categoryId: value,
-                  childSubCategoryId: undefined,
-                  subCategoryId: undefined
+                  minPrice: value ?? null
                 }))
               }
-              options={categories.map((item) => ({
-                label: item.name,
-                value: item.id
-              }))}
-              placeholder='Все категории'
-              value={filters.categoryId}
+              placeholder='От'
+              value={filters.minPrice ?? null}
             />
-          </div>
-
-          <div className={styles.filterBlock}>
-            <span className={styles.filterLabel}>Подкатегория</span>
-            <Select
-              allowClear
-              disabled={!selectedCategory || isCategoriesLoading}
+            <span className={styles.rangeDivider}>—</span>
+            <InputNumber
+              min={0}
               onChange={(value) =>
                 applyFilters((current) => ({
                   ...current,
-                  childSubCategoryId: undefined,
-                  subCategoryId: value
+                  maxPrice: value ?? null
                 }))
               }
-              options={secondLevelOptions}
-              placeholder='Все подкатегории'
-              value={filters.subCategoryId}
+              placeholder='До'
+              value={filters.maxPrice ?? null}
             />
           </div>
+        </AdminFilterField>
 
-          <div className={styles.filterBlock}>
-            <span className={styles.filterLabel}>Подподкатегория</span>
-            <Select
-              allowClear
-              disabled={!selectedSubCategory || isCategoriesLoading}
-              onChange={(value) =>
-                applyFilters((current) => ({
-                  ...current,
-                  childSubCategoryId: value
-                }))
-              }
-              options={thirdLevelOptions}
-              placeholder='Не выбрана'
-              value={filters.childSubCategoryId}
-            />
-          </div>
+        <AdminFilterField label='Сортировка'>
+          <Select
+            allowClear
+            onChange={(value) =>
+              applyFilters((current) => ({
+                ...current,
+                sort: value
+              }))
+            }
+            options={[
+              { label: 'Цена: по возрастанию', value: 'priceAsc' },
+              { label: 'Цена: по убыванию', value: 'priceDesc' }
+            ]}
+            placeholder='Без сортировки'
+            value={filters.sort}
+          />
+        </AdminFilterField>
+      </AdminFiltersPanel>
 
-          <div className={`${styles.filterBlock} ${styles.priceBlock}`}>
-            <span className={styles.filterLabel}>Цена</span>
-            <div className={styles.priceRange}>
-              <InputNumber
-                min={0}
-                onChange={(value) =>
-                  applyFilters((current) => ({
-                    ...current,
-                    minPrice: value ?? null
-                  }))
-                }
-                placeholder='От'
-                value={filters.minPrice ?? null}
-              />
-              <span className={styles.rangeDivider}>—</span>
-              <InputNumber
-                min={0}
-                onChange={(value) =>
-                  applyFilters((current) => ({
-                    ...current,
-                    maxPrice: value ?? null
-                  }))
-                }
-                placeholder='До'
-                value={filters.maxPrice ?? null}
-              />
-            </div>
-          </div>
-
-          <div className={styles.filterBlock}>
-            <span className={styles.filterLabel}>Сортировка</span>
-            <Select
-              allowClear
-              onChange={(value) =>
-                applyFilters((current) => ({
-                  ...current,
-                  sort: value
-                }))
-              }
-              options={[
-                { label: 'Цена: по возрастанию', value: 'priceAsc' },
-                { label: 'Цена: по убыванию', value: 'priceDesc' }
-              ]}
-              placeholder='Без сортировки'
-              value={filters.sort}
-            />
-          </div>
-        </div>
-      </Card>
-
-      <Card className={styles.tableCard}>
-        <Table
-          columns={columns}
-          dataSource={products}
-          loading={isLoading}
-          locale={{
-            emptyText: <Empty description='Товары пока не добавлены' />
-          }}
-          onChange={handleTableChange}
-          pagination={{
-            current: currentPage,
-            pageSize: PAGE_SIZE,
-            showSizeChanger: false,
-            total: totalProducts
-          }}
-          rowKey='id'
-          scroll={{ x: 1320 }}
-        />
-      </Card>
+      <AdminDataTable
+        columns={columns}
+        dataSource={products}
+        loading={isLoading}
+        locale={{
+          emptyText: <Empty description='Товары пока не добавлены' />
+        }}
+        onChange={handleTableChange}
+        pagination={{
+          current: currentPage,
+          pageSize: PAGE_SIZE,
+          showSizeChanger: false,
+          total: totalProducts
+        }}
+        rowKey='id'
+        scroll={{ x: 1320 }}
+      />
 
       <ProductUpsertModal
         onClose={closeModal}

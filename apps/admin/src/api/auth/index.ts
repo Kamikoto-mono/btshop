@@ -5,7 +5,7 @@ import {
   publicApi,
   setStoredTokens
 } from '../config'
-import { isAdminUser, mapAdminUser } from './model'
+import { mapAdminUser } from './model'
 import type {
   ILoginRequestDto,
   IMeResponseDto,
@@ -39,7 +39,6 @@ const hasSession = () => Boolean(getStoredAccessToken() || getStoredRefreshToken
 
 export const authApi = {
   hasSession,
-  isAdminUser,
   login,
   logout,
   me,

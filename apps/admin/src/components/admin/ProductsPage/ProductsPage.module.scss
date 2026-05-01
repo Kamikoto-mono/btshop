@@ -14,25 +14,10 @@
   margin-bottom: 0 !important;
 }
 
-.filtersCard :global(.ant-card-body) {
-  padding: 16px 20px;
-}
-
 .filtersGrid {
   display: grid;
   grid-template-columns: minmax(180px, 1.1fr) minmax(180px, 1.1fr) minmax(180px, 1.1fr) minmax(220px, 1.2fr) minmax(180px, 1fr);
   gap: 16px;
-}
-
-.filterBlock {
-  display: grid;
-  gap: 8px;
-}
-
-.filterLabel {
-  color: #5d718c;
-  font-size: 13px;
-  font-weight: 600;
 }
 
 .priceBlock {
@@ -53,14 +38,6 @@
 .rangeDivider {
   color: #8ea0b8;
   font-weight: 600;
-}
-
-.tableCard :global(.ant-card-body) {
-  padding: 12px 12px 4px;
-}
-
-.tableCard :global(.ant-table-tbody > tr > td) {
-  vertical-align: middle;
 }
 
 .coverButton {

@@ -27,18 +27,13 @@ export const LoginPage = () => {
       }
 
       try {
-        const user = await authApi.me()
+        await authApi.me()
 
         if (!isMounted) {
           return
         }
 
-        if (authApi.isAdminUser(user)) {
-          router.replace('/categories')
-          return
-        }
-
-        authApi.logout()
+        router.replace('/categories')
       } catch {
         authApi.logout()
       }
@@ -61,14 +56,7 @@ export const LoginPage = () => {
         password: values.password
       })
 
-      const user = await authApi.me()
-
-      if (!authApi.isAdminUser(user)) {
-        authApi.logout()
-        setErrorMessage('Доступ разрешён только администраторам.')
-        return
-      }
-
+      await authApi.me()
       router.replace('/categories')
     } catch {
       authApi.logout()

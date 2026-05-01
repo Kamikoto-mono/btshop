@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button, Layout, Spin, Tabs, Typography } from 'antd'
+import { Button, Layout, Spin, Tabs } from 'antd'
 
 import { authApi } from '@/api/auth'
 import type { IAdminUser } from '@/api/auth/model'
@@ -37,12 +37,6 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
 
       try {
         const nextUser = await authApi.me()
-
-        if (!authApi.isAdminUser(nextUser)) {
-          authApi.logout()
-          router.replace('/login')
-          return
-        }
 
         if (!isMounted) {
           return
@@ -81,7 +75,6 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
       <Layout.Header className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.headerRow}>
-
             <Tabs
               activeKey={getActiveTab(pathname)}
               className={styles.tabs}
@@ -90,6 +83,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
             />
 
             <div className={styles.userMeta}>
+              {user?.email ? <span className={styles.userEmail}>{user.email}</span> : null}
               <Button
                 onClick={() => {
                   authApi.logout()

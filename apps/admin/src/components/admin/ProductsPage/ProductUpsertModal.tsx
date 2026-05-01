@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { UploadFile } from 'antd'
-import { App, Button, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography } from 'antd'
+import { App, Button, Form, Input, InputNumber, Select, Space, Spin, Typography } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 
 import { categoriesApi } from '@/api/categories'
 import type { IAdminCategoryNode, IAdminSubCategoryNode } from '@/api/categories/model'
 import { productsApi } from '@/api/products'
 import { findProductCategorySelectionPath, type IAdminProduct } from '@/api/products/model'
-import { UploadDropZone } from '@/components/ui/UploadDropZone/UploadDropZone'
+import { AdminModalShell, UploadDropZone } from '@/components/ui'
 import styles from './ProductUpsertModal.module.scss'
 
 interface IProductFormValues {
@@ -409,7 +409,7 @@ export const ProductUpsertModal = ({
   }
 
   return (
-    <Modal
+    <AdminModalShell
       destroyOnHidden
       okButtonProps={{
         disabled: isCategoriesLoading,
@@ -611,6 +611,6 @@ export const ProductUpsertModal = ({
           )}
         </div>
       </div>
-    </Modal>
+    </AdminModalShell>
   )
 }

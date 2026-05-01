@@ -1,0 +1,7 @@
+.card :global(.ant-card-body) {
+  padding: 12px 12px 4px;
+}
+
+.card :global(.ant-table-tbody > tr > td) {
+  vertical-align: middle;
+}

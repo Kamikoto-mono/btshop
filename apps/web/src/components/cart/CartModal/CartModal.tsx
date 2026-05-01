@@ -10,7 +10,6 @@ import emptyCartImage from '@assets/images/bt-empty-card.png'
 
 import {
   createMockOrder,
-  mockProfile,
   ORDER_STORAGE_KEY,
   PROFILE_STORAGE_KEY
 } from '@/mocks'
@@ -69,10 +68,10 @@ export const CartModal = () => {
 
     if (!profile) {
       form.reset({
-        address: user?.address ?? mockProfile.address ?? '',
-        fullName: user?.fullName ?? mockProfile.fullName ?? '',
-        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
-        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
+        address: user?.address ?? '',
+        fullName: user?.fullName ?? '',
+        postalCode: user?.postalCode ?? '',
+        telegram: user?.telegramUsername ?? ''
       })
       return
     }
@@ -93,10 +92,10 @@ export const CartModal = () => {
       })
     } catch {
       form.reset({
-        address: user?.address ?? mockProfile.address ?? '',
-        fullName: user?.fullName ?? mockProfile.fullName ?? '',
-        postalCode: user?.postalCode ?? mockProfile.postalCode ?? '',
-        telegram: user?.telegramUsername ?? mockProfile.telegram ?? ''
+        address: user?.address ?? '',
+        fullName: user?.fullName ?? '',
+        postalCode: user?.postalCode ?? '',
+        telegram: user?.telegramUsername ?? ''
       })
     }
   }, [form, isCartOpen, user])

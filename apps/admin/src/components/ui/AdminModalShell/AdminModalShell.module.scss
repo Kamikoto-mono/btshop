@@ -1,0 +1,46 @@
+.modal :global(.ant-modal-content) {
+  border-radius: 24px;
+}
+
+.body {
+  display: grid;
+  gap: 18px;
+}
+
+.body :global(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+.body :global(.ant-input-outlined),
+.body :global(.ant-input-number),
+.body :global(.ant-select .ant-select-selector) {
+  border-radius: 14px;
+}
+
+.body :global(.ant-input-outlined),
+.body :global(.ant-input-number) {
+  min-height: 44px;
+}
+
+.body :global(.ant-input-number .ant-input-number-input) {
+  height: 42px;
+}
+
+.body :global(.ant-select-single:not(.ant-select-customize-input) .ant-select-selector) {
+  height: 44px;
+  padding: 0 14px;
+}
+
+.body :global(.ant-select-single .ant-select-selector .ant-select-selection-item),
+.body :global(.ant-select-single .ant-select-selector .ant-select-selection-placeholder) {
+  line-height: 42px;
+}
+
+.body :global(.ant-select .ant-select-arrow) {
+  color: #8ea0b8;
+}
+
+.body :global(.ant-input-textarea textarea.ant-input) {
+  min-height: 132px;
+  resize: vertical;
+}

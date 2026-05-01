@@ -1,0 +1,19 @@
+.panel :global(.ant-card-body) {
+  padding: 16px 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.label {
+  color: #5d718c;
+  font-size: 13px;
+  font-weight: 600;
+}
