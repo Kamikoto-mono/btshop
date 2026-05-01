@@ -18,6 +18,11 @@ import styles from './layout.module.scss'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg'
+  },
   title: {
     default: DEFAULT_TITLE,
     template: `%s | ${SITE_NAME}`
