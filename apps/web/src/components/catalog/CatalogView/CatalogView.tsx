@@ -17,6 +17,7 @@ import {
   type IBreadcrumbItem,
   ProductCard
 } from '@/components/ui'
+import { resolveCatalogPathByIds } from '@/lib/catalogSlugs'
 import styles from './CatalogView.module.scss'
 
 interface ICatalogViewProps {
@@ -173,7 +174,11 @@ export const CatalogView = ({
   )
   const paginationItems = useMemo(() => buildPaginationItems(visiblePages), [visiblePages])
 
-  const pushWithParams = (updates: Record<string, string | undefined>, resetPage = true) => {
+  const pushWithParams = (
+    updates: Record<string, string | undefined>,
+    resetPage = true,
+    pathnameOverride?: string
+  ) => {
     const nextParams = new URLSearchParams(searchParams.toString())
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -189,24 +194,35 @@ export const CatalogView = ({
     }
 
     const query = nextParams.toString()
-    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const nextPathname = pathnameOverride ?? pathname
+
+    router.push(query ? `${nextPathname}?${query}` : nextPathname, { scroll: false })
   }
 
   const handleCategorySelect = (categoryId?: string) => {
     setOpenedCategoryId(categoryId ?? null)
     setOpenedSubCategoryId(null)
-    pushWithParams({
-      categoryId,
-      subCategoryId: undefined
+    const nextPathname = resolveCatalogPathByIds(categories, {
+      categoryId
     })
+
+    pushWithParams({
+      categoryId: undefined,
+      subCategoryId: undefined
+    }, true, nextPathname)
   }
 
   const handleSubCategorySelect = (categoryId: string, subCategoryId: string) => {
     setOpenedCategoryId(categoryId)
-    pushWithParams({
+    const nextPathname = resolveCatalogPathByIds(categories, {
       categoryId,
       subCategoryId
     })
+
+    pushWithParams({
+      categoryId: undefined,
+      subCategoryId: undefined
+    }, true, nextPathname)
   }
 
   const handleSortChange = (value: string) => {

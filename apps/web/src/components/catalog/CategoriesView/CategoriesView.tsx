@@ -8,7 +8,7 @@ import chevronDownIcon from '@assets/icons/chevron-down.svg'
 
 import type { ICategoryNode, ISubCategoryNode } from '@/api/categories/model'
 import { Breadcrumbs, Eyebrow } from '@/components/ui'
-import { getMarketHref } from '@/lib/routes'
+import { buildCategoryPath } from '@/lib/catalogSlugs'
 import styles from './CategoriesView.module.scss'
 
 const hasChildren = (subCategory: ISubCategoryNode) =>
@@ -62,8 +62,8 @@ export const CategoriesView = ({
                 <div className={styles.sectionHeader}>
                   <Link
                     className={styles.sectionLink}
-                    href={getMarketHref({
-                      categoryId: category.id
+                    href={buildCategoryPath({
+                      category
                     })}
                   >
                     <span>{category.name}</span>
@@ -98,9 +98,9 @@ export const CategoriesView = ({
                           <div className={styles.subHeader}>
                             <Link
                               className={styles.subLink}
-                              href={getMarketHref({
-                                categoryId: category.id,
-                                subCategoryId: subCategory.id
+                              href={buildCategoryPath({
+                                category,
+                                subCategory
                               })}
                             >
                               <span>{subCategory.name}</span>
@@ -127,9 +127,10 @@ export const CategoriesView = ({
                                 {subCategory.childSubCategories.map((childSubCategory) => (
                                   <Link
                                     className={styles.childLink}
-                                    href={getMarketHref({
-                                      categoryId: category.id,
-                                      subCategoryId: childSubCategory.id
+                                    href={buildCategoryPath({
+                                      category,
+                                      line: childSubCategory,
+                                      subCategory
                                     })}
                                     key={childSubCategory.id}
                                   >
