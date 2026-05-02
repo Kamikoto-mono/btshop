@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { TELEGRAM_CHAT_URL, TELEGRAM_OPERATOR_URL } from '@btshop/shared'
+
 import logoIcon from '@assets/icons/logo.svg'
 import mastercardIcon from '@assets/icons/mastercard-footer.svg'
 import sbpIcon from '@assets/icons/sbp-footer.svg'
@@ -32,12 +34,12 @@ export const Footer = () => (
       <div className={styles.navGroup}>
         <p className={styles.groupTitle}>Контакты</p>
 
-        <Link className={styles.contactLink} href='https://t.me/btshop_operator'>
+        <Link className={styles.contactLink} href={TELEGRAM_OPERATOR_URL}>
           <Image alt='' aria-hidden='true' src={telegramIcon} />
           <span>Оператор</span>
         </Link>
 
-        <Link className={styles.contactLink} href='https://t.me/btshop_chat'>
+        <Link className={styles.contactLink} href={TELEGRAM_CHAT_URL}>
           <Image alt='' aria-hidden='true' src={telegramIcon} />
           <span>Чат</span>
         </Link>

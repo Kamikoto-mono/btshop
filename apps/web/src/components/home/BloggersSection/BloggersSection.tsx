@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { YOUTUBE_ROGICH_URL, YOUTUBE_VAST_URL } from '@btshop/shared'
+
 import youtubeIcon from '@assets/icons/youtube.svg'
 import rogImage from '@assets/images/rog.png'
 import vastImage from '@assets/images/vast.png'
@@ -13,7 +15,7 @@ const bloggers = [
   {
     description:
       'Обзоры, личный опыт и понятная подача для тех, кто следит за формой и результатом.',
-    href: 'https://www.youtube.com/@rogi4bb',
+    href: YOUTUBE_ROGICH_URL,
     image: rogImage,
     name: 'Игорь Рогич',
     views: '2 000 000+ просмотров'
@@ -21,7 +23,7 @@ const bloggers = [
   {
     description:
       'Лфк, тренинг, реабилитация. Все что связано с телом и здоровьем.',
-    href: 'https://www.youtube.com/@Vast_os',
+    href: YOUTUBE_VAST_URL,
     image: vastImage,
     name: 'Vast',
     views: '60 000+ просмотров'

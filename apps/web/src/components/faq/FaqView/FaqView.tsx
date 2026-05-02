@@ -3,6 +3,8 @@
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
+import { CRIMINAL_CODE_URL, DECREE_964_URL } from '@btshop/shared'
+
 import { Breadcrumbs, Eyebrow } from '@/components/ui'
 import styles from './FaqView.module.scss'
 
@@ -17,12 +19,6 @@ interface IFaqSection {
   id: string
   title: string
   questions: IFaqQuestion[]
-}
-
-const legalLinks = {
-  criminalCode:
-    'http://pravo.gov.ru/proxy/ips/?docbody=&link_id=0&nd=102041891&intelsearch=&firstDoc=1',
-  decree964: 'https://roszdravnadzor.gov.ru/pages/reform/npa-archive/28-01-2021'
 }
 
 const faqSections: IFaqSection[] = [
@@ -64,7 +60,7 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.decree964}
+                    href={DECREE_964_URL}
                     rel='noreferrer'
                     target='_blank'
                   >
@@ -74,7 +70,7 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.criminalCode}
+                    href={CRIMINAL_CODE_URL}
                     rel='noreferrer'
                     target='_blank'
                   >
@@ -84,7 +80,7 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.criminalCode}
+                    href={CRIMINAL_CODE_URL}
                     rel='noreferrer'
                     target='_blank'
                   >
@@ -152,7 +148,7 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.decree964}
+                    href={DECREE_964_URL}
                     rel='noreferrer'
                     target='_blank'
                   >
@@ -162,7 +158,7 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.criminalCode}
+                    href={CRIMINAL_CODE_URL}
                     rel='noreferrer'
                     target='_blank'
                   >
@@ -172,7 +168,7 @@ const faqSections: IFaqSection[] = [
                 <li>
                   <a
                     className={styles.legalLink}
-                    href={legalLinks.criminalCode}
+                    href={CRIMINAL_CODE_URL}
                     rel='noreferrer'
                     target='_blank'
                   >

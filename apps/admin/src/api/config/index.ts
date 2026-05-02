@@ -3,7 +3,8 @@ import axios, {
   type InternalAxiosRequestConfig
 } from 'axios'
 
-const API_BASE_URL = 'https://api.battletoads.shop/api'
+import { API_BASE_URL } from '@btshop/shared'
+
 const ACCESS_TOKEN_KEY = 'btshop-admin-access-token'
 const REFRESH_TOKEN_KEY = 'btshop-admin-refresh-token'
 
