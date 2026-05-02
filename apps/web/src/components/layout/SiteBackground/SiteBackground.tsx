@@ -1,4 +1,5 @@
-import Image, { type StaticImageData } from 'next/image'
+import type { CSSProperties } from 'react'
+import type { StaticImageData } from 'next/image'
 
 import chlorodehydromethyltestosteroneImage from '@assets/images/site-bg/chlorodehydromethyltestosterone.svg.png'
 import nandroloneImage from '@assets/images/site-bg/Nandrolone.svg.png'
@@ -30,12 +31,14 @@ const formulas: ISiteBgFormula[] = [
 export const SiteBackground = () => (
   <div aria-hidden='true' className={styles.background}>
     {formulas.map((formula, index) => (
-      <Image
-        alt=''
+      <div
         className={`${styles.formula} ${formula.className}`}
         key={`${formula.className}-${index}`}
-        priority={index < 4}
-        src={formula.image}
+        style={
+          {
+            '--formula-image': `url(${formula.image.src})`
+          } as CSSProperties
+        }
       />
     ))}
   </div>
