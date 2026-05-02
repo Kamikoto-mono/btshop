@@ -134,38 +134,6 @@ table {
   border-spacing: 0;
 }
 
-@font-face {
-  font-family: 'Onest';
-  src: url('./OnestRegular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Onest';
-  src: url('./OnestMedium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Onest';
-  src: url('./OnestSemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Onest';
-  src: url('./OnestBold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   --color-page: #f3f6fb;
   --color-surface: #ffffff;
@@ -184,8 +152,14 @@ table {
   --radius-md: 16px;
   --radius-sm: 12px;
   --container-width: 1400px;
-  --asset-dna-blocks: url('https://battletoads.ams3.cdn.digitaloceanspaces.com/front-assets/dna-blocks.png');
-  --asset-footer-cell-texture: url('https://battletoads.ams3.cdn.digitaloceanspaces.com/front-assets/footer-cell-texture-transparent.png');
+  --asset-dna-blocks: image-set(
+    url('/front-assets/dna-blocks.webp') type('image/webp'),
+    url('/front-assets/dna-blocks.png') type('image/png')
+  );
+  --asset-footer-cell-texture: image-set(
+    url('/front-assets/footer-cell-texture-transparent.webp') type('image/webp'),
+    url('/front-assets/footer-cell-texture-transparent.png') type('image/png')
+  );
   --asset-molecule: url('https://battletoads.ams3.cdn.digitaloceanspaces.com/front-assets/molecule.png');
 }
 
@@ -195,7 +169,7 @@ body {
     radial-gradient(circle at top left, rgba(29, 99, 216, 0.1), transparent 22%),
     linear-gradient(180deg, #f8fbff 0%, #eef3f9 100%);
   color: var(--color-text);
-  font-family: 'Onest', sans-serif;
+  font-family: inherit;
 }
 
 a {

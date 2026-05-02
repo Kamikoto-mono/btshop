@@ -159,9 +159,8 @@ export const HomePage = ({
           <Image
             alt='Battletoads showcase'
             className={styles.heroImage}
-            fetchPriority='high'
             height={960}
-            priority
+            sizes='(max-width: 900px) 0px, 370px'
             src={FRONT_ASSET_URLS.mainToads}
             width={960}
           />

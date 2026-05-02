@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 import type { ReactNode } from 'react'
 
 import './globals.scss'
@@ -15,6 +16,33 @@ import {
 } from '@/shared/seo/config'
 import { StoreProvider } from '@/store/StoreProvider'
 import styles from './layout.module.scss'
+
+const onest = localFont({
+  display: 'swap',
+  preload: true,
+  src: [
+    {
+      path: '../../../../packages/shared/src/styles/OnestRegular.woff2',
+      style: 'normal',
+      weight: '400'
+    },
+    {
+      path: '../../../../packages/shared/src/styles/OnestMedium.woff2',
+      style: 'normal',
+      weight: '500'
+    },
+    {
+      path: '../../../../packages/shared/src/styles/OnestSemiBold.woff2',
+      style: 'normal',
+      weight: '600'
+    },
+    {
+      path: '../../../../packages/shared/src/styles/OnestBold.woff2',
+      style: 'normal',
+      weight: '700'
+    }
+  ]
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -66,13 +94,8 @@ export default function RootLayout({
           href='https://battletoads.ams3.cdn.digitaloceanspaces.com'
           rel='preconnect'
         />
-        <link
-          crossOrigin=''
-          href='https://battletoads.ams3.digitaloceanspaces.com'
-          rel='preconnect'
-        />
       </head>
-      <body className={styles.body}>
+      <body className={`${styles.body} ${onest.className}`}>
         <StoreProvider>
           <SiteBackground />
           <Header />
