@@ -4,9 +4,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import { formatCurrency } from '@btshop/shared'
-
-import emptyCartImage from '@assets/images/bt-empty-card.png'
+import { formatCurrency, FRONT_ASSET_URLS } from '@btshop/shared'
 
 import {
   createMockOrder,
@@ -263,7 +261,13 @@ export const CartModal = () => {
               })
             ) : (
               <div className={styles.emptyState}>
-                <Image alt='' aria-hidden='true' src={emptyCartImage} />
+                <Image
+                  alt=''
+                  aria-hidden='true'
+                  height={560}
+                  src={FRONT_ASSET_URLS.btEmptyCard}
+                  width={560}
+                />
                 <p>На данный момент в корзине нет товаров</p>
               </div>
             )}

@@ -8,6 +8,17 @@ export const FRONT_ASSETS_BASE_URL =
 
 export const DEFAULT_OG_IMAGE_URL = `${FRONT_ASSETS_BASE_URL}/main-toads.png`
 
+export const getFrontAssetUrl = (filename: string) =>
+  `${FRONT_ASSETS_BASE_URL}/${filename}`
+
+export const FRONT_ASSET_URLS = {
+  btEmptyCard: getFrontAssetUrl('bt-empty-card.png'),
+  dnaBlocks: getFrontAssetUrl('dna-blocks.png'),
+  footerCellTextureTransparent: getFrontAssetUrl('footer-cell-texture-transparent.png'),
+  mainToads: getFrontAssetUrl('main-toads.png'),
+  molecule: getFrontAssetUrl('molecule.png')
+} as const
+
 export const TELEGRAM_OPERATOR_URL = 'https://t.me/btshop_operator'
 export const TELEGRAM_CHAT_URL = 'https://t.me/btshop_chat'
 

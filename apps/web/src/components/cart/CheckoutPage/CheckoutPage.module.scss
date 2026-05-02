@@ -161,7 +161,7 @@
   bottom: -60px;
   width: 250px;
   height: 250px;
-  background: url('../../../../assets/images/dna-blocks.png') center / contain no-repeat;
+  background: var(--asset-dna-blocks) center / contain no-repeat;
   opacity: 0.08;
   transform: rotate(-8deg);
   pointer-events: none;

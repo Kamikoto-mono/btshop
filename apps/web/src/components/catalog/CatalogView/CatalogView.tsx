@@ -4,8 +4,9 @@ import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
+import { FRONT_ASSET_URLS } from '@btshop/shared'
+
 import chevronDownIcon from '@assets/icons/chevron-down.svg'
-import emptyCartImage from '@assets/images/bt-empty-card.png'
 
 import type { ICategoryNode, ISubCategoryNode } from '@/api/categories/model'
 import type { IProduct } from '@/api/products/model'
@@ -541,7 +542,13 @@ export const CatalogView = ({
               </>
             ) : (
               <div className={styles.emptyState}>
-                <Image alt='' aria-hidden='true' src={emptyCartImage} />
+                <Image
+                  alt=''
+                  aria-hidden='true'
+                  height={560}
+                  src={FRONT_ASSET_URLS.btEmptyCard}
+                  width={560}
+                />
                 <p>{searchQuery ? 'По запросу ничего не найдено' : 'Нет товаров'}</p>
               </div>
             )}

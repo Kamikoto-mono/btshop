@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
       {
         hostname: 'battletoads.ams3.digitaloceanspaces.com',
         protocol: 'https'
+      },
+      {
+        hostname: 'battletoads.ams3.cdn.digitaloceanspaces.com',
+        protocol: 'https'
       }
     ]
   },

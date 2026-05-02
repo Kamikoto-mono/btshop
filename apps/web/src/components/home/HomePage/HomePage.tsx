@@ -2,6 +2,8 @@
 
 import Image from 'next/image'
 
+import { FRONT_ASSET_URLS } from '@btshop/shared'
+
 import type { IProduct } from '@/api/products/model'
 import anonymityIcon from '@assets/icons/adv-anonymity.svg'
 import honestyIcon from '@assets/icons/adv-honesty.svg'
@@ -12,7 +14,6 @@ import routeNodeIcon from '@assets/icons/route-node.svg'
 import shieldCheckIcon from '@assets/icons/shield-check.svg'
 import balkanBanner from '@assets/images/balkan-pharmaceuticals-banner.png'
 import canadabiolabsBanner from '@assets/images/canadabiolabs-banner.png'
-import mainToadsImage from '@assets/images/main-toads.png'
 import spLaboratoriesBanner from '@assets/images/sp-laboratories-banner.png'
 import zphcBanner from '@assets/images/zphc-banner.png'
 
@@ -158,8 +159,11 @@ export const HomePage = ({
           <Image
             alt='Battletoads showcase'
             className={styles.heroImage}
+            fetchPriority='high'
+            height={960}
             priority
-            src={mainToadsImage}
+            src={FRONT_ASSET_URLS.mainToads}
+            width={960}
           />
         </div>
       </section>

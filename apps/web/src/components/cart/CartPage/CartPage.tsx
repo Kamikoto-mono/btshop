@@ -5,9 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { formatCurrency } from '@btshop/shared'
-
-import emptyCartImage from '@assets/images/bt-empty-card.png'
+import { formatCurrency, FRONT_ASSET_URLS } from '@btshop/shared'
 
 import { Breadcrumbs, Button } from '@/components/ui'
 import {
@@ -181,7 +179,13 @@ export const CartPage = () => {
           </>
         ) : (
           <div className={styles.emptyState}>
-            <Image alt='' aria-hidden='true' src={emptyCartImage} />
+            <Image
+              alt=''
+              aria-hidden='true'
+              height={560}
+              src={FRONT_ASSET_URLS.btEmptyCard}
+              width={560}
+            />
             <p>На данный момент в корзине нет товаров</p>
             <Button href='/market' size='lg'>
               Перейти в магазин

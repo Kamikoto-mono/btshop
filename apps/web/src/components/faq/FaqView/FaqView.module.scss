@@ -22,7 +22,7 @@
   bottom: -180px;
   width: 700px;
   height: 700px;
-  background: url('../../../../assets/images/molecule.png') center / contain no-repeat;
+  background: var(--asset-molecule) center / contain no-repeat;
   opacity: 0.2;
   pointer-events: none;
 }
