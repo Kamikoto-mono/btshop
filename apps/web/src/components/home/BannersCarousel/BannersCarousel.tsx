@@ -259,6 +259,7 @@ export const BannersCarousel: React.FC<{ banners: IBanner[] }> = ({
         >
           {extendedBanners.map((banner, index) => {
             const isCenter = index === centerIndex + offset
+            const shouldPrioritize = index === centerIndex && offset === 0
 
             return (
               <div
@@ -271,11 +272,14 @@ export const BannersCarousel: React.FC<{ banners: IBanner[] }> = ({
                 }
               >
                 <Image
-                  src={getBannerSrc(banner.photo)}
                   alt=''
                   fill
                   className={styles.bannerImage}
-                  unoptimized
+                  fetchPriority={shouldPrioritize ? 'high' : undefined}
+                  loading={shouldPrioritize ? 'eager' : 'lazy'}
+                  priority={shouldPrioritize}
+                  sizes='(max-width: 550px) 300px, (max-width: 800px) 380px, 600px'
+                  src={getBannerSrc(banner.photo)}
                 />
               </div>
             )

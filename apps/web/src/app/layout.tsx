@@ -60,6 +60,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ru'>
+      <head>
+        <link
+          crossOrigin=''
+          href='https://battletoads.ams3.cdn.digitaloceanspaces.com'
+          rel='preconnect'
+        />
+        <link
+          crossOrigin=''
+          href='https://battletoads.ams3.digitaloceanspaces.com'
+          rel='preconnect'
+        />
+      </head>
       <body className={styles.body}>
         <StoreProvider>
           <SiteBackground />
