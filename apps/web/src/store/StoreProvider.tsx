@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 
 import { authApi } from '@/api/auth'
 import { hydrateUserSession } from './authSlice'
-import { hydrateCart, ICartItem } from './cartSlice'
+import { hydrateCart, ICartItem, ICartPromoValidation } from './cartSlice'
 import { useAppSelector } from './hooks'
 import { createStore, TAppStore } from './store'
 
@@ -13,7 +13,7 @@ const CART_STORAGE_KEY = 'btshop-cart'
 const AUTH_STORAGE_KEY = 'btshop-auth'
 
 const CartStorageSync = ({ isHydrated }: { isHydrated: boolean }) => {
-  const items = useAppSelector((state) => state.cart.items)
+  const cart = useAppSelector((state) => state.cart)
   const user = useAppSelector((state) => state.auth.user)
 
   useEffect(() => {
@@ -21,8 +21,17 @@ const CartStorageSync = ({ isHydrated }: { isHydrated: boolean }) => {
       return
     }
 
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
-  }, [isHydrated, items])
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify({
+        items: cart.items,
+        promoCode: cart.promoCode,
+        promoMessage: cart.promoMessage,
+        promoStatus: cart.promoStatus,
+        promoValidation: cart.promoValidation
+      })
+    )
+  }, [cart, isHydrated])
 
   useEffect(() => {
     if (!isHydrated) {
@@ -53,7 +62,17 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
     if (rawValue) {
       try {
-        storeRef.current?.dispatch(hydrateCart(JSON.parse(rawValue) as ICartItem[]))
+        const parsedValue = JSON.parse(rawValue) as
+          | ICartItem[]
+          | {
+              items?: ICartItem[]
+              promoCode?: string
+              promoMessage?: string
+              promoStatus?: 'idle' | 'invalid' | 'valid'
+              promoValidation?: ICartPromoValidation | null
+            }
+
+        storeRef.current?.dispatch(hydrateCart(parsedValue))
       } catch {
         storeRef.current?.dispatch(hydrateCart([]))
       }

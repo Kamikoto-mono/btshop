@@ -1,10 +1,5 @@
-import { PlaceholderPage } from '@/components/admin/PlaceholderPage/PlaceholderPage'
+import { PromoCodesPage } from '@/components/admin/PromoCodesPage/PromoCodesPage'
 
 export default function Page() {
-  return (
-    <PlaceholderPage
-      description='Промокоды добавим следующим экраном: список кодов, лимиты, даты активности и тип скидки.'
-      title='Промокоды'
-    />
-  )
+  return <PromoCodesPage />
 }

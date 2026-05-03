@@ -7,11 +7,15 @@ import { useState } from 'react'
 
 import { formatCurrency, FRONT_ASSET_URLS } from '@btshop/shared'
 
+import { getOrderApiErrorMessage, ordersApi } from '@/api/orders'
 import { Breadcrumbs, Button } from '@/components/ui'
 import {
   decreaseQuantity,
   increaseQuantity,
-  removeItem
+  removeItem,
+  setPromoCode,
+  setPromoValidationError,
+  setPromoValidationSuccess
 } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import styles from './CartPage.module.scss'
@@ -19,23 +23,64 @@ import styles from './CartPage.module.scss'
 export const CartPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const items = useAppSelector((state) => state.cart.items)
-  const [promoCode, setPromoCode] = useState('')
-  const [promoMessage, setPromoMessage] = useState('')
+  const { items, promoCode, promoMessage, promoStatus, promoValidation } = useAppSelector(
+    (state) => state.cart
+  )
+  const [isPromoSubmitting, setIsPromoSubmitting] = useState(false)
   const [removingIds, setRemovingIds] = useState<string[]>([])
 
-  const totalPrice = items.reduce(
+  const productsTotal = items.reduce(
     (sum, item) => sum + item.quantity * item.product.price,
     0
   )
+  const totalPrice = promoValidation?.finalAmount ?? productsTotal
   const hasItems = items.length > 0
 
-  const handlePromoApply = () => {
-    setPromoMessage(
-      promoCode.trim()
-        ? `Промокод "${promoCode.trim()}" сохранен как mock-примененный.`
-        : 'Введите промокод.'
-    )
+  const handlePromoApply = async () => {
+    const normalizedPromoCode = promoCode.trim().toUpperCase()
+
+    if (!normalizedPromoCode) {
+      dispatch(setPromoValidationError('Введите промокод.'))
+      return
+    }
+
+    setIsPromoSubmitting(true)
+
+    try {
+      const response = await ordersApi.validatePromo({
+        amount: productsTotal,
+        promoCode: normalizedPromoCode
+      })
+
+      if (!response.isValid) {
+        dispatch(setPromoValidationError('Промокод не подошёл для текущего заказа.'))
+        return
+      }
+
+      dispatch(
+        setPromoValidationSuccess({
+          message: `Промокод "${response.promoCode}" применён. Скидка ${formatCurrency(response.promoDiscount)}.`,
+          validation: {
+            finalAmount: response.finalAmount,
+            originalAmount: response.originalAmount,
+            promoCode: response.promoCode,
+            promoDiscount: response.promoDiscount
+          }
+        })
+      )
+    } catch (error) {
+      const apiMessage = getOrderApiErrorMessage(error, 'Не удалось проверить промокод.')
+      const normalizedMessage =
+        apiMessage.toLowerCase() === 'promo code not found'
+          ? 'Промокод не найден.'
+          : apiMessage
+
+      dispatch(
+        setPromoValidationError(normalizedMessage)
+      )
+    } finally {
+      setIsPromoSubmitting(false)
+    }
   }
 
   const handleRemove = (productId: string) => {
@@ -158,19 +203,45 @@ export const CartPage = () => {
 
             <div className={styles.promoBlock}>
               <input
-                onChange={(event) => setPromoCode(event.target.value)}
+                onChange={(event) => dispatch(setPromoCode(event.target.value))}
                 placeholder='промокод'
                 value={promoCode}
               />
-              <Button onClick={handlePromoApply} type='button' variant='outlined'>
-                применить
+              <Button
+                onClick={() => void handlePromoApply()}
+                type='button'
+                variant='outlined'
+              >
+                {isPromoSubmitting ? 'проверяем...' : 'применить'}
               </Button>
             </div>
 
-            {promoMessage ? <p className={styles.promoMessage}>{promoMessage}</p> : null}
+            {promoMessage ? (
+              <p
+                className={
+                  promoStatus === 'valid'
+                    ? `${styles.promoMessage} ${styles.promoMessageSuccess}`
+                    : `${styles.promoMessage} ${styles.promoMessageError}`
+                }
+              >
+                {promoMessage}
+              </p>
+            ) : null}
 
             <div className={styles.summaryCard}>
               <strong>Итого: {formatCurrency(totalPrice)}</strong>
+              {promoValidation ? (
+                <div className={styles.summaryDetails}>
+                  <div className={styles.summaryDetailRow}>
+                    <span>Сумма товаров</span>
+                    <span>{formatCurrency(productsTotal)}</span>
+                  </div>
+                  <div className={styles.summaryDetailRow}>
+                    <span>Скидка по промокоду</span>
+                    <span>-{formatCurrency(promoValidation.promoDiscount)}</span>
+                  </div>
+                </div>
+              ) : null}
               <p>Минимальный заказ от 5 000 руб.</p>
               <Button className={styles.summaryAction} href='/checkout' size='lg'>
                 Оформить заказ

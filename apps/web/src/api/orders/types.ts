@@ -5,13 +5,27 @@ export interface ICreateOrderProductDto {
 
 export interface ICreateOrderRequestDto {
   address: string
-  delivery: 'cdek' | 'pochta'
+  delivery: 'cdek' | 'почта'
   email: string
   fullName: string
   index: string
+  promoCode?: string
   products: ICreateOrderProductDto[]
   tel: string
   telegramUsername: string
+}
+
+export interface IValidatePromoRequestDto {
+  amount: number
+  promoCode: string
+}
+
+export interface IValidatePromoResponseDto {
+  finalAmount: number
+  isValid: boolean
+  originalAmount: number
+  promoCode: string
+  promoDiscount: number
 }
 
 export interface IOrderProductDto {

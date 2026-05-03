@@ -2,10 +2,16 @@
 
 ## Назначение
 
-`apps/admin` — административная панель на `Next.js 16`, `React 19`, `antd` и `axios`.
-Приложение использует `App Router`, авторизацию через access/refresh tokens и доменную структуру компонентов.
+`apps/admin` — административная панель на `Next.js 16`, `React 19`, `antd`, `axios` и `SCSS Modules`.
 
-## Ключевые директории
+Админка уже работает с живыми данными:
+
+- login и session-check через `/api/auth/*`
+- товары через `/api/admin/products`
+- категории через `/api/admin/categories`
+- заказы через `/api/admin/orders`
+
+## Структура
 
 ```text
 apps/admin/
@@ -14,59 +20,115 @@ apps/admin/
       auth/
       categories/
       config/
+      orders/
       products/
     app/
       (dashboard)/
+        categories/
+        orders/
+        products/
       login/
     components/
       admin/
+        AdminShell/
+        CategoriesPage/
+        LoginPage/
+        OrdersPage/
+        PlaceholderPage/
+        ProductsPage/
       ui/
+        AdminDataTable/
+        AdminFiltersPanel/
+        AdminModalShell/
+        UploadDropZone/
 ```
 
-## Архитектурные паттерны
+## Архитектурные правила
 
 - `src/app` — маршруты и layout-слой `Next.js`.
 - `src/app/(dashboard)` — защищённая часть админки.
-- `src/components/admin` — крупные страницы и shell-компоненты админки.
-- `src/components/ui` — локальные UI-обёртки и small reusable blocks.
+- `src/components/admin` — крупные экраны и shell.
+- `src/components/ui` — переиспользуемые admin UI-обёртки.
 - `src/api/<domain>` — API по доменам.
 - `types.ts` — DTO и payload-контракты.
-- `model.ts` — внутренние интерфейсы `I...` и mapper/helper-логика.
+- `model.ts` — внутренние `I...` модели и mapper/helper-логика.
 - `index.ts` — публичный API домена.
 
 ## API и авторизация
 
-- Базовый URL задан в `src/api/config/index.ts`.
-- Текущее значение: `https://api.battletoads.shop/api`.
-- Используются два клиента: `publicApi` и `adminApi`.
-- `adminApi` добавляет `Authorization` в request interceptor.
-- При `401` срабатывает refresh-механизм и повтор запроса.
+- Базовый API URL берётся из `@btshop/shared`, текущее значение: `https://api.battletoads.shop/api`.
+- Используются два клиента:
+  - `publicApi`
+  - `adminApi`
+- `adminApi` добавляет `Authorization` и умеет refresh/retry.
 
-Ключи токенов в `localStorage`:
+Токены в `localStorage`:
 
 - `btshop-admin-access-token`
 - `btshop-admin-refresh-token`
 
-Правильный паттерн для нового API-домена:
+Текущая логика доступа:
 
-1. `types.ts` — DTO, request payloads, response payloads.
-2. `model.ts` — `IAdmin...` сущности, mapper-функции и helper-утилиты.
-3. `index.ts` — методы домена, которые используют `adminApi` или `publicApi`.
-4. UI-слой работает только с внутренними моделями, а не с raw response.
+- после успешного `login` / `me()` админка проверяет `role === 'admin'`
+- только при `role: "admin"` shell открывает dashboard
 
-## Соглашения по именованию
+## Доступные API-домены
 
-- Интерфейсы — `I...`.
-- Type aliases — `T...`.
-- Модели админки удобно префиксовать как `IAdmin...`, если они относятся только к admin app.
-- Компоненты и папки компонентов — `PascalCase`.
-- Импорт SCSS — всегда `styles`.
+- `auth`
+- `categories`
+- `products`
+- `orders`
+
+## Reusable admin UI
+
+В админке уже есть вынесенный общий UI-слой, который нужно переиспользовать дальше:
+
+- `AdminFiltersPanel`
+- `AdminDataTable`
+- `AdminModalShell`
+- `UploadDropZone`
+
+Правило:
+
+- если делаем новую CRUD-страницу, сначала смотреть, можно ли собрать её на этих обёртках
+- не дублировать таблицы, фильтр-блоки и модальные shell-компоненты локально по страницам
+
+## Страницы
+
+### Products
+
+- Страница товаров уже сидит на общих admin UI-обёртках.
+- Product modal использует `AdminModalShell`.
+
+### Orders
+
+- Есть отдельная страница `OrdersPage`.
+- Таблица работает с реальным `GET /api/admin/orders`.
+- Поддерживаются:
+  - фильтр по статусу
+  - фильтр по диапазону дат
+  - просмотр заказа
+  - `PATCH /api/admin/orders/{id}`
+  - `DELETE /api/admin/orders/{id}`
+- Статус можно менять прямо в таблице через dropdown-tag, без открытия модалки.
+
+Важно по раскладке данных:
+
+- в колонке `Клиент` идут:
+  - email
+  - telegram
+  - телефон
+- в колонке `Адрес` идут:
+  - ФИО
+  - address
+  - индекс
+- поля `city` в заказах нет и не должно быть
 
 ## Стили и визуальная система
 
-Админка использует общие глобальные токены из `@btshop/shared/styles/globals.scss` и поверх них стилизует `antd`.
+Админка опирается на общие токены из `@btshop/shared/styles/globals.scss` и поверх них стилизует `antd`.
 
-Базовые цвета проекта:
+Основные переменные:
 
 - `--color-page: #f3f6fb`
 - `--color-surface: #ffffff`
@@ -81,48 +143,33 @@ apps/admin/
 
 Особенности admin UI:
 
-- Основной шрифт — `Onest`.
-- Фон собран из светлого градиента и мягкого radial accent.
-- Для layout и форм активно используется `antd`.
-- Для точечной кастомизации библиотечных компонентов применяются `:global(...)` внутри `*.module.scss`.
+- основной шрифт — `Onest`
+- фон и layout светлые, с мягким градиентом
+- `antd` кастомизируется локально через `module.scss` и `:global(...)`
+- визуал новых общих обёрток нельзя ломать ради локальной страницы
 
-## Паттерны компонентов
+## Именование и соглашения
 
-Типовая структура страницы:
+- интерфейсы — `I...`
+- type aliases — `T...`
+- admin-модели удобно держать как `IAdmin...`, если они относятся только к админке
+- компоненты и папки — `PascalCase`
+- импорт стилей всегда как `styles`
 
-```text
-ProductsPage/
-  ProductsPage.tsx
-  ProductsPage.module.scss
-```
+## Что важно соблюдать при новых изменениях
 
-Что характерно для текущей админки:
+- Не вызывать backend напрямую из UI, минуя `src/api/<domain>`.
+- Не смешивать raw DTO и внутренние admin-модели.
+- Если mapper, flatten tree или select-options логика переиспользуется, держать её в `model.ts`.
+- Если нужна новая CRUD-страница, по умолчанию собирать её на `AdminFiltersPanel`, `AdminDataTable`, `AdminModalShell`.
+- Не разносить одинаковые filter/table/modal реализации по разным страницам.
+- При работе с заказами не добавлять `city`: у заказа его нет, используем только `address`.
 
-- Страницы обычно client-side: `use client`.
-- Данные загружаются внутри компонента через `useEffect`.
-- UI-обратная связь отдаётся через `App.useApp().message`.
-- CRUD-операции завязаны на доменный `api`-модуль.
-- Быстрые mapper/helper-функции остаются в `model.ts`, а не размазываются по компонентам.
-
-## Layout и доступ
-
-- Основной shell находится в `src/components/admin/AdminShell/AdminShell.tsx`.
-- `AdminShell` проверяет сессию, запрашивает `/auth/me`, валидирует admin role и только потом открывает dashboard.
-- Навигация строится через tab-based header.
-- Защита маршрутов сейчас реализована на уровне клиентского shell, это важно учитывать при расширении dashboard.
-
-## Что важно соблюдать при разработке
-
-- Не вызывать backend напрямую из UI без доменного `api`-слоя.
-- Не смешивать DTO и внутренние admin-модели.
-- Если логика выбора, маппинга или flatten tree переиспользуется, держать её в `model.ts`.
-- Если нужно кастомизировать `antd`, сначала пробовать модульный SCSS рядом с компонентом, а не глобальный хаос.
-- Новые страницы dashboard оформлять в той же доменной структуре: `components/admin/<PageName>`.
-
-## Чеклист для новых фич
+## Чеклист для новой admin-фичи
 
 1. Добавить или расширить домен в `src/api`.
-2. Описать DTO и mapper.
-3. Создать страницу/блок в `src/components/admin`.
-4. Подключить экран через `src/app/(dashboard)` и при необходимости обновить навигацию shell.
-5. Проверить сценарии `401`, refresh token и пустые состояния UI.
+2. Описать `types.ts`, `model.ts`, `index.ts`.
+3. Собрать страницу в `src/components/admin/<PageName>`.
+4. По возможности использовать уже существующие admin UI-обёртки.
+5. Подключить экран через `src/app/(dashboard)`.
+6. Проверить `401`, refresh token, empty states и loading/error feedback.

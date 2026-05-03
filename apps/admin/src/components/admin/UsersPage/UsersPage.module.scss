@@ -1,0 +1,61 @@
+.page {
+  display: grid;
+  gap: 20px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heading {
+  margin-bottom: 0 !important;
+}
+
+.idCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userId {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.customerCell {
+  display: grid;
+  gap: 4px;
+}
+
+.customerName {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.customerMeta {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.addressCell {
+  display: grid;
+  gap: 4px;
+}
+
+.addressLine {
+  color: var(--color-text);
+}
+
+.emptyValue {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1080px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

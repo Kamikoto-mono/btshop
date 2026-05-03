@@ -24,7 +24,9 @@ import {
 import styles from './CheckoutPage.module.scss'
 
 interface IDeliveryMethod {
+  apiValue: 'cdek' | 'почта'
   description: string
+  disabled?: boolean
   id: 'cdek' | 'pochta'
   price: number
   title: string
@@ -42,16 +44,19 @@ interface ICheckoutFormValues {
 
 const DELIVERY_METHODS: IDeliveryMethod[] = [
   {
-    description: '??????? ???????? ?????? ??????',
+    apiValue: 'почта',
+    description: 'Доставка в ближайшее отделение Почты России',
     id: 'pochta',
     price: 1000,
-    title: '????? ? ?????? ?????'
+    title: 'Почта России'
   },
   {
-    description: '???????? ????',
+    apiValue: 'cdek',
+    description: 'Временно недоступно',
+    disabled: true,
     id: 'cdek',
     price: 1000,
-    title: '????'
+    title: 'CDEK'
   }
 ]
 
@@ -68,7 +73,9 @@ const defaultValues: ICheckoutFormValues = {
 export const CheckoutPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const items = useAppSelector((state) => state.cart.items)
+  const { items, promoCode, promoStatus, promoValidation } = useAppSelector(
+    (state) => state.cart
+  )
   const user = useAppSelector((state) => state.auth.user)
 
   const [errorMessage, setErrorMessage] = useState('')
@@ -87,7 +94,8 @@ export const CheckoutPage = () => {
   )
   const selectedDelivery =
     DELIVERY_METHODS.find((method) => method.id === deliveryId) ?? DELIVERY_METHODS[0]
-  const totalPrice = productsTotal + selectedDelivery.price
+  const discountedProductsTotal = promoValidation?.finalAmount ?? productsTotal
+  const totalPrice = discountedProductsTotal + selectedDelivery.price
   const canSubmit = items.length > 0 && !isSubmitting
 
   useEffect(() => {
@@ -154,10 +162,14 @@ export const CheckoutPage = () => {
     try {
       const order = await ordersApi.createOrder({
         address: normalizedValues.address,
-        delivery: values.deliveryId,
+        delivery: selectedDelivery.apiValue,
         email: normalizedValues.email,
         fullName: normalizedValues.fullName,
         index: normalizedValues.postalCode,
+        promoCode:
+          promoStatus === 'valid' && promoValidation?.promoCode
+            ? promoValidation.promoCode
+            : undefined,
         products: items.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity
@@ -458,16 +470,25 @@ export const CheckoutPage = () => {
                     {DELIVERY_METHODS.map((method) => (
                       <label
                         className={
-                          field.value === method.id
-                            ? styles.deliverySelected
-                            : styles.deliveryOption
+                          method.disabled
+                            ? styles.deliveryDisabled
+                            : field.value === method.id
+                              ? styles.deliverySelected
+                              : styles.deliveryOption
                         }
                         key={method.id}
                       >
                         <input
                           checked={field.value === method.id}
+                          disabled={method.disabled}
                           name='delivery'
-                          onChange={() => field.onChange(method.id)}
+                          onChange={() => {
+                            if (method.disabled) {
+                              return
+                            }
+
+                            field.onChange(method.id)
+                          }}
                           type='radio'
                         />
                         <span>
@@ -516,6 +537,15 @@ export const CheckoutPage = () => {
             <span>Сумма товаров</span>
             <strong>{formatCurrency(productsTotal)}</strong>
           </div>
+
+          {promoValidation ? (
+            <div className={styles.summaryLine}>
+              <span>Промокод {promoCode || promoValidation.promoCode}</span>
+              <strong className={styles.discountValue}>
+                -{formatCurrency(promoValidation.promoDiscount)}
+              </strong>
+            </div>
+          ) : null}
 
           <div className={styles.summaryLine}>
             <span>Доставка</span>

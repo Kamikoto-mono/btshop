@@ -1,6 +1,6 @@
 import type { IStoredOrder } from '@/mocks'
 
-import type { IOrderDto } from './types'
+import type { IOrderDto, IValidatePromoResponseDto } from './types'
 
 export interface IOrder {
   address: string
@@ -56,4 +56,22 @@ export const mapOrderToStoredOrder = (order: IOrder): IStoredOrder => ({
   status: order.status,
   telegram: order.telegramUsername,
   totalPrice: order.amount
+})
+
+export interface IValidatedPromoCode {
+  finalAmount: number
+  isValid: boolean
+  originalAmount: number
+  promoCode: string
+  promoDiscount: number
+}
+
+export const mapValidatedPromoCode = (
+  dto: IValidatePromoResponseDto
+): IValidatedPromoCode => ({
+  finalAmount: dto.finalAmount,
+  isValid: dto.isValid,
+  originalAmount: dto.originalAmount,
+  promoCode: dto.promoCode,
+  promoDiscount: dto.promoDiscount
 })

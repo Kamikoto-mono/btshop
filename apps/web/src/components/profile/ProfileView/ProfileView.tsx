@@ -44,6 +44,7 @@ const defaultValues: IProfileFormValues = {
 export const ProfileView = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.auth.user)
+  const userId = user?.id ?? null
   const [orders, setOrders] = useState<IOrder[]>([])
   const [openedOrderId, setOpenedOrderId] = useState<string | null>(null)
   const [savedMessage, setSavedMessage] = useState('')
@@ -98,11 +99,6 @@ export const ProfileView = () => {
 
   useEffect(() => {
     if (!user) {
-      setOrders([])
-      setOpenedOrderId(null)
-      setHistoryPage(1)
-      setHasMoreOrders(false)
-      setOrdersError('')
       form.reset(defaultValues)
       void form.trigger()
       return
@@ -116,8 +112,20 @@ export const ProfileView = () => {
       tel: user.tel
     })
     void form.trigger()
-    void loadOrders(1, 'replace')
   }, [form, user])
+
+  useEffect(() => {
+    if (!userId) {
+      setOrders([])
+      setOpenedOrderId(null)
+      setHistoryPage(1)
+      setHasMoreOrders(false)
+      setOrdersError('')
+      return
+    }
+
+    void loadOrders(1, 'replace')
+  }, [userId])
 
   const orderTotals = useMemo(
     () => Object.fromEntries(orders.map((order) => [order.id, order.amount])),

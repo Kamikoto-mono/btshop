@@ -25,6 +25,23 @@ const getOrders = async (params?: IAdminOrdersQuery) => {
   }
 }
 
+const getOrdersByUserId = async (userId: string, params?: IAdminOrdersQuery) => {
+  const { data } = await adminApi.get<IAdminOrdersListDto>(
+    `/admin/orders/users/${userId}`,
+    {
+      params: {
+        limit: params?.limit ?? 10,
+        page: params?.page ?? 1
+      }
+    }
+  )
+
+  return {
+    items: data.items.map(mapOrder),
+    meta: data.meta
+  }
+}
+
 const getOrderById = async (id: string) => {
   const { data } = await adminApi.get<IAdminOrderDto>(`/admin/orders/${id}`)
   return mapOrder(data)
@@ -43,6 +60,7 @@ const deleteOrder = async (id: string) => {
 export const ordersApi = {
   deleteOrder,
   getOrderById,
+  getOrdersByUserId,
   getOrders,
   updateOrder
 }

@@ -217,7 +217,37 @@
 }
 
 .promoMessage {
+  margin-top: -10px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.promoMessageSuccess {
+  color: var(--color-success);
+}
+
+.promoMessageError {
+  color: #c14949;
+}
+
+.summaryDetails {
+  display: grid;
+  gap: 12px;
+  justify-content: start;
+}
+
+.summaryDetailRow {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 18px;
+  justify-content: start;
   color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.summaryDetailRow span:last-child {
+  color: var(--color-text);
+  font-weight: 400;
 }
 
 .summaryCard {
