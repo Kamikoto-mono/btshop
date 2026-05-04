@@ -91,6 +91,12 @@ export const getAuthApiErrorMessage = (
     const responseMessage = (error.response?.data as IApiErrorDto | undefined)?.message
 
     if (responseMessage) {
+      const normalizedMessage = responseMessage.trim().toLowerCase()
+
+      if (normalizedMessage === 'invalid email or password') {
+        return 'Неверный email или пароль'
+      }
+
       return responseMessage
     }
   }

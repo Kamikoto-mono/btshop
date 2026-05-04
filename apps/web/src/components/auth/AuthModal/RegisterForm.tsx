@@ -10,13 +10,17 @@ import { AuthPasswordToggle } from './AuthPasswordToggle'
 import type { IRegisterFormValues } from './AuthModal.types'
 
 interface IRegisterFormProps {
+  formError?: string
   form: UseFormReturn<IRegisterFormValues>
+  formSuccess?: string
   isSubmitting: boolean
   onSubmit: (values: IRegisterFormValues) => Promise<void> | void
 }
 
 export const RegisterForm = ({
+  formError,
   form,
+  formSuccess,
   isSubmitting,
   onSubmit
 }: IRegisterFormProps) => {
@@ -111,6 +115,13 @@ export const RegisterForm = ({
           </small>
         ) : null}
       </label>
+
+      {formError ? (
+        <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+      ) : null}
+      {!formError && formSuccess ? (
+        <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+      ) : null}
 
       <Button disabled={isSubmitting} fullWidth size='lg' type='submit'>
         {isSubmitting ? 'Регистрируем...' : 'Зарегистрироваться'}

@@ -11,6 +11,8 @@ import type { IPasswordResetConfirmFormValues } from './AuthModal.types'
 
 interface IPasswordResetConfirmFormProps {
   form: UseFormReturn<IPasswordResetConfirmFormValues>
+  formError?: string
+  formSuccess?: string
   isSubmitting: boolean
   otpResetKey: number
   resetCodeError: string
@@ -22,6 +24,8 @@ interface IPasswordResetConfirmFormProps {
 
 export const PasswordResetConfirmForm = ({
   form,
+  formError,
+  formSuccess,
   isSubmitting,
   otpResetKey,
   resetCodeError,
@@ -111,6 +115,13 @@ export const PasswordResetConfirmForm = ({
           </small>
         ) : null}
       </label>
+
+      {formError ? (
+        <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+      ) : null}
+      {!formError && formSuccess ? (
+        <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+      ) : null}
 
       <div className={styles.actionsColumn}>
         <Button

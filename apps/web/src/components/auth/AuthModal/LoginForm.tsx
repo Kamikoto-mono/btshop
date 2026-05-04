@@ -10,14 +10,18 @@ import { AuthPasswordToggle } from './AuthPasswordToggle'
 import type { ILoginFormValues } from './AuthModal.types'
 
 interface ILoginFormProps {
+  formError?: string
   form: UseFormReturn<ILoginFormValues>
+  formSuccess?: string
   isSubmitting: boolean
   onForgotPassword: (email: string) => void
   onSubmit: (values: ILoginFormValues) => Promise<void> | void
 }
 
 export const LoginForm = ({
+  formError,
   form,
+  formSuccess,
   isSubmitting,
   onForgotPassword,
   onSubmit
@@ -103,6 +107,13 @@ export const LoginForm = ({
           Забыли пароль?
         </button>
       </div>
+
+      {formError ? (
+        <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+      ) : null}
+      {!formError && formSuccess ? (
+        <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+      ) : null}
 
       <Button disabled={isSubmitting} fullWidth size='lg' type='submit'>
         {isSubmitting ? 'Входим...' : 'Войти'}

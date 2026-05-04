@@ -284,16 +284,11 @@ export const AuthModal = () => {
             </button>
           </div>
 
-          {formError ? (
-            <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
-          ) : null}
-          {!formError && formSuccess ? (
-            <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
-          ) : null}
-
           {mode === 'login' ? (
             <LoginForm
+              formError={formError}
               form={loginForm}
+              formSuccess={formSuccess}
               isSubmitting={isLoginSubmitting}
               onForgotPassword={(email) => {
                 clearMessages()
@@ -304,7 +299,9 @@ export const AuthModal = () => {
             />
           ) : (
             <RegisterForm
+              formError={formError}
               form={registerForm}
+              formSuccess={formSuccess}
               isSubmitting={isRegisterSubmitting}
               onSubmit={handleRegister}
             />
@@ -312,15 +309,10 @@ export const AuthModal = () => {
         </>
       ) : view === 'resetRequest' ? (
         <>
-          {formError ? (
-            <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
-          ) : null}
-          {!formError && formSuccess ? (
-            <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
-          ) : null}
-
           <PasswordResetRequestForm
+            formError={formError}
             form={passwordResetRequestForm}
+            formSuccess={formSuccess}
             isSubmitting={isResetRequestSubmitting}
             onBack={() => {
               clearMessages()
@@ -331,15 +323,10 @@ export const AuthModal = () => {
         </>
       ) : (
         <>
-          {formError ? (
-            <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
-          ) : null}
-          {!formError && formSuccess ? (
-            <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
-          ) : null}
-
           <PasswordResetConfirmForm
             form={passwordResetConfirmForm}
+            formError={formError}
+            formSuccess={formSuccess}
             isSubmitting={isResetConfirmSubmitting}
             onBack={() => {
               clearMessages()

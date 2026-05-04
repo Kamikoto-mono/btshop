@@ -8,14 +8,18 @@ import styles from './AuthModal.module.scss'
 import type { IPasswordResetRequestFormValues } from './AuthModal.types'
 
 interface IPasswordResetRequestFormProps {
+  formError?: string
   form: UseFormReturn<IPasswordResetRequestFormValues>
+  formSuccess?: string
   isSubmitting: boolean
   onBack: () => void
   onSubmit: (values: IPasswordResetRequestFormValues) => Promise<void> | void
 }
 
 export const PasswordResetRequestForm = ({
+  formError,
   form,
+  formSuccess,
   isSubmitting,
   onBack,
   onSubmit
@@ -47,6 +51,13 @@ export const PasswordResetRequestForm = ({
         </small>
       ) : null}
     </label>
+
+    {formError ? (
+      <div className={`${styles.alert} ${styles.alertError}`}>{formError}</div>
+    ) : null}
+    {!formError && formSuccess ? (
+      <div className={`${styles.alert} ${styles.alertSuccess}`}>{formSuccess}</div>
+    ) : null}
 
     <div className={styles.actionsColumn}>
       <Button disabled={isSubmitting} fullWidth size='lg' type='submit'>
