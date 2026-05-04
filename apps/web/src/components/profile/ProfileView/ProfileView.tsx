@@ -177,6 +177,30 @@ export const ProfileView = () => {
     dispatch(logout())
   }
 
+  const ordersSkeleton = Array.from({ length: 3 }, (_, index) => (
+    <article className={styles.orderSkeleton} key={`order-skeleton-${index}`}>
+      <div className={styles.orderSkeletonHeader}>
+        <div className={styles.orderSkeletonMeta}>
+          <div className={styles.skeletonLineShort}>
+            <div className={styles.skeletonShimmer} />
+          </div>
+          <div className={styles.skeletonLineLong}>
+            <div className={styles.skeletonShimmer} />
+          </div>
+        </div>
+
+        <div className={styles.orderSkeletonSide}>
+          <div className={styles.skeletonStatus}>
+            <div className={styles.skeletonShimmer} />
+          </div>
+          <div className={styles.skeletonTotal}>
+            <div className={styles.skeletonShimmer} />
+          </div>
+        </div>
+      </div>
+    </article>
+  ))
+
   return (
     <div className={styles.page}>
       <Breadcrumbs
@@ -342,7 +366,7 @@ export const ProfileView = () => {
             {ordersError ? <p className={styles.errorBanner}>{ordersError}</p> : null}
 
             {isOrdersLoading ? (
-              <p className={styles.ordersState}>Загружаем историю заказов...</p>
+              <div className={styles.orderSkeletonList}>{ordersSkeleton}</div>
             ) : orders.length === 0 ? (
               <p className={styles.ordersState}>Заказов пока нет.</p>
             ) : (
