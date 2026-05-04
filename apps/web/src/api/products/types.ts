@@ -34,6 +34,11 @@ export interface IProductsQuery {
   subCategoryId?: string
 }
 
+export interface IProductSearchQuery {
+  limit?: number
+  query: string
+}
+
 export interface IRandomProductsQuery {
   limit?: number
 }

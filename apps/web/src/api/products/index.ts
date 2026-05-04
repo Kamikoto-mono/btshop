@@ -1,6 +1,7 @@
 import { publicApi } from '../config'
 import { mapProduct } from './model'
 import type {
+  IProductSearchQuery,
   IProductDto,
   IProductsListDto,
   IProductsQuery,
@@ -41,8 +42,23 @@ const getRandomProducts = async (params?: IRandomProductsQuery) => {
   return data.map(mapProduct)
 }
 
+const searchProducts = async (params: IProductSearchQuery) => {
+  const { data } = await publicApi.get<IProductsListDto>('/products/search', {
+    params: {
+      limit: params.limit ?? 12,
+      query: params.query
+    }
+  })
+
+  return {
+    items: data.items.map(mapProduct),
+    meta: data.meta
+  }
+}
+
 export const productsApi = {
   getProductById,
   getProducts,
-  getRandomProducts
+  getRandomProducts,
+  searchProducts
 }
