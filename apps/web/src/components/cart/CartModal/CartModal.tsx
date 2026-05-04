@@ -220,11 +220,11 @@ export const CartModal = () => {
 
                     <div className={styles.itemImage}>
                       {item.product.photo ? (
-                        <img
+                        <Image
                           alt={item.product.name}
                           className={styles.productImage}
-                          decoding='async'
-                          loading='lazy'
+                          fill
+                          sizes='96px'
                           src={item.product.photo}
                         />
                       ) : (

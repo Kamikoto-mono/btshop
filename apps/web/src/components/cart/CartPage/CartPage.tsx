@@ -144,11 +144,11 @@ export const CartPage = () => {
                     <div className={styles.itemInfo}>
                       <div className={styles.itemImage}>
                         {item.product.photo ? (
-                          <img
+                          <Image
                             alt={item.product.name}
                             className={styles.productImage}
-                            decoding='async'
-                            loading='lazy'
+                            fill
+                            sizes='104px'
                             src={item.product.photo}
                           />
                         ) : (
