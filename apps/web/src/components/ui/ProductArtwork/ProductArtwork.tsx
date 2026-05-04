@@ -2,9 +2,6 @@ import Image, { type StaticImageData } from 'next/image'
 
 import styles from './ProductArtwork.module.scss'
 
-const isRemoteImage = (imageSrc?: string | StaticImageData) =>
-  typeof imageSrc === 'string' && /^https?:\/\//.test(imageSrc)
-
 export const ProductArtwork = ({
   label,
   imageSrc,
