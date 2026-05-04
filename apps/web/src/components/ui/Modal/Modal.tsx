@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/utils/modalScrollLock'
 import styles from './Modal.module.scss'
@@ -25,6 +25,7 @@ export const Modal = ({
   backdropClassName = ''
 }: IModalProps) => {
   const [mounted, setMounted] = useState(false)
+  const backdropPressStartedRef = useRef(false)
 
   useEffect(() => {
     setMounted(true)
@@ -49,7 +50,22 @@ export const Modal = ({
   if (!isOpen || !mounted) return null
 
   return createPortal(
-    <div className={`${styles.backdrop} ${backdropClassName}`} onClick={onClose}>
+    <div
+      className={`${styles.backdrop} ${backdropClassName}`}
+      onClick={(event) => {
+        const shouldClose =
+          backdropPressStartedRef.current && event.target === event.currentTarget
+
+        backdropPressStartedRef.current = false
+
+        if (shouldClose) {
+          onClose()
+        }
+      }}
+      onMouseDown={(event) => {
+        backdropPressStartedRef.current = event.target === event.currentTarget
+      }}
+    >
       <div
         className={`${styles.modal} ${modalClassName}`}
         style={{

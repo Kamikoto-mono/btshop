@@ -19,8 +19,8 @@ export const FRONT_ASSET_URLS = {
   molecule: getFrontAssetUrl('molecule.png')
 } as const
 
-export const TELEGRAM_OPERATOR_URL = 'https://t.me/btshop_operator'
-export const TELEGRAM_CHAT_URL = 'https://t.me/btshop_chat'
+export const TELEGRAM_OPERATOR_URL = 'https://t.me/BattleToadsShop'
+export const TELEGRAM_CHAT_URL = 'https://t.me/BattleToadsShop'
 
 export const YOUTUBE_ROGICH_URL = 'https://www.youtube.com/@rogi4bb'
 export const YOUTUBE_VAST_URL = 'https://www.youtube.com/@Vast_os'
