@@ -9,6 +9,9 @@ import styles from './ImageModal.module.scss'
 const getImageKey = (image: string | StaticImageData) =>
   typeof image === 'string' ? image : image.src
 
+const isRemoteImage = (imageSrc: string | StaticImageData) =>
+  typeof imageSrc === 'string' && /^https?:\/\//.test(imageSrc)
+
 interface IImageModalProps {
   isOpen: boolean
   onClose: () => void
@@ -167,17 +170,27 @@ export const ImageModal: React.FC<IImageModalProps> = ({
               </button>
             ) : null}
 
-            <Image
-              alt={imageAlt}
-              className={styles.modalImage}
-              draggable={false}
-              height={1600}
-              key={getImageKey(imageOverrideSrc || imageSrc)}
-              sizes='100vw'
-              src={imageOverrideSrc || imageSrc}
-              unoptimized
-              width={1600}
-            />
+            {isRemoteImage(imageOverrideSrc || imageSrc) ? (
+              <img
+                alt={imageAlt}
+                className={styles.modalImage}
+                decoding='async'
+                draggable={false}
+                key={getImageKey(imageOverrideSrc || imageSrc)}
+                src={imageOverrideSrc || imageSrc}
+              />
+            ) : (
+              <Image
+                alt={imageAlt}
+                className={styles.modalImage}
+                draggable={false}
+                height={1600}
+                key={getImageKey(imageOverrideSrc || imageSrc)}
+                sizes='100vw'
+                src={imageOverrideSrc || imageSrc}
+                width={1600}
+              />
+            )}
 
             {isNavigationEnabled ? (
               <button

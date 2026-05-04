@@ -27,14 +27,21 @@ export const ProductArtwork = ({
           : styles.cardArtwork
     }
   >
-    {imageSrc ? (
+    {imageSrc && isRemoteImage(imageSrc) ? (
+      <img
+        alt={label}
+        className={styles.artworkImage}
+        decoding='async'
+        loading={variant === 'main' ? 'eager' : 'lazy'}
+        src={imageSrc}
+      />
+    ) : imageSrc ? (
       <Image
         alt={label}
         className={styles.artworkImage}
         fill
         sizes={variant === 'main' ? '50vw' : variant === 'thumb' ? '120px' : '320px'}
         src={imageSrc}
-        unoptimized={isRemoteImage(imageSrc)}
       />
     ) : null}
   </div>
