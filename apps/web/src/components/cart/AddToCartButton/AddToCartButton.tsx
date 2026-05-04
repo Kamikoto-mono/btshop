@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { IProduct } from '@/api/products/model'
 
 import { Button } from '@/components/ui'
@@ -13,12 +15,17 @@ import styles from './AddToCartButton.module.scss'
 
 export const AddToCartButton = ({ product }: { product: IProduct }) => {
   const dispatch = useAppDispatch()
+  const [isMounted, setIsMounted] = useState(false)
   const quantity = useAppSelector(
     (state) =>
       state.cart.items.find((item) => item.product.id === product.id)?.quantity ?? 0
   )
 
-  if (quantity > 0) {
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (isMounted && quantity > 0) {
     return (
       <div className={styles.stepper}>
         <button
