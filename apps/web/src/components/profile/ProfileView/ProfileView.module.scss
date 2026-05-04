@@ -379,9 +379,16 @@ display: flex;
   white-space: nowrap;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1050px) {
   .content {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+
+  }
+
+  .form {
+    width: 100%;
   }
 }
 
