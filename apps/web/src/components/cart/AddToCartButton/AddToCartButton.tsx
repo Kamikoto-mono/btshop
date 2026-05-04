@@ -20,6 +20,8 @@ export const AddToCartButton = ({ product }: { product: IProduct }) => {
     (state) =>
       state.cart.items.find((item) => item.product.id === product.id)?.quantity ?? 0
   )
+  const isOutOfStock = product.inStock <= 0
+  const isAtStockLimit = quantity >= product.inStock
 
   useEffect(() => {
     setIsMounted(true)
@@ -42,6 +44,7 @@ export const AddToCartButton = ({ product }: { product: IProduct }) => {
         <button
           aria-label={`Увеличить количество ${product.name}`}
           className={styles.stepperButton}
+          disabled={isAtStockLimit}
           onClick={() => dispatch(increaseQuantity(product.id))}
           type='button'
         >
@@ -52,8 +55,13 @@ export const AddToCartButton = ({ product }: { product: IProduct }) => {
   }
 
   return (
-    <Button fullWidth onClick={() => dispatch(addItem(product))} size='lg'>
-      В корзину
+    <Button
+      disabled={isOutOfStock}
+      fullWidth
+      onClick={() => dispatch(addItem(product))}
+      size='lg'
+    >
+      {isOutOfStock ? 'Нет в наличии' : 'В корзину'}
     </Button>
   )
 }

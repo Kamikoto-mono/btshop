@@ -50,17 +50,33 @@ const invalidatePromo = (state: ICartState) => {
   state.promoValidation = null
 }
 
+const clampQuantityToStock = (quantity: number, inStock: number) => {
+  if (inStock <= 0) {
+    return 0
+  }
+
+  return Math.min(quantity, inStock)
+}
+
+const sanitizeCartItems = (items: ICartItem[]) =>
+  items
+    .map((item) => ({
+      ...item,
+      quantity: clampQuantityToStock(item.quantity, item.product.inStock)
+    }))
+    .filter((item) => item.quantity > 0)
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
     hydrateCart: (state, action: PayloadAction<THydrateCartPayload>) => {
       if (Array.isArray(action.payload)) {
-        state.items = action.payload
+        state.items = sanitizeCartItems(action.payload)
         return
       }
 
-      state.items = action.payload.items ?? []
+      state.items = sanitizeCartItems(action.payload.items ?? [])
       state.promoCode = action.payload.promoCode ?? ''
       state.promoMessage = action.payload.promoMessage ?? ''
       state.promoStatus = action.payload.promoStatus ?? 'idle'
@@ -71,13 +87,20 @@ const cartSlice = createSlice({
         (item) => item.product.id === action.payload.id
       )
 
+      if (action.payload.inStock <= 0) {
+        return
+      }
+
       if (!existingItem) {
         state.items.push({
           product: action.payload,
           quantity: 1
         })
       } else {
-        existingItem.quantity += 1
+        existingItem.quantity = clampQuantityToStock(
+          existingItem.quantity + 1,
+          existingItem.product.inStock
+        )
       }
 
       invalidatePromo(state)
@@ -90,7 +113,7 @@ const cartSlice = createSlice({
       const item = state.items.find((entry) => entry.product.id === action.payload)
 
       if (item) {
-        item.quantity += 1
+        item.quantity = clampQuantityToStock(item.quantity + 1, item.product.inStock)
         invalidatePromo(state)
       }
     },
@@ -109,7 +132,12 @@ const cartSlice = createSlice({
         return
       }
 
-      if (action.payload.quantity <= 0) {
+      const nextQuantity = clampQuantityToStock(
+        action.payload.quantity,
+        item.product.inStock
+      )
+
+      if (nextQuantity <= 0) {
         state.items = state.items.filter(
           (entry) => entry.product.id !== action.payload.productId
         )
@@ -117,7 +145,7 @@ const cartSlice = createSlice({
         return
       }
 
-      item.quantity = action.payload.quantity
+      item.quantity = nextQuantity
       invalidatePromo(state)
     },
     decreaseQuantity: (state, action: PayloadAction<string>) => {

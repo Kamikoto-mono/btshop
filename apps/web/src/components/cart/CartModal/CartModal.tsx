@@ -199,6 +199,7 @@ export const CartModal = () => {
             {hasItems ? (
               items.map((item) => {
                 const isRemoving = removingIds.includes(item.product.id)
+                const isAtStockLimit = item.quantity >= item.product.inStock
 
                 return (
                   <article
@@ -246,6 +247,7 @@ export const CartModal = () => {
                       </button>
                       <span>{item.quantity}</span>
                       <button
+                        disabled={isAtStockLimit}
                         onClick={() => dispatch(increaseQuantity(item.product.id))}
                         type='button'
                       >

@@ -38,6 +38,9 @@ export const CartPage = () => {
   const totalPrice = promoValidation?.finalAmount ?? productsTotal
   const hasItems = items.length > 0
 
+  const clampNumber = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max)
+
   const handlePromoApply = async () => {
     const normalizedPromoCode = promoCode.trim().toUpperCase()
 
@@ -102,11 +105,22 @@ export const CartPage = () => {
     quantityDrafts[productId] ?? String(quantity)
 
   const handleQuantityInputChange = (productId: string, value: string) => {
+    const item = items.find((entry) => entry.product.id === productId)
+
+    if (!item) {
+      return
+    }
+
     const normalizedValue = value.replace(/[^\d]/g, '')
+    const limitedValue = normalizedValue
+      ? String(
+          clampNumber(Number(normalizedValue), 1, Math.max(1, item.product.inStock))
+        )
+      : ''
 
     setQuantityDrafts((current) => ({
       ...current,
-      [productId]: normalizedValue
+      [productId]: limitedValue
     }))
   }
 
@@ -176,6 +190,7 @@ export const CartPage = () => {
             <div className={styles.itemsList}>
               {items.map((item) => {
                 const isRemoving = removingIds.includes(item.product.id)
+                const isAtStockLimit = item.quantity >= item.product.inStock
 
                 return (
                   <article
@@ -247,6 +262,7 @@ export const CartPage = () => {
                         value={getQuantityValue(item.product.id, item.quantity)}
                       />
                       <button
+                        disabled={isAtStockLimit}
                         onClick={() => dispatch(increaseQuantity(item.product.id))}
                         type='button'
                       >

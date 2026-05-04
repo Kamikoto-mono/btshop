@@ -164,6 +164,11 @@
   font-weight: 600;
 }
 
+.quantityControl button:disabled {
+  color: rgba(97, 117, 143, 0.45);
+  cursor: not-allowed;
+}
+
 .quantityInput {
   width: 100%;
   padding: 0 6px;
