@@ -2,6 +2,9 @@ import Image, { type StaticImageData } from 'next/image'
 
 import styles from './ProductArtwork.module.scss'
 
+const isRemoteImage = (imageSrc?: string | StaticImageData) =>
+  typeof imageSrc === 'string' && /^https?:\/\//.test(imageSrc)
+
 export const ProductArtwork = ({
   label,
   imageSrc,
@@ -31,6 +34,7 @@ export const ProductArtwork = ({
         fill
         sizes={variant === 'main' ? '50vw' : variant === 'thumb' ? '120px' : '320px'}
         src={imageSrc}
+        unoptimized={isRemoteImage(imageSrc)}
       />
     ) : null}
   </div>
