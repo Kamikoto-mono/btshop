@@ -31,7 +31,6 @@ export const ProductArtwork = ({
         fill
         sizes={variant === 'main' ? '50vw' : variant === 'thumb' ? '120px' : '320px'}
         src={imageSrc}
-        unoptimized={isRemoteImage(imageSrc)}
       />
     ) : null}
   </div>
