@@ -94,6 +94,32 @@ const cartSlice = createSlice({
         invalidatePromo(state)
       }
     },
+    setQuantity: (
+      state,
+      action: PayloadAction<{
+        productId: string
+        quantity: number
+      }>
+    ) => {
+      const item = state.items.find(
+        (entry) => entry.product.id === action.payload.productId
+      )
+
+      if (!item) {
+        return
+      }
+
+      if (action.payload.quantity <= 0) {
+        state.items = state.items.filter(
+          (entry) => entry.product.id !== action.payload.productId
+        )
+        invalidatePromo(state)
+        return
+      }
+
+      item.quantity = action.payload.quantity
+      invalidatePromo(state)
+    },
     decreaseQuantity: (state, action: PayloadAction<string>) => {
       const item = state.items.find((entry) => entry.product.id === action.payload)
 
@@ -171,6 +197,7 @@ export const {
   openCart,
   removeItem,
   setPromoCode,
+  setQuantity,
   setPromoValidationError,
   setPromoValidationSuccess
 } = cartSlice.actions

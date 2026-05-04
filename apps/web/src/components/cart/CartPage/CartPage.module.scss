@@ -152,7 +152,7 @@
 }
 
 .quantityControl button,
-.quantityControl span {
+.quantityInput {
   height: 38px;
   display: grid;
   place-items: center;
@@ -164,13 +164,22 @@
   font-weight: 600;
 }
 
-.quantityControl span {
+.quantityInput {
+  width: 100%;
+  padding: 0 6px;
+  border: 0;
+  background: transparent;
   color: var(--color-text);
   font-weight: 700;
+  text-align: center;
 }
 
-.quantityControl button + span,
-.quantityControl span + button {
+.quantityInput:focus {
+  outline: none;
+}
+
+.quantityControl button + .quantityInput,
+.quantityInput + button {
   border-left: 1px solid rgba(169, 184, 204, 0.58);
 }
 

@@ -14,6 +14,7 @@ import {
   increaseQuantity,
   removeItem,
   setPromoCode,
+  setQuantity,
   setPromoValidationError,
   setPromoValidationSuccess
 } from '@/store/cartSlice'
@@ -27,6 +28,7 @@ export const CartPage = () => {
     (state) => state.cart
   )
   const [isPromoSubmitting, setIsPromoSubmitting] = useState(false)
+  const [quantityDrafts, setQuantityDrafts] = useState<Record<string, string>>({})
   const [removingIds, setRemovingIds] = useState<string[]>([])
 
   const productsTotal = items.reduce(
@@ -94,6 +96,49 @@ export const CartPage = () => {
       dispatch(removeItem(productId))
       setRemovingIds((current) => current.filter((id) => id !== productId))
     }, 280)
+  }
+
+  const getQuantityValue = (productId: string, quantity: number) =>
+    quantityDrafts[productId] ?? String(quantity)
+
+  const handleQuantityInputChange = (productId: string, value: string) => {
+    const normalizedValue = value.replace(/[^\d]/g, '')
+
+    setQuantityDrafts((current) => ({
+      ...current,
+      [productId]: normalizedValue
+    }))
+  }
+
+  const commitQuantityInput = (
+    productId: string,
+    fallbackQuantity: number,
+    rawValue?: string
+  ) => {
+    const draftValue = (rawValue ?? quantityDrafts[productId] ?? '').replace(/[^\d]/g, '')
+
+    if (!draftValue) {
+      setQuantityDrafts((current) => ({
+        ...current,
+        [productId]: String(fallbackQuantity)
+      }))
+      return
+    }
+
+    const nextQuantity = Math.max(1, Number(draftValue))
+
+    dispatch(
+      setQuantity({
+        productId,
+        quantity: nextQuantity
+      })
+    )
+
+    setQuantityDrafts((current) => {
+      const nextDrafts = { ...current }
+      delete nextDrafts[productId]
+      return nextDrafts
+    })
   }
 
   return (
@@ -174,7 +219,33 @@ export const CartPage = () => {
                       >
                         -
                       </button>
-                      <span>{item.quantity}</span>
+                      <input
+                        aria-label={`Количество товара ${item.product.name}`}
+                        className={styles.quantityInput}
+                        inputMode='numeric'
+                        onBlur={() =>
+                          commitQuantityInput(
+                            item.product.id,
+                            item.quantity,
+                            getQuantityValue(item.product.id, item.quantity)
+                          )
+                        }
+                        onChange={(event) =>
+                          handleQuantityInputChange(item.product.id, event.target.value)
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            commitQuantityInput(
+                              item.product.id,
+                              item.quantity,
+                              event.currentTarget.value
+                            )
+                            event.currentTarget.blur()
+                          }
+                        }}
+                        type='text'
+                        value={getQuantityValue(item.product.id, item.quantity)}
+                      />
                       <button
                         onClick={() => dispatch(increaseQuantity(item.product.id))}
                         type='button'
