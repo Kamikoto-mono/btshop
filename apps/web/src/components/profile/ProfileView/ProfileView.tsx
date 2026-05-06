@@ -12,7 +12,7 @@ import { authApi } from '@/api/auth'
 import { ordersApi } from '@/api/orders'
 import type { IOrder } from '@/api/orders/model'
 import { Breadcrumbs, Button, Eyebrow, Input } from '@/components/ui'
-import { PROFILE_STORAGE_KEY } from '@/mocks'
+import { PROFILE_STORAGE_KEY } from '@/shared/storage/profile'
 import { logout, openAuthModal, setUserSession } from '@/store/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {

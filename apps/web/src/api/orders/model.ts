@@ -1,5 +1,3 @@
-import type { IStoredOrder } from '@/mocks'
-
 import type { IOrderDto, IValidatePromoResponseDto } from './types'
 
 export interface IOrder {
@@ -41,25 +39,6 @@ export const mapOrder = (dto: IOrderDto): IOrder => ({
   telegramUsername: dto.telegramUsername,
   trackNumber: dto.trackNumber ?? '',
   userId: dto.userId
-})
-
-export const mapOrderToStoredOrder = (order: IOrder): IStoredOrder => ({
-  address: order.address,
-  createdAt: order.createdAt,
-  customer: order.fullName,
-  email: order.email,
-  id: order.id,
-  items: order.products.map((product) => ({
-    id: product.productId,
-    name: product.name,
-    price: product.price,
-    quantity: product.quantity
-  })),
-  phone: order.tel,
-  postalCode: order.postalCode,
-  status: order.status,
-  telegram: order.telegramUsername,
-  totalPrice: order.amount
 })
 
 export interface IValidatedPromoCode {

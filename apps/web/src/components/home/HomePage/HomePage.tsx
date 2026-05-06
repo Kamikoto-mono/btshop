@@ -12,10 +12,10 @@ import safetyIcon from '@assets/icons/adv-safety.svg'
 import packageStackIcon from '@assets/icons/package-stack.svg'
 import routeNodeIcon from '@assets/icons/route-node.svg'
 import shieldCheckIcon from '@assets/icons/shield-check.svg'
-import balkanBanner from '@assets/images/balkan-pharmaceuticals-banner.png'
-import canadabiolabsBanner from '@assets/images/canadabiolabs-banner.png'
-import spLaboratoriesBanner from '@assets/images/sp-laboratories-banner.png'
-import zphcBanner from '@assets/images/zphc-banner.png'
+import firstBanner from '@assets/images/banners/first-banner.webp'
+import secondBanner from '@assets/images/banners/second-banner.webp'
+import thirdBanner from '@assets/images/banners/third-banner.webp'
+import fourthBanner from '@assets/images/banners/fouth-banner.webp'
 
 import { BloggersSection, PopularProductsSection } from '@/components/home'
 import { HomeReviewsSection } from '@/components/reviews'
@@ -71,26 +71,26 @@ const advantageItems = [
 
 const banners = [
   {
-    _id: 'balkan-pharmaceuticals',
-    photo: balkanBanner,
+    _id: 'banner-1',
+    photo: firstBanner,
     position: 1,
     webUrl: '/market'
   },
   {
-    _id: 'canadabiolabs',
-    photo: canadabiolabsBanner,
+    _id: 'banner-2',
+    photo: secondBanner,
     position: 2,
     webUrl: '/market'
   },
   {
-    _id: 'sp-laboratories',
-    photo: spLaboratoriesBanner,
+    _id: 'banner-3',
+    photo: thirdBanner,
     position: 3,
     webUrl: '/market'
   },
   {
-    _id: 'zphc',
-    photo: zphcBanner,
+    _id: 'banner-4',
+    photo: fourthBanner,
     position: 4,
     webUrl: '/market'
   }

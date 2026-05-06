@@ -8,9 +8,8 @@ import { formatCurrency } from '@btshop/shared'
 
 import { getOrderApiErrorMessage, ordersApi } from '@/api/orders'
 import type { IOrder } from '@/api/orders/model'
-import { mapOrderToStoredOrder } from '@/api/orders/model'
 import { Breadcrumbs, Button, Input } from '@/components/ui'
-import { ORDER_STORAGE_KEY, PROFILE_STORAGE_KEY } from '@/mocks'
+import { PROFILE_STORAGE_KEY } from '@/shared/storage/profile'
 import { clearCart } from '@/store/cartSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
@@ -177,15 +176,6 @@ export const CheckoutPage = () => {
         tel: normalizedValues.phone,
         telegramUsername: normalizedValues.telegram
       })
-
-      const previousOrders = JSON.parse(
-        window.localStorage.getItem(ORDER_STORAGE_KEY) ?? '[]'
-      ) as Array<Record<string, unknown>>
-
-      window.localStorage.setItem(
-        ORDER_STORAGE_KEY,
-        JSON.stringify([mapOrderToStoredOrder(order), ...previousOrders])
-      )
 
       window.localStorage.setItem(
         PROFILE_STORAGE_KEY,
