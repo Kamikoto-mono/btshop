@@ -13,13 +13,14 @@ import type {
 const appendBaseProductFields = (
   formData: FormData,
   payload: {
+    categoryId?: string
     c_price: number
     desc: string
     f_price?: number
     inStock: number
     name: string
     price: number
-    subCategoryId: string
+    subCategoryId?: string
   }
 ) => {
   formData.append('name', payload.name)
@@ -30,7 +31,14 @@ const appendBaseProductFields = (
     formData.append('f_price', String(payload.f_price))
   }
   formData.append('inStock', String(payload.inStock))
-  formData.append('subCategoryId', payload.subCategoryId)
+
+  if (payload.categoryId) {
+    formData.append('categoryId', payload.categoryId)
+  }
+
+  if (payload.subCategoryId) {
+    formData.append('subCategoryId', payload.subCategoryId)
+  }
 }
 
 const getProducts = async (params?: IAdminProductsQuery) => {
@@ -78,9 +86,15 @@ const updateProduct = async (id: string, payload: IUpdateProductDto) => {
   const formData = new FormData()
 
   appendBaseProductFields(formData, payload)
-  ;(payload.photos ?? []).forEach((photoKey) => {
-    formData.append('photos', photoKey)
-  })
+  if (payload.photos) {
+    if (payload.photos.length === 0) {
+      formData.append('photos', '[]')
+    } else {
+      payload.photos.forEach((photoKey) => {
+        formData.append('photos', photoKey)
+      })
+    }
+  }
   ;(payload.newPhotos ?? []).forEach((photo) => {
     formData.append('newPhotos', photo)
   })

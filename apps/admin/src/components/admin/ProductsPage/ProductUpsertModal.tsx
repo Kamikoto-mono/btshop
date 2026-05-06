@@ -74,8 +74,15 @@ const collectNewPhotoFiles = (photos: TManagedPhoto[]) =>
     photo.type === 'new' && photo.file.originFileObj ? [photo.file.originFileObj as File] : []
   )
 
-const getFinalSubCategoryId = (values: IProductFormValues) =>
-  values.childSubCategoryId || values.subCategoryId || values.categoryId
+const getCategoryPayload = (values: IProductFormValues) => {
+  const subCategoryId = values.childSubCategoryId || values.subCategoryId
+
+  if (subCategoryId) {
+    return { subCategoryId }
+  }
+
+  return { categoryId: values.categoryId }
+}
 
 const buildCategoryOptions = (categories: IAdminCategoryNode[]) =>
   categories.map((category) => ({
@@ -214,7 +221,11 @@ export const ProductUpsertModal = ({
           return
         }
 
-        const selectionPath = findProductCategorySelectionPath(nextCategories, product.subCategoryId)
+        const selectionPath = findProductCategorySelectionPath(
+          nextCategories,
+          product.subCategoryId,
+          product.categoryId
+        )
         const templateDesc = findTemplateDesc(nextCategories, selectionPath)
 
         form.setFieldsValue({
@@ -366,10 +377,11 @@ export const ProductUpsertModal = ({
         .filter((photo): photo is IExistingPhoto => photo.type === 'existing')
         .map((photo) => photo.key)
       const newPhotosToUpload = collectNewPhotoFiles(managedPhotos)
-      const subCategoryId = getFinalSubCategoryId(values)
+      const categoryPayload = getCategoryPayload(values)
 
       if (product) {
         await productsApi.updateProduct(product.id, {
+          ...categoryPayload,
           c_price: values.c_price,
           desc: values.desc.trim(),
           f_price: typeof values.f_price === 'number' ? values.f_price : undefined,
@@ -377,20 +389,19 @@ export const ProductUpsertModal = ({
           name: values.name.trim(),
           newPhotos: newPhotosToUpload,
           photos: photosToKeep,
-          price: values.price,
-          subCategoryId
+          price: values.price
         })
         message.success('Товар обновлён.')
       } else {
         await productsApi.createProduct({
+          ...categoryPayload,
           c_price: values.c_price,
           desc: values.desc.trim(),
           f_price: typeof values.f_price === 'number' ? values.f_price : undefined,
           inStock: values.inStock,
           name: values.name.trim(),
           photos: newPhotosToUpload,
-          price: values.price,
-          subCategoryId
+          price: values.price
         })
         message.success('Товар создан.')
       }

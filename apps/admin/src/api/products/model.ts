@@ -12,7 +12,7 @@ export interface IAdminProduct {
   photo: string | null
   photos: string[]
   price: number
-  subCategoryId: string
+  subCategoryId?: string | null
   subCategoryName?: string | null
   subCategoryPath: string
 }
@@ -26,12 +26,12 @@ export interface IProductSubCategoryOption {
 export interface IProductCategorySelectionPath {
   categoryId: string
   childSubCategoryId?: string
-  subCategoryId: string
+  subCategoryId?: string
 }
 
 export const mapProduct = (dto: IAdminProductDto): IAdminProduct => ({
   c_price: dto.c_price,
-  categoryId: dto.subCategory?.categoryId ?? null,
+  categoryId: dto.categoryId ?? dto.subCategory?.categoryId ?? null,
   desc: dto.desc,
   f_price: dto.f_price ?? null,
   id: dto.id,
@@ -40,9 +40,10 @@ export const mapProduct = (dto: IAdminProductDto): IAdminProduct => ({
   photo: dto.photos[0] ?? null,
   photos: dto.photos,
   price: dto.price,
-  subCategoryId: dto.subCategoryId,
+  subCategoryId: dto.subCategoryId ?? dto.subCategory?.id ?? null,
   subCategoryName: dto.subCategory?.name ?? null,
-  subCategoryPath: dto.subCategory?.name ?? dto.subCategoryId
+  subCategoryPath:
+    dto.subCategory?.name ?? dto.subCategoryId ?? dto.categoryId ?? '—'
 })
 
 const walkSubCategories = (
@@ -80,26 +81,35 @@ export const buildProductSubCategoryOptions = (
 
 export const findProductCategorySelectionPath = (
   categories: IAdminCategoryNode[],
-  targetSubCategoryId: string
+  targetSubCategoryId?: string | null,
+  targetCategoryId?: string | null
 ): IProductCategorySelectionPath | null => {
-  for (const category of categories) {
-    for (const subCategory of category.subCategories) {
-      if (subCategory.id === targetSubCategoryId) {
-        return {
-          categoryId: category.id,
-          subCategoryId: subCategory.id
-        }
-      }
-
-      for (const childSubCategory of subCategory.childSubCategories) {
-        if (childSubCategory.id === targetSubCategoryId) {
+  if (targetSubCategoryId) {
+    for (const category of categories) {
+      for (const subCategory of category.subCategories) {
+        if (subCategory.id === targetSubCategoryId) {
           return {
             categoryId: category.id,
-            childSubCategoryId: childSubCategory.id,
             subCategoryId: subCategory.id
           }
         }
+
+        for (const childSubCategory of subCategory.childSubCategories) {
+          if (childSubCategory.id === targetSubCategoryId) {
+            return {
+              categoryId: category.id,
+              childSubCategoryId: childSubCategory.id,
+              subCategoryId: subCategory.id
+            }
+          }
+        }
       }
+    }
+  }
+
+  if (targetCategoryId && categories.some((category) => category.id === targetCategoryId)) {
+    return {
+      categoryId: targetCategoryId
     }
   }
 

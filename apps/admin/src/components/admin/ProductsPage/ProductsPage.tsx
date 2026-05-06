@@ -141,6 +141,18 @@ export const ProductsPage = () => {
     [selectedSubCategory]
   )
 
+  const getProductCategoryPath = (product: IAdminProduct) => {
+    if (product.subCategoryName) {
+      return product.subCategoryPath
+    }
+
+    if (product.categoryId) {
+      return categories.find((item) => item.id === product.categoryId)?.name ?? product.categoryId
+    }
+
+    return '—'
+  }
+
   const applyFilters = (
     updater: (current: IProductFilters) => IProductFilters
   ) => {
@@ -168,11 +180,14 @@ export const ProductsPage = () => {
     patch: Partial<
       Pick<IAdminProduct, 'c_price' | 'desc' | 'f_price' | 'inStock' | 'name' | 'price'>
     > & {
+      categoryId?: string
       subCategoryId?: string
     }
   ) => {
     try {
       await productsApi.updateProduct(product.id, {
+        categoryId:
+          patch.categoryId ?? (patch.subCategoryId ? undefined : product.categoryId ?? undefined),
         c_price: patch.c_price ?? product.c_price,
         desc: patch.desc ?? product.desc,
         f_price: patch.f_price ?? product.f_price ?? undefined,
@@ -180,7 +195,7 @@ export const ProductsPage = () => {
         name: patch.name ?? product.name,
         photos: product.photos,
         price: patch.price ?? product.price,
-        subCategoryId: patch.subCategoryId ?? product.subCategoryId
+        subCategoryId: patch.subCategoryId ?? product.subCategoryId ?? undefined
       })
 
       setQuickEdit(null)
@@ -208,7 +223,9 @@ export const ProductsPage = () => {
         quickEdit.field === 'f_price' && quickEdit.value === null
           ? undefined
           : Number(quickEdit.value)
-    } as Partial<IAdminProduct>)
+    } as Partial<
+      Pick<IAdminProduct, 'c_price' | 'desc' | 'f_price' | 'inStock' | 'name' | 'price'>
+    >)
   }
 
   const renderQuickNumberCell = (
@@ -346,7 +363,7 @@ export const ProductsPage = () => {
       {
         dataIndex: 'subCategoryPath',
         key: 'subCategoryPath',
-        render: (value) => <Tag>{value}</Tag>,
+        render: (_, product) => <Tag>{getProductCategoryPath(product)}</Tag>,
         title: 'Подкатегория',
         width: 130
       },
@@ -416,7 +433,7 @@ export const ProductsPage = () => {
         width: 44
       }
     ],
-    [message, quickEdit]
+    [categories, message, quickEdit]
   )
 
   const handleTableChange = (pagination: TablePaginationConfig) => {

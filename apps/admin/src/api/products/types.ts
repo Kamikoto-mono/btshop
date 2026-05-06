@@ -1,4 +1,5 @@
 export interface IAdminProductDto {
+  categoryId?: string | null
   c_price: number
   desc: string
   f_price?: number | null
@@ -13,7 +14,7 @@ export interface IAdminProductDto {
     name: string
     subCategoryId?: string | null
   } | null
-  subCategoryId: string
+  subCategoryId?: string | null
 }
 
 export interface IAdminProductsListDto {
@@ -43,7 +44,12 @@ export interface IAdminProductsQuery {
   subCategoryId?: string
 }
 
-export interface ICreateProductDto {
+interface IProductCategoryPayload {
+  categoryId?: string
+  subCategoryId?: string
+}
+
+export interface ICreateProductDto extends IProductCategoryPayload {
   c_price: number
   desc: string
   f_price?: number
@@ -51,10 +57,9 @@ export interface ICreateProductDto {
   name: string
   photos: File[]
   price: number
-  subCategoryId: string
 }
 
-export interface IUpdateProductDto {
+export interface IUpdateProductDto extends IProductCategoryPayload {
   c_price: number
   desc: string
   f_price?: number
@@ -63,7 +68,6 @@ export interface IUpdateProductDto {
   newPhotos?: File[]
   photos?: string[]
   price: number
-  subCategoryId: string
 }
 
 export interface IDeleteProductResponseDto {

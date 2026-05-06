@@ -14,6 +14,7 @@ export interface IAdminOrderDto {
   fullName: string
   id: string
   index: number
+  number: number
   products: IAdminOrderProductDto[]
   status: string
   tel: string

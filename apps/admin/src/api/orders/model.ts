@@ -8,6 +8,7 @@ export interface IAdminOrder {
   email: string
   fullName: string
   id: string
+  number: number
   postalCode: string
   products: Array<{
     name: string
@@ -30,6 +31,7 @@ export const mapOrder = (dto: IAdminOrderDto): IAdminOrder => ({
   email: dto.email,
   fullName: dto.fullName,
   id: dto.id,
+  number: dto.number,
   postalCode: String(dto.index),
   products: dto.products,
   status: dto.status,

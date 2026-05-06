@@ -74,6 +74,8 @@ const formatOrderTime = (value: string) =>
     minute: '2-digit'
   }).format(new Date(value))
 
+const formatOrderNumber = (value: number) => `#${value}`
+
 const formatRangeDate = (value: Date) => value.toISOString()
 
 const formatCurrency = (value: number) =>
@@ -252,14 +254,15 @@ export const OrdersPage = () => {
       {
         dataIndex: 'createdAt',
         key: 'createdAt',
-        render: (value: string) => (
+        render: (value: string, order) => (
           <div className={styles.dateCell}>
+            <span className={styles.orderNumber}>{formatOrderNumber(order.number)}</span>
             <span className={styles.dateValue}>{formatOrderDate(value)}</span>
             <span className={styles.dateTime}>{formatOrderTime(value)}</span>
           </div>
         ),
-        title: 'Дата',
-        width: 68
+        title: 'Заказ',
+        width: 82
       },
       {
         dataIndex: 'email',
@@ -305,55 +308,9 @@ export const OrdersPage = () => {
         width: 360
       },
       {
-        dataIndex: 'delivery',
-        key: 'delivery',
-        render: (value: string) => getDeliveryLabel(value),
-        title: 'Доставка',
-        width: 100
-      },
-      {
         dataIndex: 'status',
         key: 'status',
         render: (value: string, order) => {
-          const pendingTrackValue = trackDrafts[order.id] ?? order.trackNumber
-          const isPendingWorkStatus = pendingWorkStatusOrderId === order.id
-
-          if (isPendingWorkStatus) {
-            return (
-              <div className={styles.pendingStatusEditor}>
-                <Input
-                  className={styles.pendingStatusInput}
-                  onChange={(event) =>
-                    setTrackDrafts((current) => ({
-                      ...current,
-                      [order.id]: event.target.value
-                    }))
-                  }
-                  placeholder='Введите трек-номер'
-                  value={pendingTrackValue}
-                />
-                <Button
-                  disabled={!pendingTrackValue.trim()}
-                  icon={<CheckOutlined />}
-                  loading={statusUpdatingId === order.id}
-                  onClick={() => void handleWorkStatusConfirm(order)}
-                  type='primary'
-                />
-                <Button
-                  icon={<CloseOutlined />}
-                  onClick={() => {
-                    setPendingWorkStatusOrderId(null)
-                    setTrackDrafts((current) => {
-                      const nextDrafts = { ...current }
-                      delete nextDrafts[order.id]
-                      return nextDrafts
-                    })
-                  }}
-                />
-              </div>
-            )
-          }
-
           return (
             <Select
               className={`${styles.statusSelect} ${getStatusClassName(value)}`}
@@ -371,58 +328,85 @@ export const OrdersPage = () => {
         width: 100
       },
       {
-        dataIndex: 'trackNumber',
-        key: 'trackNumber',
-        render: (_, order) => {
-          const isFinalStatus = order.status === 'В работе'
-          const value = trackDrafts[order.id] ?? order.trackNumber
+        dataIndex: 'delivery',
+        key: 'delivery',
+        render: (value: string, order) => {
+          const isPendingWorkStatus = pendingWorkStatusOrderId === order.id
+          const isEditableTrack = order.status === 'В работе' || isPendingWorkStatus
+          const trackValue = trackDrafts[order.id] ?? order.trackNumber
 
-          if (!isFinalStatus && !order.trackNumber) {
-            return <span className={styles.customerMeta}>—</span>
-          }
-
-          if (isFinalStatus) {
+          if (isEditableTrack) {
             return (
-              <Space.Compact>
-                <Input
-                  className={styles.trackInput}
-                  onBlur={() => void handleTrackSave(order)}
-                  onChange={(event) =>
-                    setTrackDrafts((current) => ({
-                      ...current,
-                      [order.id]: event.target.value
-                    }))
-                  }
-                  onPressEnter={() => void handleTrackSave(order)}
-                  placeholder='Указать трек'
-                  value={value}
-                />
-                {value ? (
+              <div className={styles.deliveryCell}>
+                <span className={styles.deliveryLabel}>{getDeliveryLabel(value)}</span>
+                <Space.Compact>
+                  <Input
+                    className={styles.trackInput}
+                    onBlur={() =>
+                      isPendingWorkStatus
+                        ? void handleWorkStatusConfirm(order)
+                        : void handleTrackSave(order)
+                    }
+                    onChange={(event) =>
+                      setTrackDrafts((current) => ({
+                        ...current,
+                        [order.id]: event.target.value
+                      }))
+                    }
+                    onPressEnter={() =>
+                      isPendingWorkStatus
+                        ? void handleWorkStatusConfirm(order)
+                        : void handleTrackSave(order)
+                    }
+                    placeholder='Указать трек'
+                    value={trackValue}
+                  />
                   <Button
                     icon={<CopyOutlined />}
-                    loading={trackSavingId === order.id}
-                    onClick={() => void handleTrackCopy(value)}
+                    disabled={!trackValue}
+                    loading={isPendingWorkStatus ? statusUpdatingId === order.id : trackSavingId === order.id}
+                    onClick={() => void handleTrackCopy(trackValue)}
                   />
-                ) : null}
-              </Space.Compact>
+                  {isPendingWorkStatus ? (
+                    <Button
+                      icon={<CloseOutlined />}
+                      onClick={() => {
+                        setPendingWorkStatusOrderId(null)
+                        setTrackDrafts((current) => {
+                          const nextDrafts = { ...current }
+                          delete nextDrafts[order.id]
+                          return nextDrafts
+                        })
+                      }}
+                    />
+                  ) : null}
+                </Space.Compact>
+              </div>
             )
           }
 
           return (
-            <div className={styles.trackCell}>
-              <span className={styles.trackValue} title={order.trackNumber}>
-                {order.trackNumber}
-              </span>
-              <Button
-                icon={<CopyOutlined />}
-                onClick={() => void handleTrackCopy(order.trackNumber)}
-                size='small'
-                type='text'
-              />
+            <div className={styles.deliveryCell}>
+              <span className={styles.deliveryLabel}>{getDeliveryLabel(value)}</span>
+              {order.trackNumber ? (
+                <div className={styles.trackCell}>
+                  <span className={styles.trackValue} title={order.trackNumber}>
+                    {order.trackNumber}
+                  </span>
+                  <Button
+                    icon={<CopyOutlined />}
+                    onClick={() => void handleTrackCopy(order.trackNumber)}
+                    size='small'
+                    type='text'
+                  />
+                </div>
+              ) : (
+                <span className={styles.customerMeta}>—</span>
+              )}
             </div>
           )
         },
-        title: 'Трек-номер',
+        title: 'Доставка',
         width: 170
       },
       {
