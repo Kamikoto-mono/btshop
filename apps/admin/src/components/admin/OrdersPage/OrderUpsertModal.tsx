@@ -17,6 +17,7 @@ interface IOrderFormValues {
   status: string
   tel: string
   telegramUsername: string
+  trackNumber: string
 }
 
 interface IOrderUpsertModalProps {
@@ -70,7 +71,8 @@ export const OrderUpsertModal = ({
           postalCode: nextOrder.postalCode,
           status: nextOrder.status,
           tel: nextOrder.tel,
-          telegramUsername: nextOrder.telegramUsername
+          telegramUsername: nextOrder.telegramUsername,
+          trackNumber: nextOrder.trackNumber
         })
       } catch {
         message.error('Не удалось загрузить заказ.')
@@ -101,7 +103,8 @@ export const OrderUpsertModal = ({
         })),
         status: values.status,
         tel: values.tel.trim(),
-        telegramUsername: values.telegramUsername.trim()
+        telegramUsername: values.telegramUsername.trim(),
+        trackNumber: values.trackNumber.trim()
       })
 
       message.success('Заказ обновлён.')
@@ -202,6 +205,10 @@ export const OrderUpsertModal = ({
             >
               <Select options={STATUS_OPTIONS} />
             </Form.Item>
+
+            <Form.Item label='Трек-номер' name='trackNumber'>
+              <Input placeholder='Например, TRACK-123456' />
+            </Form.Item>
           </Form>
         </div>
 
@@ -233,6 +240,10 @@ export const OrderUpsertModal = ({
             <div className={styles.summaryRow}>
               <span>User ID</span>
               <strong>{order?.userId ?? '—'}</strong>
+            </div>
+            <div className={styles.summaryRow}>
+              <span>Трек-номер</span>
+              <strong>{order?.trackNumber || '—'}</strong>
             </div>
             <div className={`${styles.summaryRow} ${styles.summaryTotal}`}>
               <span>Сумма</span>

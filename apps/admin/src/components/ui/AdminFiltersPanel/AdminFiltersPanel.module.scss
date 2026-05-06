@@ -5,15 +5,43 @@
 .grid {
   display: grid;
   gap: 16px;
+  min-width: 0;
 }
 
 .field {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .label {
   color: #5d718c;
   font-size: 13px;
   font-weight: 600;
+}
+
+.field :global(.ant-select),
+.field :global(.ant-picker),
+.field :global(.ant-input),
+.field :global(.ant-input-number),
+.field :global(.ant-btn) {
+  width: 100%;
+}
+
+@media (max-width: 650px) {
+  .panel :global(.ant-card-body) {
+    padding: 14px 14px 12px;
+  }
+
+  .grid {
+    gap: 12px;
+  }
+
+  .field {
+    gap: 6px;
+  }
+
+  .label {
+    display: none;
+  }
 }

@@ -1,6 +1,11 @@
 @use '@btshop/shared/styles/globals.scss';
 @import 'antd/dist/reset.css';
 
+:root {
+  --admin-shell-max-width: 1600px;
+  --admin-shell-gutter: 24px;
+}
+
 html,
 body {
   min-height: 100%;
@@ -14,4 +19,10 @@ body {
 
 #__next {
   min-height: 100vh;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --admin-shell-gutter: 16px;
+  }
 }

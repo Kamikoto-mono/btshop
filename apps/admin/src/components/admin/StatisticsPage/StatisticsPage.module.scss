@@ -1,0 +1,158 @@
+.page {
+  display: grid;
+  gap: 20px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heading {
+  margin-bottom: 0 !important;
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.dateRange :global(.ant-picker) {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.chartCard,
+.summaryCard {
+  border: 1px solid rgba(185, 205, 231, 0.7);
+  border-radius: 28px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(73, 131, 232, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.96));
+  box-shadow: 0 20px 45px rgba(78, 110, 154, 0.08);
+}
+
+.chartHeader {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.chartTitle {
+  margin: 0;
+  color: #16304f;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+
+.chartBox {
+  width: 100%;
+  height: 320px;
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+}
+
+.summarySection {
+  display: grid;
+  gap: 16px;
+}
+
+.summaryTitle {
+  margin: 0;
+  color: #16304f;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.summaryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.summaryCard {
+  display: flex;
+  flex: 1 1 240px;
+  min-height: 110px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 20px;
+}
+
+.summaryLabel {
+  color: #7d90ab;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.summaryValue {
+  color: #16304f;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.summaryValuePositive {
+  color: #228b5a;
+}
+
+.summaryValueNegative {
+  color: #c45050;
+}
+
+@media (max-width: 1280px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .chartCard,
+  .summaryCard {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .summaryCard {
+    flex-basis: 100%;
+    min-height: 96px;
+  }
+
+  .chartBox {
+    height: 280px;
+  }
+}

@@ -6,12 +6,20 @@ import {
   Button,
   DatePicker,
   Empty,
+  Input,
   Popconfirm,
   Select,
+  Space,
   Typography,
   type TablePaginationConfig
 } from 'antd'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import {
+  CheckOutlined,
+  CloseOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+  EditOutlined
+} from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 
 import { ordersApi } from '@/api/orders'
@@ -53,10 +61,17 @@ const getStatusClassName = (status: string) => {
   return styles.statusCreated
 }
 
-const formatDateTime = (value: string) =>
+const formatOrderDate = (value: string) =>
   new Intl.DateTimeFormat('ru-RU', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  }).format(new Date(value))
+
+const formatOrderTime = (value: string) =>
+  new Intl.DateTimeFormat('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit'
   }).format(new Date(value))
 
 const formatRangeDate = (value: Date) => value.toISOString()
@@ -75,6 +90,9 @@ export const OrdersPage = () => {
   const [totalOrders, setTotalOrders] = useState(0)
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null)
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null)
+  const [trackDrafts, setTrackDrafts] = useState<Record<string, string>>({})
+  const [trackSavingId, setTrackSavingId] = useState<string | null>(null)
+  const [pendingWorkStatusOrderId, setPendingWorkStatusOrderId] = useState<string | null>(null)
 
   const loadOrders = async (page = currentPage, nextFilters = filters) => {
     setIsLoading(true)
@@ -107,24 +125,40 @@ export const OrdersPage = () => {
     setCurrentPage(1)
   }
 
+  const buildOrderPayload = (
+    order: IAdminOrder,
+    overrides?: Partial<Parameters<typeof ordersApi.updateOrder>[1]>
+  ) => ({
+    address: order.address,
+    delivery: order.delivery,
+    email: order.email,
+    fullName: order.fullName,
+    index: Number(order.postalCode),
+    products: order.products.map((product) => ({
+      productId: product.productId,
+      quantity: product.quantity
+    })),
+    status: order.status,
+    tel: order.tel,
+    telegramUsername: order.telegramUsername,
+    trackNumber: order.trackNumber,
+    ...overrides
+  })
+
   const handleStatusChange = async (order: IAdminOrder, status: string) => {
+    if (status === 'В работе' && order.status !== 'В работе' && !order.trackNumber.trim()) {
+      setPendingWorkStatusOrderId(order.id)
+      setTrackDrafts((current) => ({
+        ...current,
+        [order.id]: current[order.id] ?? order.trackNumber
+      }))
+      return
+    }
+
     setStatusUpdatingId(order.id)
 
     try {
-      const updatedOrder = await ordersApi.updateOrder(order.id, {
-        address: order.address,
-        delivery: order.delivery,
-        email: order.email,
-        fullName: order.fullName,
-        index: Number(order.postalCode),
-        products: order.products.map((product) => ({
-          productId: product.productId,
-          quantity: product.quantity
-        })),
-        status,
-        tel: order.tel,
-        telegramUsername: order.telegramUsername
-      })
+      const updatedOrder = await ordersApi.updateOrder(order.id, buildOrderPayload(order, { status }))
 
       setOrders((current) =>
         current.map((item) => (item.id === updatedOrder.id ? updatedOrder : item))
@@ -137,14 +171,95 @@ export const OrdersPage = () => {
     }
   }
 
+  const handleWorkStatusConfirm = async (order: IAdminOrder) => {
+    const nextTrackNumber = (trackDrafts[order.id] ?? order.trackNumber).trim()
+
+    if (!nextTrackNumber) {
+      message.error('Укажите трек-номер перед переводом заказа в статус "В работе".')
+      return
+    }
+
+    setStatusUpdatingId(order.id)
+
+    try {
+      const updatedOrder = await ordersApi.updateOrder(
+        order.id,
+        buildOrderPayload(order, {
+          status: 'В работе',
+          trackNumber: nextTrackNumber
+        })
+      )
+
+      setOrders((current) =>
+        current.map((item) => (item.id === updatedOrder.id ? updatedOrder : item))
+      )
+      setPendingWorkStatusOrderId(null)
+      setTrackDrafts((current) => {
+        const nextDrafts = { ...current }
+        delete nextDrafts[order.id]
+        return nextDrafts
+      })
+      message.success('Статус заказа обновлён, трек-номер сохранён.')
+    } catch {
+      message.error('Не удалось перевести заказ в статус "В работе".')
+    } finally {
+      setStatusUpdatingId(null)
+    }
+  }
+
+  const handleTrackSave = async (order: IAdminOrder) => {
+    const nextTrackNumber = (trackDrafts[order.id] ?? order.trackNumber).trim()
+
+    if (nextTrackNumber === order.trackNumber) {
+      return
+    }
+
+    setTrackSavingId(order.id)
+
+    try {
+      const updatedOrder = await ordersApi.updateOrder(
+        order.id,
+        buildOrderPayload(order, { trackNumber: nextTrackNumber })
+      )
+
+      setOrders((current) =>
+        current.map((item) => (item.id === updatedOrder.id ? updatedOrder : item))
+      )
+      setTrackDrafts((current) => {
+        const nextDrafts = { ...current }
+        delete nextDrafts[order.id]
+        return nextDrafts
+      })
+      message.success(nextTrackNumber ? 'Трек-номер сохранён.' : 'Трек-номер очищен.')
+    } catch {
+      message.error('Не удалось сохранить трек-номер.')
+    } finally {
+      setTrackSavingId(null)
+    }
+  }
+
+  const handleTrackCopy = async (trackNumber: string) => {
+    try {
+      await navigator.clipboard.writeText(trackNumber)
+      message.success('Трек-номер скопирован.')
+    } catch {
+      message.error('Не удалось скопировать трек-номер.')
+    }
+  }
+
   const columns = useMemo<ColumnsType<IAdminOrder>>(
     () => [
       {
         dataIndex: 'createdAt',
         key: 'createdAt',
-        render: (value: string) => formatDateTime(value),
+        render: (value: string) => (
+          <div className={styles.dateCell}>
+            <span className={styles.dateValue}>{formatOrderDate(value)}</span>
+            <span className={styles.dateTime}>{formatOrderTime(value)}</span>
+          </div>
+        ),
         title: 'Дата',
-        width: 180
+        width: 68
       },
       {
         dataIndex: 'email',
@@ -159,7 +274,7 @@ export const OrdersPage = () => {
           </div>
         ),
         title: 'Клиент',
-        width: 260
+        width: 200
       },
       {
         dataIndex: 'address',
@@ -187,39 +302,135 @@ export const OrdersPage = () => {
           </div>
         ),
         title: 'Товары',
-        width: 420
+        width: 360
       },
       {
         dataIndex: 'delivery',
         key: 'delivery',
         render: (value: string) => getDeliveryLabel(value),
         title: 'Доставка',
-        width: 120
+        width: 100
       },
       {
         dataIndex: 'status',
         key: 'status',
-        render: (value: string, order) => (
-          <Select
-            className={`${styles.statusSelect} ${getStatusClassName(value)}`}
-            loading={statusUpdatingId === order.id}
-            onChange={(nextStatus) => void handleStatusChange(order, nextStatus)}
-            options={STATUS_OPTIONS}
-            popupMatchSelectWidth={false}
-            size='small'
-            value={value}
-            variant='borderless'
-          />
-        ),
+        render: (value: string, order) => {
+          const pendingTrackValue = trackDrafts[order.id] ?? order.trackNumber
+          const isPendingWorkStatus = pendingWorkStatusOrderId === order.id
+
+          if (isPendingWorkStatus) {
+            return (
+              <div className={styles.pendingStatusEditor}>
+                <Input
+                  className={styles.pendingStatusInput}
+                  onChange={(event) =>
+                    setTrackDrafts((current) => ({
+                      ...current,
+                      [order.id]: event.target.value
+                    }))
+                  }
+                  placeholder='Введите трек-номер'
+                  value={pendingTrackValue}
+                />
+                <Button
+                  disabled={!pendingTrackValue.trim()}
+                  icon={<CheckOutlined />}
+                  loading={statusUpdatingId === order.id}
+                  onClick={() => void handleWorkStatusConfirm(order)}
+                  type='primary'
+                />
+                <Button
+                  icon={<CloseOutlined />}
+                  onClick={() => {
+                    setPendingWorkStatusOrderId(null)
+                    setTrackDrafts((current) => {
+                      const nextDrafts = { ...current }
+                      delete nextDrafts[order.id]
+                      return nextDrafts
+                    })
+                  }}
+                />
+              </div>
+            )
+          }
+
+          return (
+            <Select
+              className={`${styles.statusSelect} ${getStatusClassName(value)}`}
+              loading={statusUpdatingId === order.id}
+              onChange={(nextStatus) => void handleStatusChange(order, nextStatus)}
+              options={STATUS_OPTIONS}
+              popupMatchSelectWidth={false}
+              size='small'
+              value={value}
+              variant='borderless'
+            />
+          )
+        },
         title: 'Статус',
-        width: 150
+        width: 100
+      },
+      {
+        dataIndex: 'trackNumber',
+        key: 'trackNumber',
+        render: (_, order) => {
+          const isFinalStatus = order.status === 'В работе'
+          const value = trackDrafts[order.id] ?? order.trackNumber
+
+          if (!isFinalStatus && !order.trackNumber) {
+            return <span className={styles.customerMeta}>—</span>
+          }
+
+          if (isFinalStatus) {
+            return (
+              <Space.Compact>
+                <Input
+                  className={styles.trackInput}
+                  onBlur={() => void handleTrackSave(order)}
+                  onChange={(event) =>
+                    setTrackDrafts((current) => ({
+                      ...current,
+                      [order.id]: event.target.value
+                    }))
+                  }
+                  onPressEnter={() => void handleTrackSave(order)}
+                  placeholder='Указать трек'
+                  value={value}
+                />
+                {value ? (
+                  <Button
+                    icon={<CopyOutlined />}
+                    loading={trackSavingId === order.id}
+                    onClick={() => void handleTrackCopy(value)}
+                  />
+                ) : null}
+              </Space.Compact>
+            )
+          }
+
+          return (
+            <div className={styles.trackCell}>
+              <span className={styles.trackValue} title={order.trackNumber}>
+                {order.trackNumber}
+              </span>
+              <Button
+                icon={<CopyOutlined />}
+                onClick={() => void handleTrackCopy(order.trackNumber)}
+                size='small'
+                type='text'
+              />
+            </div>
+          )
+        },
+        title: 'Трек-номер',
+        width: 170
       },
       {
         dataIndex: 'amount',
         key: 'amount',
         render: (value: number) => `${formatCurrency(value)} ₽`,
         title: 'Сумма',
-        width: 140
+        width: 110
       },
       {
         key: 'actions',
@@ -255,7 +466,14 @@ export const OrdersPage = () => {
         width: 44
       }
     ],
-    [currentPage, message, statusUpdatingId]
+    [
+      currentPage,
+      message,
+      pendingWorkStatusOrderId,
+      statusUpdatingId,
+      trackDrafts,
+      trackSavingId
+    ]
   )
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -319,7 +537,7 @@ export const OrdersPage = () => {
           total: totalOrders
         }}
         rowKey='id'
-        scroll={{ x: 1600 }}
+        scroll={{ x: 'max-content' }}
       />
 
       <OrderUpsertModal

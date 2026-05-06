@@ -45,9 +45,11 @@ export interface IOrderDto {
   id: string
   index: string
   products: IOrderProductDto[]
+  promoCode?: string | null
   status: string
   tel: string
   telegramUsername: string
+  trackNumber?: string | null
   userId: string
 }
 

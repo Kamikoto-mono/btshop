@@ -411,6 +411,12 @@ export const ProfileView = () => {
                           }
                         >
                           <div className={styles.orderContentInner}>
+                            {order.trackNumber ? (
+                              <div className={styles.orderTrack}>
+                                <span>Трек-номер</span>
+                                <strong>{order.trackNumber}</strong>
+                              </div>
+                            ) : null}
                             <div className={styles.orderItems}>
                               {order.products.map((item) => (
                                 <div className={styles.orderItem} key={item.productId}>

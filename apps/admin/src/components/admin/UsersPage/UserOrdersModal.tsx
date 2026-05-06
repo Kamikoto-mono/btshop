@@ -164,9 +164,16 @@ export const UserOrdersModal = ({
                   </details>
 
                   <div className={styles.footer}>
-                    <Typography.Text className={styles.orderMeta}>
-                      {order.address}, {order.postalCode}
-                    </Typography.Text>
+                    <div className={styles.footerMeta}>
+                      <Typography.Text className={styles.orderMeta}>
+                        {order.address}, {order.postalCode}
+                      </Typography.Text>
+                      {order.trackNumber ? (
+                        <Typography.Text className={styles.orderMeta}>
+                          Трек: {order.trackNumber}
+                        </Typography.Text>
+                      ) : null}
+                    </div>
                   </div>
                 </article>
               ))}

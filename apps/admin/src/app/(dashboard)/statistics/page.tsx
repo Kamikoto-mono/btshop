@@ -1,10 +1,5 @@
-import { PlaceholderPage } from '@/components/admin/PlaceholderPage/PlaceholderPage'
+import { StatisticsPage } from '@/components/admin/StatisticsPage/StatisticsPage'
 
 export default function Page() {
-  return (
-    <PlaceholderPage
-      description='Раздел статистики пока зарезервирован под графики продаж, остатки и ключевые показатели магазина.'
-      title='Статистика'
-    />
-  )
+  return <StatisticsPage />
 }

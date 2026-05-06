@@ -16,7 +16,7 @@
 
 .filtersGrid {
   display: grid;
-  grid-template-columns: minmax(180px, 1.1fr) minmax(180px, 1.1fr) minmax(180px, 1.1fr) minmax(220px, 1.2fr) minmax(180px, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -94,15 +94,5 @@
   .headerRow {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .filtersGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .filtersGrid {
-    grid-template-columns: 1fr;
   }
 }

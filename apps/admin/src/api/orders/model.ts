@@ -18,6 +18,7 @@ export interface IAdminOrder {
   status: string
   tel: string
   telegramUsername: string
+  trackNumber: string
   userId: string
 }
 
@@ -34,5 +35,6 @@ export const mapOrder = (dto: IAdminOrderDto): IAdminOrder => ({
   status: dto.status,
   tel: dto.tel,
   telegramUsername: dto.telegramUsername,
+  trackNumber: dto.trackNumber ?? '',
   userId: dto.userId
 })

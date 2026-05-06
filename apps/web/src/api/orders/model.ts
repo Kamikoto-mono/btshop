@@ -17,9 +17,11 @@ export interface IOrder {
     productId: string
     quantity: number
   }>
+  promoCode: string
   status: string
   tel: string
   telegramUsername: string
+  trackNumber: string
   userId: string
 }
 
@@ -33,9 +35,11 @@ export const mapOrder = (dto: IOrderDto): IOrder => ({
   id: dto.id,
   postalCode: dto.index,
   products: dto.products,
+  promoCode: dto.promoCode ?? '',
   status: dto.status,
   tel: dto.tel,
   telegramUsername: dto.telegramUsername,
+  trackNumber: dto.trackNumber ?? '',
   userId: dto.userId
 })
 

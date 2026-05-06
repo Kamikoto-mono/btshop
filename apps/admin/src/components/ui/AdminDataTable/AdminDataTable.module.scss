@@ -1,5 +1,33 @@
+.card {
+  width: 100%;
+  min-width: 0;
+}
+
 .card :global(.ant-card-body) {
   padding: 12px 12px 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tableWrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tableWrap :global(.ant-table-wrapper) {
+  width: 100%;
+  min-width: 0;
+}
+
+.tableWrap :global(.ant-spin-nested-loading),
+.tableWrap :global(.ant-spin-container),
+.tableWrap :global(.ant-table),
+.tableWrap :global(.ant-table-container) {
+  min-width: 0;
 }
 
 .card :global(.ant-table-tbody > tr > td) {

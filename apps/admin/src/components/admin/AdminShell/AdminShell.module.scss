@@ -9,19 +9,20 @@
   border-bottom: 1px solid rgba(204, 214, 228, 0.9);
   background: rgba(247, 249, 252, 0.92);
   backdrop-filter: blur(10px);
-  padding: 16px 0px 0px 0px;
+  padding: 16px 0 0;
 }
 
 .headerInner {
-  width: min(1440px, calc(100% - 32px));
+  width: min(var(--admin-shell-max-width), calc(100% - (var(--admin-shell-gutter) * 2)));
   margin: 0 auto;
 }
 
 .headerRow {
-    display: flex;
-      justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 20px 24px;
+  min-width: 0;
 }
 
 .brand {
@@ -34,15 +35,20 @@
 }
 
 .tabs {
-  justify-self: center;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 .userMeta {
   display: flex;
   align-items: center;
-  justify-self: end;
+  flex: 0 0 auto;
   gap: 12px;
+}
+
+.mobileMenuButton {
+  display: none;
+  flex: 0 0 auto;
 }
 
 .userEmail {
@@ -55,7 +61,7 @@
 }
 
 .tabs :global(.ant-tabs-nav-wrap) {
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .tabs :global(.ant-tabs-tab) {
@@ -64,11 +70,11 @@
 }
 
 .main {
-  padding: 28px 0 40px;
+  padding: 28px 0 48px;
 }
 
 .content {
-  width: min(1440px, calc(100% - 32px));
+  width: min(var(--admin-shell-max-width), calc(100% - (var(--admin-shell-gutter) * 2)));
   margin: 0 auto;
 }
 
@@ -78,31 +84,26 @@
   place-items: center;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 920px) {
   .header {
-    padding: 16px;
-  }
-
-  .headerInner,
-  .content {
-    width: 100%;
+    padding-top: 12px;
   }
 
   .headerRow {
-    grid-template-columns: 1fr;
-    align-items: start;
+    gap: 12px;
   }
 
-  .tabs {
-    width: 100%;
-    justify-self: stretch;
-  }
-
-  .tabs :global(.ant-tabs-nav-wrap) {
-    justify-content: flex-start;
-  }
-
+  .tabs,
   .userMeta {
-    justify-self: start;
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .main {
+    padding: 20px 0 32px;
   }
 }

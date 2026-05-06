@@ -16,12 +16,30 @@
 
 .filtersGrid {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.2fr) minmax(220px, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 16px;
 }
 
 .dateRange :global(.ant-picker) {
   width: 100%;
+}
+
+.dateCell {
+  display: grid;
+  gap: 2px;
+}
+
+.dateValue {
+  color: #16304f;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.dateTime {
+  color: #7d90ab;
+  font-size: 12px;
+  line-height: 1.15;
 }
 
 .customerCell {
@@ -55,6 +73,37 @@
   gap: 2px;
 }
 
+.trackCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trackValue {
+  display: inline-block;
+  max-width: 88px;
+  overflow: hidden;
+  color: #16304f;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trackInput {
+  width: 112px;
+}
+
+.pendingStatusEditor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pendingStatusInput {
+  width: 140px;
+}
+
 .statusCreated,
 .statusPaid,
 .statusActive {
@@ -63,7 +112,7 @@
 }
 
 .statusSelect {
-  min-width: 132px;
+  min-width: 90px;
 }
 
 .statusSelect :global(.ant-select-selector) {
@@ -89,15 +138,5 @@
   .headerRow {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .filtersGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .filtersGrid {
-    grid-template-columns: 1fr;
   }
 }

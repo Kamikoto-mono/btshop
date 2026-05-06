@@ -333,6 +333,21 @@ display: flex;
     );
 }
 
+.orderTrack {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 22px;
+  padding-top: 16px;
+  color: var(--color-text-muted);
+}
+
+.orderTrack strong {
+  color: var(--color-text);
+  font-size: 14px;
+}
+
 .orderItems {
   display: grid;
   gap: 12px;

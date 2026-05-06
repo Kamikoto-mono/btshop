@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button, Layout, Spin, Tabs } from 'antd'
+import { MenuOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Layout, Spin, Tabs, type MenuProps } from 'antd'
 
 import { authApi } from '@/api/auth'
 import type { IAdminUser } from '@/api/auth/model'
@@ -25,6 +26,11 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname()
   const [status, setStatus] = useState<'checking' | 'ready'>('checking')
   const [user, setUser] = useState<IAdminUser | null>(null)
+
+  const handleLogout = () => {
+    authApi.logout()
+    router.replace('/login')
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -62,6 +68,33 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
     []
   )
 
+  const mobileMenuItems = useMemo<MenuProps['items']>(
+    () => [
+      ...(user?.email
+        ? [
+            {
+              disabled: true,
+              key: 'email',
+              label: user.email
+            }
+          ]
+        : []),
+      ...NAV_ITEMS.map((item) => ({
+        key: item.key,
+        label: item.label
+      })),
+      {
+        type: 'divider'
+      },
+      {
+        danger: true,
+        key: 'logout',
+        label: 'Выйти'
+      }
+    ],
+    [user?.email]
+  )
+
   if (status !== 'ready') {
     return (
       <div className={styles.centeredState}>
@@ -84,15 +117,34 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
 
             <div className={styles.userMeta}>
               {user?.email ? <span className={styles.userEmail}>{user.email}</span> : null}
-              <Button
-                onClick={() => {
-                  authApi.logout()
-                  router.replace('/login')
-                }}
-              >
-                Выйти
-              </Button>
+              <Button onClick={handleLogout}>Выйти</Button>
             </div>
+
+            <Dropdown
+              menu={{
+                items: mobileMenuItems,
+                onClick: ({ key }) => {
+                  if (key === 'logout') {
+                    handleLogout()
+                    return
+                  }
+
+                  if (key === 'email') {
+                    return
+                  }
+
+                  router.push(String(key))
+                }
+              }}
+              placement='bottomRight'
+              trigger={['click']}
+            >
+              <Button
+                aria-label='Открыть меню навигации'
+                className={styles.mobileMenuButton}
+                icon={<MenuOutlined />}
+              />
+            </Dropdown>
           </div>
         </div>
       </Layout.Header>

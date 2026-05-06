@@ -103,6 +103,11 @@
   gap: 12px;
 }
 
+.footerMeta {
+  display: grid;
+  gap: 4px;
+}
+
 .amount {
   color: var(--color-text);
   font-size: 15px;

@@ -18,6 +18,7 @@ export interface IAdminOrderDto {
   status: string
   tel: string
   telegramUsername: string
+  trackNumber?: string | null
   userId: string
 }
 
@@ -54,6 +55,7 @@ export interface IUpdateOrderDto {
   status: string
   tel: string
   telegramUsername: string
+  trackNumber?: string
 }
 
 export interface IDeleteOrderResponseDto {

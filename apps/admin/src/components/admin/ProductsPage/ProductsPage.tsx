@@ -251,7 +251,7 @@ export const ProductsPage = () => {
 
     return (
       <div className={styles.editableCell}>
-        <span>{typeof displayValue === 'number' ? `${displayValue} ₽` : '—'}</span>
+        <span>{typeof displayValue === 'number' ? `${displayValue}` : '—'}</span>
         <Button
           icon={<EditOutlined />}
           onClick={() =>
@@ -348,7 +348,7 @@ export const ProductsPage = () => {
         key: 'subCategoryPath',
         render: (value) => <Tag>{value}</Tag>,
         title: 'Подкатегория',
-        width: 140
+        width: 130
       },
       {
         dataIndex: 'price',
@@ -356,15 +356,15 @@ export const ProductsPage = () => {
         render: (_, product) =>
           renderQuickNumberCell(product, 'price', product.price),
         title: 'Цена',
-        width: 170
+        width: 110
       },
       {
         dataIndex: 'f_price',
         key: 'f_price',
         render: (_, product) =>
           renderQuickNumberCell(product, 'f_price', product.f_price ?? null, 'Нет'),
-        title: 'Старая цена',
-        width: 170
+        title: 'Скидка',
+        width: 110
       },
       {
         dataIndex: 'c_price',
@@ -372,7 +372,7 @@ export const ProductsPage = () => {
         render: (_, product) =>
           renderQuickNumberCell(product, 'c_price', product.c_price),
         title: 'Себестоимость',
-        width: 180
+        width: 110
       },
       {
         dataIndex: 'inStock',
@@ -380,7 +380,7 @@ export const ProductsPage = () => {
         render: (_, product) =>
           renderQuickNumberCell(product, 'inStock', product.inStock),
         title: 'Остаток',
-        width: 150
+        width: 100
       },
       {
         key: 'actions',
