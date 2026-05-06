@@ -25,7 +25,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const pathname = usePathname()
   const [status, setStatus] = useState<'checking' | 'ready'>('checking')
-  const [user, setUser] = useState<IAdminUser | null>(null)
+  const [, setUser] = useState<IAdminUser | null>(null)
 
   const handleLogout = () => {
     authApi.logout()
@@ -70,15 +70,6 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
 
   const mobileMenuItems = useMemo<MenuProps['items']>(
     () => [
-      ...(user?.email
-        ? [
-            {
-              disabled: true,
-              key: 'email',
-              label: user.email
-            }
-          ]
-        : []),
       ...NAV_ITEMS.map((item) => ({
         key: item.key,
         label: item.label
@@ -92,7 +83,7 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
         label: 'Выйти'
       }
     ],
-    [user?.email]
+    []
   )
 
   if (status !== 'ready') {
@@ -116,7 +107,6 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
             />
 
             <div className={styles.userMeta}>
-              {user?.email ? <span className={styles.userEmail}>{user.email}</span> : null}
               <Button onClick={handleLogout}>Выйти</Button>
             </div>
 
@@ -126,10 +116,6 @@ export const AdminShell = ({ children }: { children: ReactNode }) => {
                 onClick: ({ key }) => {
                   if (key === 'logout') {
                     handleLogout()
-                    return
-                  }
-
-                  if (key === 'email') {
                     return
                   }
 
