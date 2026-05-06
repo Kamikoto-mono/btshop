@@ -21,7 +21,7 @@ interface IProductFormValues {
   inStock: number
   name: string
   price: number
-  subCategoryId: string
+  subCategoryId?: string
 }
 
 interface IExistingPhoto {
@@ -75,7 +75,7 @@ const collectNewPhotoFiles = (photos: TManagedPhoto[]) =>
   )
 
 const getFinalSubCategoryId = (values: IProductFormValues) =>
-  values.childSubCategoryId || values.subCategoryId
+  values.childSubCategoryId || values.subCategoryId || values.categoryId
 
 const buildCategoryOptions = (categories: IAdminCategoryNode[]) =>
   categories.map((category) => ({
@@ -462,15 +462,15 @@ export const ProductUpsertModal = ({
                   className={styles.categoryField}
                   label='Подкатегория'
                   name='subCategoryId'
-                  rules={[{ required: true, message: 'Выберите подкатегорию' }]}
                 >
                   <Select
+                    allowClear
                     disabled={!selectedCategory}
                     onChange={() => {
                       form.setFieldValue('childSubCategoryId', undefined)
                     }}
                     options={subCategoryOptions}
-                    placeholder='Выберите подкатегорию'
+                    placeholder='Опционально'
                   />
                 </Form.Item>
 
