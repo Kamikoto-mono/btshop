@@ -76,6 +76,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       } catch {
         storeRef.current?.dispatch(hydrateCart([]))
       }
+    } else {
+      storeRef.current?.dispatch(hydrateCart([]))
     }
 
     const rawSession = window.localStorage.getItem(AUTH_STORAGE_KEY)

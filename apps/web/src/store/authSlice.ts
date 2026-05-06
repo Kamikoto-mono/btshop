@@ -11,6 +11,7 @@ export interface IUserSession {
 }
 
 interface IAuthState {
+  isHydrated: boolean
   isOpen: boolean
   mode: 'login' | 'register'
   redirectTo: string | null
@@ -18,6 +19,7 @@ interface IAuthState {
 }
 
 const initialState: IAuthState = {
+  isHydrated: false,
   isOpen: false,
   mode: 'login',
   redirectTo: null,
@@ -50,14 +52,17 @@ const authSlice = createSlice({
       state.mode = action.payload
     },
     setUserSession: (state, action: PayloadAction<IUserSession | null>) => {
+      state.isHydrated = true
       state.user = action.payload
       state.isOpen = false
       state.redirectTo = null
     },
     hydrateUserSession: (state, action: PayloadAction<IUserSession | null>) => {
+      state.isHydrated = true
       state.user = action.payload
     },
     logout: (state) => {
+      state.isHydrated = true
       state.user = null
     }
   }

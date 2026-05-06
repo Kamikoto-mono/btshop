@@ -17,6 +17,7 @@ export interface ICartPromoValidation {
 type TCartPromoStatus = 'idle' | 'invalid' | 'valid'
 
 interface ICartState {
+  isHydrated: boolean
   items: ICartItem[]
   isOpen: boolean
   promoCode: string
@@ -36,6 +37,7 @@ type THydrateCartPayload =
     }
 
 const initialState: ICartState = {
+  isHydrated: false,
   items: [],
   isOpen: false,
   promoCode: '',
@@ -71,6 +73,8 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     hydrateCart: (state, action: PayloadAction<THydrateCartPayload>) => {
+      state.isHydrated = true
+
       if (Array.isArray(action.payload)) {
         state.items = sanitizeCartItems(action.payload)
         return

@@ -51,7 +51,7 @@ const getDeliveryLabel = (value: string) => {
 
 export const ProfileView = () => {
   const dispatch = useAppDispatch()
-  const user = useAppSelector((state) => state.auth.user)
+  const { isHydrated: isAuthHydrated, user } = useAppSelector((state) => state.auth)
   const userId = user?.id ?? null
   const [orders, setOrders] = useState<IOrder[]>([])
   const [openedOrderId, setOpenedOrderId] = useState<string | null>(null)
@@ -222,6 +222,40 @@ export const ProfileView = () => {
     </article>
   ))
 
+  const profileSkeleton = (
+    <section className={styles.form}>
+      <div className={styles.profileSkeletonHeading}>
+        <div className={styles.skeletonShimmer} />
+      </div>
+      <div className={styles.profileSkeletonFieldLarge}>
+        <div className={styles.skeletonShimmer} />
+      </div>
+      <div className={styles.profileSkeletonFieldLarge}>
+        <div className={styles.skeletonShimmer} />
+      </div>
+      <div className={styles.profileSkeletonArea}>
+        <div className={styles.skeletonShimmer} />
+      </div>
+      <div className={styles.profileSkeletonGrid}>
+        <div className={styles.profileSkeletonField}>
+          <div className={styles.skeletonShimmer} />
+        </div>
+        <div className={styles.profileSkeletonField}>
+          <div className={styles.skeletonShimmer} />
+        </div>
+        <div className={styles.profileSkeletonField}>
+          <div className={styles.skeletonShimmer} />
+        </div>
+      </div>
+      <div className={styles.profileSkeletonButton}>
+        <div className={styles.skeletonShimmer} />
+      </div>
+      <div className={styles.profileSkeletonButtonSecondary}>
+        <div className={styles.skeletonShimmer} />
+      </div>
+    </section>
+  )
+
   return (
     <div className={styles.page}>
       <Breadcrumbs
@@ -240,7 +274,15 @@ export const ProfileView = () => {
         {savedMessage ? <span className={styles.badge}>{savedMessage}</span> : null}
       </section>
 
-      {!user ? (
+      {!isAuthHydrated ? (
+        <div className={styles.content}>
+          {profileSkeleton}
+          <section className={styles.orders}>
+            <h2>История заказов</h2>
+            <div className={styles.orderSkeletonList}>{ordersSkeleton}</div>
+          </section>
+        </div>
+      ) : !user ? (
         <section className={styles.authRequired}>
           <h2>Нужна авторизация</h2>
           <p>Войдите в аккаунт, чтобы посмотреть и сохранить данные профиля.</p>

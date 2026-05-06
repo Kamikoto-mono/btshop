@@ -24,7 +24,7 @@ import styles from './CartPage.module.scss'
 export const CartPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { items, promoCode, promoMessage, promoStatus, promoValidation } = useAppSelector(
+  const { isHydrated, items, promoCode, promoMessage, promoStatus, promoValidation } = useAppSelector(
     (state) => state.cart
   )
   const [isPromoSubmitting, setIsPromoSubmitting] = useState(false)
@@ -37,6 +37,32 @@ export const CartPage = () => {
   )
   const totalPrice = promoValidation?.finalAmount ?? productsTotal
   const hasItems = items.length > 0
+  const cartSkeleton = Array.from({ length: 3 }, (_, index) => (
+    <article className={styles.cartSkeletonRow} key={`cart-skeleton-${index}`}>
+      <div className={styles.cartSkeletonMain}>
+        <div className={styles.cartSkeletonImage}>
+          <div className={styles.cartSkeletonShimmer} />
+        </div>
+        <div className={styles.cartSkeletonCopy}>
+          <div className={styles.cartSkeletonTitle}>
+            <div className={styles.cartSkeletonShimmer} />
+          </div>
+          <div className={styles.cartSkeletonMeta}>
+            <div className={styles.cartSkeletonShimmer} />
+          </div>
+        </div>
+      </div>
+      <div className={styles.cartSkeletonPrice}>
+        <div className={styles.cartSkeletonShimmer} />
+      </div>
+      <div className={styles.cartSkeletonQty}>
+        <div className={styles.cartSkeletonShimmer} />
+      </div>
+      <div className={styles.cartSkeletonSum}>
+        <div className={styles.cartSkeletonShimmer} />
+      </div>
+    </article>
+  ))
 
   const clampNumber = (value: number, min: number, max: number) =>
     Math.min(Math.max(value, min), max)
@@ -177,7 +203,34 @@ export const CartPage = () => {
           </div>
         </div>
 
-        {hasItems ? (
+        {!isHydrated ? (
+          <>
+            <div className={styles.tableHeader}>
+              <span>Товар</span>
+              <span>Цена</span>
+              <span>Кол-во</span>
+              <span>Сумма</span>
+              <span />
+            </div>
+
+            <div className={styles.itemsList}>{cartSkeleton}</div>
+
+            <div className={`${styles.summaryCard} ${styles.summaryCardSkeleton}`}>
+              <div className={styles.cartSummaryLine}>
+                <div className={styles.cartSkeletonShimmer} />
+              </div>
+              <div className={styles.cartSummaryMetaLine}>
+                <div className={styles.cartSkeletonShimmer} />
+              </div>
+              <div className={styles.cartSummaryMetaLineShort}>
+                <div className={styles.cartSkeletonShimmer} />
+              </div>
+              <div className={styles.cartSummaryButton}>
+                <div className={styles.cartSkeletonShimmer} />
+              </div>
+            </div>
+          </>
+        ) : hasItems ? (
           <>
             <div className={styles.tableHeader}>
               <span>Товар</span>
