@@ -74,6 +74,32 @@
   font-size: 13px;
 }
 
+.productsToggle {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  color: #2e7ae8;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.productsToggle:hover {
+  opacity: 0.72;
+}
+
+.productsToggleIcon,
+.productsToggleIconOpened {
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.productsToggleIconOpened {
+  transform: rotate(180deg);
+}
+
 .actions {
   display: inline-flex;
   align-items: center;

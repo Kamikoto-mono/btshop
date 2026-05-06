@@ -14,7 +14,6 @@ import {
   type TablePaginationConfig
 } from 'antd'
 import {
-  CheckOutlined,
   CloseOutlined,
   CopyOutlined,
   DeleteOutlined,
@@ -305,35 +304,53 @@ export const OrdersPage = () => {
       {
         dataIndex: 'products',
         key: 'products',
-        render: (products: IAdminOrder['products']) => (
-          <div className={styles.productsCell}>
-            {products.map((product) => (
-              <span className={styles.productLine} key={product.productId}>
-                {product.name} · {product.quantity} шт.
-              </span>
-            ))}
-          </div>
-        ),
+        render: (products: IAdminOrder['products'], order) => {
+          const isExpanded = expandedProductsOrderIds.includes(order.id)
+          const visibleProducts = isExpanded ? products : products.slice(0, 1)
+          const hiddenCount = Math.max(products.length - 1, 0)
+
+          return (
+            <div className={styles.productsCell}>
+              {visibleProducts.map((product) => (
+                <span className={styles.productLine} key={product.productId}>
+                  {product.name} · {product.quantity} шт.
+                </span>
+              ))}
+              {hiddenCount > 0 ? (
+                <button
+                  className={styles.productsToggle}
+                  onClick={() => toggleProducts(order.id)}
+                  type='button'
+                >
+                  <span>{isExpanded ? 'Свернуть' : `Ещё ${hiddenCount}`}</span>
+                  <DownOutlined
+                    className={
+                      isExpanded ? styles.productsToggleIconOpened : styles.productsToggleIcon
+                    }
+                  />
+                </button>
+              ) : null}
+            </div>
+          )
+        },
         title: 'Товары',
         width: 360
       },
       {
         dataIndex: 'status',
         key: 'status',
-        render: (value: string, order) => {
-          return (
-            <Select
-              className={`${styles.statusSelect} ${getStatusClassName(value)}`}
-              loading={statusUpdatingId === order.id}
-              onChange={(nextStatus) => void handleStatusChange(order, nextStatus)}
-              options={STATUS_OPTIONS}
-              popupMatchSelectWidth={false}
-              size='small'
-              value={value}
-              variant='borderless'
-            />
-          )
-        },
+        render: (value: string, order) => (
+          <Select
+            className={`${styles.statusSelect} ${getStatusClassName(value)}`}
+            loading={statusUpdatingId === order.id}
+            onChange={(nextStatus) => void handleStatusChange(order, nextStatus)}
+            options={STATUS_OPTIONS}
+            popupMatchSelectWidth={false}
+            size='small'
+            value={value}
+            variant='borderless'
+          />
+        ),
         title: 'Статус',
         width: 100
       },
@@ -372,9 +389,13 @@ export const OrdersPage = () => {
                     value={trackValue}
                   />
                   <Button
-                    icon={<CopyOutlined />}
                     disabled={!trackValue}
-                    loading={isPendingWorkStatus ? statusUpdatingId === order.id : trackSavingId === order.id}
+                    icon={<CopyOutlined />}
+                    loading={
+                      isPendingWorkStatus
+                        ? statusUpdatingId === order.id
+                        : trackSavingId === order.id
+                    }
                     onClick={() => void handleTrackCopy(trackValue)}
                   />
                   {isPendingWorkStatus ? (
@@ -462,6 +483,7 @@ export const OrdersPage = () => {
     ],
     [
       currentPage,
+      expandedProductsOrderIds,
       message,
       pendingWorkStatusOrderId,
       statusUpdatingId,
