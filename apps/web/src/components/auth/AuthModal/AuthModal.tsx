@@ -43,6 +43,7 @@ export const AuthModal = () => {
   const [formSuccess, setFormSuccess] = useState('')
   const [resetCodeError, setResetCodeError] = useState('')
   const [resetEmail, setResetEmail] = useState('')
+  const [resetCode, setResetCode] = useState('')
   const [otpResetKey, setOtpResetKey] = useState(0)
   const [isLoginSubmitting, setIsLoginSubmitting] = useState(false)
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false)
@@ -79,6 +80,7 @@ export const AuthModal = () => {
     setFormSuccess('')
     setResetCodeError('')
     setResetEmail('')
+    setResetCode('')
     setOtpResetKey(0)
 
     loginForm.reset(loginDefaults)
@@ -159,6 +161,7 @@ export const AuthModal = () => {
       })
 
       setResetEmail(normalizedEmail)
+      setResetCode('')
       setFormSuccess(response.message)
       setOtpResetKey((current) => current + 1)
       passwordResetConfirmForm.reset(passwordResetConfirmDefaults)
@@ -176,11 +179,17 @@ export const AuthModal = () => {
     values: IPasswordResetConfirmFormValues
   ) => {
     clearMessages()
+
+    if (resetCode.length !== 6) {
+      setResetCodeError('Введите код из письма.')
+      return
+    }
+
     setIsResetConfirmSubmitting(true)
 
     try {
       const response = await authApi.confirmPasswordReset({
-        code: values.code,
+        code: resetCode,
         email: resetEmail,
         newPassword: values.newPassword,
         newPasswordRepeat: values.newPasswordRepeat
@@ -190,6 +199,7 @@ export const AuthModal = () => {
       dispatch(setAuthMode('login'))
       setView('auth')
       setFormSuccess(response.message)
+      setResetCode('')
       passwordResetRequestForm.reset({
         email: resetEmail
       })
@@ -215,7 +225,9 @@ export const AuthModal = () => {
         email: resetEmail
       })
 
-      passwordResetConfirmForm.setValue('code', '')
+      setResetCode('')
+      setResetCodeError('')
+      setOtpResetKey((current) => current + 1)
       setFormSuccess(response.message)
       return true
     } catch (error) {
@@ -330,16 +342,16 @@ export const AuthModal = () => {
             isSubmitting={isResetConfirmSubmitting}
             onBack={() => {
               clearMessages()
+              setResetCode('')
               setView('resetRequest')
             }}
+            codeValue={resetCode}
             onCodeChange={(value) => {
               if (resetCodeError) {
                 setResetCodeError('')
               }
 
-              passwordResetConfirmForm.setValue('code', value, {
-                shouldValidate: true
-              })
+              setResetCode(value)
             }}
             onResend={handleResendResetCode}
             onSubmit={handlePasswordResetConfirm}

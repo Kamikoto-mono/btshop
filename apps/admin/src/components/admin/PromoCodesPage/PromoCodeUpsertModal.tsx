@@ -24,7 +24,7 @@ interface IPromoCodeUpsertModalProps {
 
 const STATUS_OPTIONS = [
   { label: 'Активен', value: 'Активен' },
-  { label: 'Неактивен', value: 'Неактивен' }
+  { label: 'Не активен', value: 'Не активен' }
 ]
 
 export const PromoCodeUpsertModal = ({

@@ -5,6 +5,7 @@ import {
   type ClipboardEvent,
   type KeyboardEvent,
   useEffect,
+  useEffectEvent,
   useRef,
   useState
 } from 'react'
@@ -77,15 +78,18 @@ export const OtpCode = ({
     return () => window.clearInterval(timerId)
   }, [secondsLeft])
 
-  useEffect(() => {
-    const nextValue = values.join('')
-
+  const emitValueChange = useEffectEvent((nextValue: string, isComplete: boolean) => {
     onChange?.(nextValue)
 
-    if (values.every(Boolean)) {
+    if (isComplete) {
       onComplete?.(nextValue)
     }
-  }, [onChange, onComplete, values])
+  })
+
+  useEffect(() => {
+    const nextValue = values.join('')
+    emitValueChange(nextValue, values.every(Boolean))
+  }, [emitValueChange, values])
 
   const focusInput = (index: number) => {
     inputRefs.current[index]?.focus()

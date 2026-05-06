@@ -18,6 +18,7 @@ import {
   CloseOutlined,
   CopyOutlined,
   DeleteOutlined,
+  DownOutlined,
   EditOutlined
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
@@ -95,6 +96,7 @@ export const OrdersPage = () => {
   const [trackDrafts, setTrackDrafts] = useState<Record<string, string>>({})
   const [trackSavingId, setTrackSavingId] = useState<string | null>(null)
   const [pendingWorkStatusOrderId, setPendingWorkStatusOrderId] = useState<string | null>(null)
+  const [expandedProductsOrderIds, setExpandedProductsOrderIds] = useState<string[]>([])
 
   const loadOrders = async (page = currentPage, nextFilters = filters) => {
     setIsLoading(true)
@@ -247,6 +249,14 @@ export const OrdersPage = () => {
     } catch {
       message.error('Не удалось скопировать трек-номер.')
     }
+  }
+
+  const toggleProducts = (orderId: string) => {
+    setExpandedProductsOrderIds((current) =>
+      current.includes(orderId)
+        ? current.filter((id) => id !== orderId)
+        : [...current, orderId]
+    )
   }
 
   const columns = useMemo<ColumnsType<IAdminOrder>>(

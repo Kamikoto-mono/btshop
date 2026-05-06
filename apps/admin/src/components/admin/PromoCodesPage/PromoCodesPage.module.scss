@@ -19,6 +19,12 @@
   gap: 4px;
 }
 
+.inlineValueRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .codeValue {
   color: var(--color-text);
   font-weight: 700;
@@ -30,10 +36,36 @@
   font-size: 13px;
 }
 
-.statusTag {
-  margin-inline-end: 0;
+.inlineInput {
+  width: 170px;
+}
+
+.inlineNumberInput {
+  width: 104px;
+}
+
+.statusSelect {
+  min-width: 90px;
+}
+
+.statusSelect :global(.ant-select-selector) {
+  border-radius: 999px !important;
+}
+
+.statusActive,
+.statusInactive {
   border-radius: 999px;
   font-weight: 600;
+}
+
+.statusActive {
+  color: #228b5a;
+  background: rgba(34, 139, 90, 0.12);
+}
+
+.statusInactive {
+  color: #7d90ab;
+  background: rgba(125, 144, 171, 0.12);
 }
 
 .actions {

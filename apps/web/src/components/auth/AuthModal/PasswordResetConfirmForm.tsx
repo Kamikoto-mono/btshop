@@ -10,6 +10,7 @@ import { AuthPasswordToggle } from './AuthPasswordToggle'
 import type { IPasswordResetConfirmFormValues } from './AuthModal.types'
 
 interface IPasswordResetConfirmFormProps {
+  codeValue: string
   form: UseFormReturn<IPasswordResetConfirmFormValues>
   formError?: string
   formSuccess?: string
@@ -23,6 +24,7 @@ interface IPasswordResetConfirmFormProps {
 }
 
 export const PasswordResetConfirmForm = ({
+  codeValue,
   form,
   formError,
   formSuccess,
@@ -36,7 +38,6 @@ export const PasswordResetConfirmForm = ({
 }: IPasswordResetConfirmFormProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isPasswordRepeatVisible, setIsPasswordRepeatVisible] = useState(false)
-  const resetCodeValue = form.watch('code')
 
   return (
     <form className={styles.form} onSubmit={form.handleSubmit(onSubmit)}>
@@ -125,7 +126,7 @@ export const PasswordResetConfirmForm = ({
 
       <div className={styles.actionsColumn}>
         <Button
-          disabled={isSubmitting || resetCodeValue.length !== 6}
+          disabled={isSubmitting || codeValue.length !== 6}
           fullWidth
           size='lg'
           type='submit'
