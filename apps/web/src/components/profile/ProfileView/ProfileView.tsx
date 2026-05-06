@@ -41,6 +41,14 @@ const defaultValues: IProfileFormValues = {
   tel: ''
 }
 
+const getDeliveryLabel = (value: string) => {
+  if (value === 'cdek') {
+    return 'CDEK'
+  }
+
+  return 'Почта'
+}
+
 export const ProfileView = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.auth.user)
@@ -55,6 +63,7 @@ export const ProfileView = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [historyPage, setHistoryPage] = useState(1)
   const [hasMoreOrders, setHasMoreOrders] = useState(false)
+  const [copiedTrackNumber, setCopiedTrackNumber] = useState('')
 
   const form = useForm<IProfileFormValues>({
     defaultValues,
@@ -131,6 +140,18 @@ export const ProfileView = () => {
     () => Object.fromEntries(orders.map((order) => [order.id, order.amount])),
     [orders]
   )
+
+  const handleTrackCopy = async (trackNumber: string) => {
+    try {
+      await navigator.clipboard.writeText(trackNumber)
+      setCopiedTrackNumber(trackNumber)
+      window.setTimeout(() => {
+        setCopiedTrackNumber((current) => (current === trackNumber ? '' : current))
+      }, 1600)
+    } catch {
+      setOrdersError('Не удалось скопировать трек-номер')
+    }
+  }
 
   const handleSubmit = form.handleSubmit(async (values) => {
     if (!user) {
@@ -413,8 +434,22 @@ export const ProfileView = () => {
                           <div className={styles.orderContentInner}>
                             {order.trackNumber ? (
                               <div className={styles.orderTrack}>
-                                <span>Трек-номер</span>
-                                <strong>{order.trackNumber}</strong>
+                                <span>{getDeliveryLabel(order.delivery)}</span>
+                                <div className={styles.orderTrackValue}>
+                                  <strong>{order.trackNumber}</strong>
+                                  <button
+                                    aria-label='Скопировать трек-номер'
+                                    className={styles.copyButton}
+                                    onClick={() => void handleTrackCopy(order.trackNumber)}
+                                    type='button'
+                                  >
+                                    <span className={styles.copyIconBack} />
+                                    <span className={styles.copyIconFront} />
+                                  </button>
+                                  {copiedTrackNumber === order.trackNumber ? (
+                                    <span className={styles.copyHint}>Скопировано</span>
+                                  ) : null}
+                                </div>
                               </div>
                             ) : null}
                             <div className={styles.orderItems}>

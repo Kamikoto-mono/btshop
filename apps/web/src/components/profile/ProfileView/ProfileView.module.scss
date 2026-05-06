@@ -348,6 +348,63 @@ display: flex;
   font-size: 14px;
 }
 
+.orderTrackValue {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.copyButton {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(201, 215, 234, 0.95);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.82);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.copyButton:hover {
+  border-color: rgba(29, 99, 216, 0.28);
+  background: rgba(231, 240, 255, 0.92);
+}
+
+.copyButton:active {
+  transform: translateY(1px);
+}
+
+.copyIconBack,
+.copyIconFront {
+  position: absolute;
+  width: 9px;
+  height: 11px;
+  border: 1.6px solid #365f9b;
+  border-radius: 2px;
+}
+
+.copyIconBack {
+  top: 7px;
+  left: 8px;
+  opacity: 0.72;
+}
+
+.copyIconFront {
+  top: 10px;
+  left: 11px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.copyHint {
+  color: var(--color-accent-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .orderItems {
   display: grid;
   gap: 12px;
@@ -464,6 +521,16 @@ display: flex;
     margin-left: 18px;
     margin-right: 18px;
     margin-bottom: 18px;
+  }
+
+  .orderTrack {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .orderTrackValue {
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .itemMeta strong,
