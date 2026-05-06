@@ -36,7 +36,8 @@ export const SiteBackground = () => (
         key={`${formula.className}-${index}`}
         style={
           {
-            '--formula-image': `url(${formula.image.src})`
+            '--formula-image': `url(${formula.image.src})`,
+            '--formula-ratio': `${formula.image.width} / ${formula.image.height}`
           } as CSSProperties
         }
       />

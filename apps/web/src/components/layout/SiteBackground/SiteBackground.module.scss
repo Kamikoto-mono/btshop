@@ -1,7 +1,7 @@
 .background {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }
@@ -19,9 +19,7 @@
 .formula {
   position: absolute;
   background: var(--formula-image) center / contain no-repeat;
-  width: auto;
-  height: auto;
-  max-width: none;
+  aspect-ratio: var(--formula-ratio);
   min-width: 170px;
   max-width: 380px;
   opacity: 0.08;
@@ -154,10 +152,6 @@
 
 @media (max-width: 650px) {
   .formula {
-    opacity: 0.02;
-  }
-
-  .formula:nth-child(even) {
-    display: none;
+    opacity: 0.04;
   }
 }

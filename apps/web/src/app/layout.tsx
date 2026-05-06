@@ -98,12 +98,14 @@ export default function RootLayout({
       <body className={`${styles.body} ${onest.className}`}>
         <StoreProvider>
           <SiteBackground />
-          <Header />
-          <main className={styles.main}>{children}</main>
-          <Footer />
-          <MobileTabs />
-          <ScrollToTop />
-          <AuthModal />
+          <div className={styles.chrome}>
+            <Header />
+            <main className={styles.main}>{children}</main>
+            <Footer />
+            <MobileTabs />
+            <ScrollToTop />
+            <AuthModal />
+          </div>
         </StoreProvider>
       </body>
     </html>
