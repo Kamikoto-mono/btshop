@@ -48,6 +48,10 @@
   box-shadow: 0 20px 45px rgba(78, 110, 154, 0.08);
 }
 
+.chartCardWide {
+  grid-column: 1 / -1;
+}
+
 .chartHeader {
   display: grid;
   gap: 4px;
@@ -60,7 +64,6 @@
   font-size: 20px;
   font-weight: 700;
 }
-
 
 .chartBox {
   width: 100%;
@@ -127,6 +130,10 @@
 @media (max-width: 1280px) {
   .chartsGrid {
     grid-template-columns: 1fr;
+  }
+
+  .chartCardWide {
+    grid-column: auto;
   }
 
   .summaryGrid {

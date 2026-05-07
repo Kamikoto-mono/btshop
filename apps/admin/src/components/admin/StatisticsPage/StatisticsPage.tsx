@@ -117,6 +117,8 @@ export const StatisticsPage = () => {
     [statistics]
   )
 
+  const emptyState = <Empty description='Нет данных за выбранный период' />
+
   return (
     <section className={styles.page}>
       <div className={styles.headerRow}>
@@ -163,7 +165,7 @@ export const StatisticsPage = () => {
       <div className={styles.chartsGrid}>
         <section className={styles.chartCard}>
           <div className={styles.chartHeader}>
-            <h2 className={styles.chartTitle}>Заказы и средний чек</h2>
+            <h2 className={styles.chartTitle}>Заказы по дням</h2>
           </div>
 
           <div className={styles.chartBox}>
@@ -177,12 +179,7 @@ export const StatisticsPage = () => {
                     stroke='#7d90ab'
                     tickLine={false}
                     axisLine={false}
-                    width={36}
-                    yAxisId='orders'
-                  />
-                  <YAxis
-                    hide
-                    yAxisId='money'
+                    width={42}
                   />
                   <Tooltip formatter={tooltipFormatter} />
                   <Legend />
@@ -191,8 +188,35 @@ export const StatisticsPage = () => {
                     fill='#4f88eb'
                     name='Заказы'
                     radius={[8, 8, 0, 0]}
-                    yAxisId='orders'
                   />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className={styles.emptyState}>{emptyState}</div>
+            )}
+          </div>
+        </section>
+
+        <section className={styles.chartCard}>
+          <div className={styles.chartHeader}>
+            <h2 className={styles.chartTitle}>Средний чек по дням</h2>
+          </div>
+
+          <div className={styles.chartBox}>
+            {chartData.length ? (
+              <ResponsiveContainer>
+                <LineChart data={chartData}>
+                  <CartesianGrid stroke='rgba(125, 144, 171, 0.16)' vertical={false} />
+                  <XAxis dataKey='date' stroke='#7d90ab' tickLine={false} axisLine={false} />
+                  <YAxis
+                    stroke='#7d90ab'
+                    tickFormatter={(value: number) => formatInteger(value)}
+                    tickLine={false}
+                    axisLine={false}
+                    width={64}
+                  />
+                  <Tooltip formatter={tooltipFormatter} />
+                  <Legend />
                   <Line
                     dataKey='averageCheck'
                     dot={{ r: 3 }}
@@ -200,19 +224,16 @@ export const StatisticsPage = () => {
                     stroke='#16304f'
                     strokeWidth={3}
                     type='monotone'
-                    yAxisId='money'
                   />
-                </BarChart>
+                </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className={styles.emptyState}>
-                <Empty description='Нет данных за выбранный период' />
-              </div>
+              <div className={styles.emptyState}>{emptyState}</div>
             )}
           </div>
         </section>
 
-        <section className={styles.chartCard}>
+        <section className={`${styles.chartCard} ${styles.chartCardWide}`}>
           <div className={styles.chartHeader}>
             <h2 className={styles.chartTitle}>Финансы по дням</h2>
           </div>
@@ -225,7 +246,7 @@ export const StatisticsPage = () => {
                   <XAxis dataKey='date' stroke='#7d90ab' tickLine={false} axisLine={false} />
                   <YAxis
                     stroke='#7d90ab'
-                    tickFormatter={(value: number) => `${formatInteger(value)}`}
+                    tickFormatter={(value: number) => formatInteger(value)}
                     tickLine={false}
                     axisLine={false}
                     width={64}
@@ -259,9 +280,7 @@ export const StatisticsPage = () => {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className={styles.emptyState}>
-                <Empty description='Нет данных за выбранный период' />
-              </div>
+              <div className={styles.emptyState}>{emptyState}</div>
             )}
           </div>
         </section>
